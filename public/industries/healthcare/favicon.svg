@@ -1,4 +1,14 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="64" height="64" rx="12" fill="#0891b2"/>
-  <path d="M26 18C23 18 20 21 20 24C20 30 22 34 22 37C22 43 18 45 18 50C18 55 22 58 28 58C32 58 34 55 34 52V37C34 34 38 32 38 27C38 22 36 22 34 22C32 22 30 24 30 27V37C34 37 38 39 38 32C38 25 34 22 34 18" fill="white"/>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4"/>
+      <stop offset="100%" style="stop-color:#0891b2"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <g transform="translate(32,28) scale(0.35)">
+    <path d="M-8,-42 C-20,-42 -28,-32 -28,-20 C-28,-4 -22,8 -22,20 C-22,36 -32,42 -32,58 C-32,68 -24,72 -14,72 C-4,72 0,62 0,48 L0,10 C0,2 4,-2 8,-2 C12,-2 16,2 16,10 L0,48 C0,62 4,72 14,72 C24,72 32,68 32,58 C32,42 22,36 22,20 C22,8 28,-4 28,-20 C28,-32 20,-42 8,-42 Z" fill="white"/>
+    <rect x="-3" y="-18" width="6" height="16" rx="2" fill="#06b6d4"/>
+    <rect x="-8" y="-13" width="16" height="6" rx="2" fill="#06b6d4"/>
+  </g>
 </svg>
