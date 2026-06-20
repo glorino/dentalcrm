@@ -57,31 +57,31 @@ export default function HomePage() {
   const heroWords = [t("landing.heroWords.ticket"), t("landing.heroWords.query"), t("landing.heroWords.complaint"), t("landing.heroWords.request")];
 
   const features = [
-    { num: "01", title: t("landing.features.intake.title"), desc: t("landing.features.intake.desc"), color: "blue", gradient: "from-blue-500 to-blue-600", bg: "bg-blue-50", border: "border-blue-100", text: "text-blue-600", iconBg: "bg-blue-500", bullets: (t("landing.features.intake.bullets") || "").split(",").map((s: string) => s.trim()) || ["Auto-classification", "Smart routing", "Instant response"], feed: [{ icon: "✓", text: "Classified", detail: "Billing inquiry" }, { icon: "✓", text: "Routed", detail: "Urgent issue → Tier 2" }, { icon: "✓", text: "Resolved", detail: "Password reset" }] },
-    { num: "02", title: t("landing.features.inbox.title"), desc: t("landing.features.inbox.desc"), color: "emerald", gradient: "from-emerald-500 to-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-600", iconBg: "bg-emerald-500", bullets: (t("landing.features.inbox.bullets") || "").split(",").map((s: string) => s.trim()) || ["6 channels unified", "Real-time sync", "Full context"], feed: [{ icon: "✓", text: "WhatsApp", detail: "Order status inquiry" }, { icon: "✓", text: "Email", detail: "Refund request received" }, { icon: "✓", text: "Web Chat", detail: "New visitor from Lagos" }] },
-    { num: "03", title: t("landing.features.sentiment.title"), desc: t("landing.features.sentiment.desc"), color: "purple", gradient: "from-purple-500 to-purple-600", bg: "bg-purple-50", border: "border-purple-100", text: "text-purple-600", iconBg: "bg-purple-500", bullets: (t("landing.features.sentiment.bullets") || "").split(",").map((s: string) => s.trim()) || ["Real-time scoring", "Trend alerts", "Churn prediction"], feed: [{ icon: "✓", text: "Detected", detail: "Frustrated tone — escalated" }, { icon: "✓", text: "Scored", detail: "Positive (0.92) — closed" }, { icon: "!", text: "Alert", detail: "Negative trend on WhatsApp" }] },
-    { num: "04", title: t("landing.features.sla.title"), desc: t("landing.features.sla.desc"), color: "amber", gradient: "from-amber-500 to-amber-600", bg: "bg-amber-50", border: "border-amber-100", text: "text-amber-600", iconBg: "bg-amber-500", bullets: (t("landing.features.sla.bullets") || "").split(",").map((s: string) => s.trim()) || ["Auto-escalation", "SLA tracking", "Compliance reporting"], feed: [{ icon: "✓", text: "Enforced", detail: "SLA 2h met for SSV-1234" }, { icon: "✕", text: "Breached", detail: "SSV-1230 exceeded 4h" }, { icon: "✓", text: "Escalated", detail: "SSV-1228 → Manager" }] },
-    { num: "05", title: t("landing.features.knowledge.title"), desc: t("landing.features.knowledge.desc"), color: "cyan", gradient: "from-cyan-500 to-cyan-600", bg: "bg-cyan-50", border: "border-cyan-100", text: "text-cyan-600", iconBg: "bg-cyan-500", bullets: (t("landing.features.knowledge.bullets") || "").split(",").map((s: string) => s.trim()) || ["Auto-ingestion", "Semantic search", "AI-powered answers"], feed: [{ icon: "✓", text: "Indexed", detail: "12 new articles processed" }, { icon: "✓", text: "Matched", detail: "Q: reset password → A: #42" }, { icon: "✓", text: "Auto-resolved", detail: "Shipping policy question" }] },
-    { num: "06", title: t("landing.features.analytics.title"), desc: t("landing.features.analytics.desc"), color: "rose", gradient: "from-rose-500 to-rose-600", bg: "bg-rose-50", border: "border-rose-100", text: "text-rose-600", iconBg: "bg-rose-500", bullets: (t("landing.features.analytics.bullets") || "").split(",").map((s: string) => s.trim()) || ["Live dashboards", "Export reports", "Custom metrics"], feed: [{ icon: "✓", text: "Updated", detail: "Resolution rate: 87%" }, { icon: "!", text: "Alert", detail: "CSAT dipped below 4.0" }, { icon: "✓", text: "Report", detail: "Weekly summary generated" }] },
+    { num: "01", title: "Appointment Scheduling", desc: "Smart AI-powered appointment booking that automatically classifies dental procedures, routes patients to the right specialists, and sends instant confirmations.", color: "blue", gradient: "from-blue-500 to-blue-600", bg: "bg-blue-50", border: "border-blue-100", text: "text-blue-600", iconBg: "bg-blue-500", bullets: ["Smart scheduling", "Patient routing", "Instant confirmations"], feed: [{ icon: "✓", text: "Scheduled", detail: "Root canal — Dr. Adebayo" }, { icon: "✓", text: "Routed", detail: "Emergency case → Oral surgeon" }, { icon: "✓", text: "Confirmed", detail: "Cleaning appointment sent" }] },
+    { num: "02", title: "Treatment Tracking", desc: "Comprehensive treatment plan management across WhatsApp, SMS, email, and phone — all channels unified in one place with full patient context.", color: "emerald", gradient: "from-emerald-500 to-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-600", iconBg: "bg-emerald-500", bullets: ["Multi-channel tracking", "Treatment history", "Full context"], feed: [{ icon: "✓", text: "WhatsApp", detail: "Follow-up reminder sent" }, { icon: "✓", text: "SMS", detail: "Post-op care instructions delivered" }, { icon: "✓", text: "Email", detail: "X-ray results shared" }] },
+    { num: "03", title: "Patient Sentiment Analysis", desc: "Real-time sentiment scoring to detect patient concerns and satisfaction levels, with automatic escalation for dissatisfied patients.", color: "purple", gradient: "from-purple-500 to-purple-600", bg: "bg-purple-50", border: "border-purple-100", text: "text-purple-600", iconBg: "bg-purple-500", bullets: ["Real-time scoring", "Trend alerts", "Satisfaction prediction"], feed: [{ icon: "✓", text: "Detected", detail: "Patient anxious — escalated" }, { icon: "✓", text: "Scored", detail: "Satisfied (0.94) — case closed" }, { icon: "!", text: "Alert", detail: "Negative trend on WhatsApp" }] },
+    { num: "04", title: "Insurance Verification", desc: "Automated insurance verification and claims tracking with SLA monitoring to ensure timely patient coverage confirmations.", color: "amber", gradient: "from-amber-500 to-amber-600", bg: "bg-amber-50", border: "border-amber-100", text: "text-amber-600", iconBg: "bg-amber-500", bullets: ["Auto-verification", "Claims tracking", "Compliance reporting"], feed: [{ icon: "✓", text: "Verified", detail: "NHIS coverage confirmed" }, { icon: "!", text: "Pending", detail: "Claim awaiting approval" }, { icon: "✓", text: "Approved", detail: "Insurance claim processed" }] },
+    { num: "05", title: "Oral Health Knowledge Base", desc: "AI-powered dental knowledge base with auto-ingested content, semantic search, and instant answers for common oral health questions.", color: "cyan", gradient: "from-cyan-500 to-cyan-600", bg: "bg-cyan-50", border: "border-cyan-100", text: "text-cyan-600", iconBg: "bg-cyan-500", bullets: ["Auto-ingestion", "Semantic search", "AI-powered answers"], feed: [{ icon: "✓", text: "Indexed", detail: "12 new dental articles processed" }, { icon: "✓", text: "Matched", detail: "Q: wisdom teeth pain → A: Article #42" }, { icon: "✓", text: "Auto-resolved", detail: "Oral hygiene FAQ answered" }] },
+    { num: "06", title: "Dental Analytics Dashboard", desc: "Live dashboards tracking patient satisfaction, treatment outcomes, appointment completion rates, and operational metrics.", color: "rose", gradient: "from-rose-500 to-rose-600", bg: "bg-rose-50", border: "border-rose-100", text: "text-rose-600", iconBg: "bg-rose-500", bullets: ["Live dashboards", "Export reports", "Custom metrics"], feed: [{ icon: "✓", text: "Updated", detail: "Patient satisfaction: 92%" }, { icon: "!", text: "Alert", detail: "Appointment no-show rate increased" }, { icon: "✓", text: "Report", detail: "Monthly dental report generated" }] },
   ];
 
   const agents = [
-    { name: "Intake", desc: t("landing.agents.intake"), color: "from-blue-500 to-blue-600", gradient: "#3b82f6" },
-    { name: "Knowledge", desc: t("landing.agents.knowledge"), color: "from-emerald-500 to-emerald-600", gradient: "#10b981" },
-    { name: "Resolution", desc: t("landing.agents.resolution"), color: "from-purple-500 to-purple-600", gradient: "#8b5cf6" },
-    { name: "QA", desc: t("landing.agents.qa"), color: "from-amber-500 to-amber-600", gradient: "#f59e0b" },
-    { name: "Escalation", desc: t("landing.agents.escalation"), color: "from-red-500 to-red-600", gradient: "#ef4444" },
-    { name: "Sentiment", desc: t("landing.agents.sentiment"), color: "from-cyan-500 to-cyan-600", gradient: "#06b6d4" },
-    { name: "Analytics", desc: t("landing.agents.analytics"), color: "from-rose-500 to-rose-600", gradient: "#f43f5e" },
+    { name: "Intake", desc: "Smart appointment triage and patient onboarding", color: "from-blue-500 to-blue-600", gradient: "#3b82f6" },
+    { name: "Knowledge", desc: "Dental procedure knowledge and treatment information", color: "from-emerald-500 to-emerald-600", gradient: "#10b981" },
+    { name: "Resolution", desc: "Automated patient query resolution and follow-ups", color: "from-purple-500 to-purple-600", gradient: "#8b5cf6" },
+    { name: "QA", desc: "Quality assurance for dental care delivery", color: "from-amber-500 to-amber-600", gradient: "#f59e0b" },
+    { name: "Escalation", desc: "Smart escalation to dental specialists", color: "from-red-500 to-red-600", gradient: "#ef4444" },
+    { name: "Sentiment", desc: "Patient satisfaction and sentiment monitoring", color: "from-cyan-500 to-cyan-600", gradient: "#06b6d4" },
+    { name: "Analytics", desc: "Dental practice performance analytics", color: "from-rose-500 to-rose-600", gradient: "#f43f5e" },
   ];
 
   const channels = [
-    { name: "WhatsApp", desc: t("landing.channels.whatsapp"), color: "from-[#25D366] to-[#128C7E]", icon: "M", stats: "whatsapp" },
-    { name: "Email", desc: t("landing.channels.email"), color: "from-[#FF6600] to-[#E55B00]", icon: "@", stats: "email" },
-    { name: "SMS", desc: t("landing.channels.sms"), color: "from-[#2196F3] to-[#1976D2]", icon: "~", stats: "sms" },
-    { name: "Web Chat", desc: t("landing.channels.web"), color: "from-[#8B5CF6] to-[#7C3AED]", icon: "W", stats: "web_chat" },
-    { name: "Messenger", desc: t("landing.channels.messenger"), color: "from-[#1877F2] to-[#0D65D9]", icon: "M", stats: "messenger" },
-    { name: "Instagram", desc: t("landing.channels.instagram"), color: "from-[#833AB4] to-[#FD1D1D]", icon: "I", stats: "instagram" },
+    { name: "WhatsApp", desc: "Patient appointment reminders and care tips", color: "from-[#25D366] to-[#128C7E]", icon: "M", stats: "whatsapp" },
+    { name: "SMS", desc: "Instant appointment confirmations and reminders", color: "from-[#2196F3] to-[#1976D2]", icon: "~", stats: "sms" },
+    { name: "Email", desc: "Treatment plans and dental reports delivery", color: "from-[#FF6600] to-[#E55B00]", icon: "@", stats: "email" },
+    { name: "Phone", desc: "Voice calls and voicemail management", color: "from-[#8B5CF6] to-[#7C3AED]", icon: "P", stats: "web_chat" },
+    { name: "Web Portal", desc: "Online patient self-service portal", color: "from-[#1877F2] to-[#0D65D9]", icon: "W", stats: "messenger" },
+    { name: "Clinic App", desc: "Mobile app for patient engagement", color: "from-[#833AB4] to-[#FD1D1D]", icon: "I", stats: "instagram" },
   ];
 
   useEffect(() => {
@@ -145,10 +145,10 @@ export default function HomePage() {
                 {/* Stats */}
                 <div className="grid grid-cols-4 gap-3">
                   {[
-                    { label: "Open", value: ticket.open, color: "text-blue-300", bg: "bg-blue-500/10" },
-                    { label: "Pending", value: ticket.pending, color: "text-amber-300", bg: "bg-amber-500/10" },
-                    { label: "Escalated", value: ticket.escalated, color: "text-red-300", bg: "bg-red-500/10" },
-                    { label: "Resolved", value: ticket.resolved, color: "text-emerald-300", bg: "bg-emerald-500/10" },
+                    { label: "Scheduled", value: ticket.open, color: "text-blue-300", bg: "bg-blue-500/10" },
+                    { label: "In Treatment", value: ticket.pending, color: "text-amber-300", bg: "bg-amber-500/10" },
+                    { label: "Urgent", value: ticket.escalated, color: "text-red-300", bg: "bg-red-500/10" },
+                    { label: "Completed", value: ticket.resolved, color: "text-emerald-300", bg: "bg-emerald-500/10" },
                   ].map((s) => (
                     <div key={s.label} className={`text-center p-3 rounded-xl ${s.bg} border border-white/[0.05]`}>
                       <div className={`text-xl font-extrabold ${s.color}`}>{s.value}</div>
@@ -156,7 +156,7 @@ export default function HomePage() {
                     </div>
                   ))}
                 </div>
-                {/* Recent tickets */}
+                {/* Recent appointments */}
                 <div className="space-y-2">
                   {recentTickets.slice(0, 3).map((rt: any, i: number) => (
                     <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.04] border border-white/[0.05]">
@@ -169,19 +169,19 @@ export default function HomePage() {
                         <span className="text-xs font-mono text-blue-300/80">{rt.ticket_number}</span>
                         <span className="text-xs text-gray-300 truncate">{rt.subject}</span>
                       </div>
-                      <span className="text-[10px] text-gray-500 shrink-0 ml-2">{rt.customer_name || "Customer"}</span>
+                      <span className="text-[10px] text-gray-500 shrink-0 ml-2">{rt.customer_name || "Patient"}</span>
                     </div>
                   ))}
                   {recentTickets.length === 0 && (
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.05]">
                       <span className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
-                      <span className="text-xs text-gray-400">Connecting to database...</span>
+                      <span className="text-xs text-gray-400">Connecting to clinic system...</span>
                     </div>
                   )}
                 </div>
                 {/* Channels */}
                 <div className="flex gap-2 flex-wrap">
-                  {["whatsapp", "email", "web_chat", "sms", "messenger", "instagram"].map((ch) => (
+                  {["whatsapp", "sms", "email", "phone", "web_portal", "clinic_app"].map((ch) => (
                     <span key={ch} className="px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.05] text-[11px] text-gray-300 capitalize">
                       {ch.replace("_", " ")} {channelCounts[ch] ? `${channelCounts[ch]}` : ""}
                     </span>
@@ -198,10 +198,10 @@ export default function HomePage() {
       <RevealSection className="relative -mt-12 z-10 max-w-[1200px] mx-auto px-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: t("stats.autoResolution"), value: ticket.autoResolutionRate || 67, suffix: "%", gradient: "from-blue-500 to-blue-600", icon: "⚡", iconBg: "bg-blue-500" },
-            { label: t("stats.avgResponse"), value: 42, suffix: "s", gradient: "from-emerald-500 to-emerald-600", icon: "⏱", iconBg: "bg-emerald-500" },
-            { label: t("stats.uptime"), value: 99.99, suffix: "%", gradient: "from-purple-500 to-purple-600", icon: "🛡", iconBg: "bg-purple-500" },
-            { label: t("stats.customers"), value: customer.total || 16, suffix: "+", gradient: "from-amber-500 to-amber-600", icon: "👥", iconBg: "bg-amber-500" },
+            { label: "Auto-Booking Rate", value: ticket.autoResolutionRate || 67, suffix: "%", gradient: "from-blue-500 to-blue-600", icon: "⚡", iconBg: "bg-blue-500" },
+            { label: "Avg Response Time", value: 42, suffix: "s", gradient: "from-emerald-500 to-emerald-600", icon: "⏱", iconBg: "bg-emerald-500" },
+            { label: "Clinic Uptime", value: 99.99, suffix: "%", gradient: "from-purple-500 to-purple-600", icon: "🛡", iconBg: "bg-purple-500" },
+            { label: "Patients Served", value: customer.total || 16, suffix: "+", gradient: "from-amber-500 to-amber-600", icon: "👥", iconBg: "bg-amber-500" },
           ].map((stat, i) => (
             <RevealSection key={stat.label} delay={i * 100}>
               <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 p-6 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
@@ -234,18 +234,18 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-[1px] rounded-2xl overflow-hidden shadow-lg shadow-gray-200/40 border border-white/60 backdrop-blur-sm">
               {[
-                { name: "Paystack", accent: "hover:shadow-blue-500/5" },
-                { name: "Kuda", accent: "hover:shadow-blue-500/5" },
-                { name: "PiggyVest", accent: "hover:shadow-green-500/5" },
-                { name: "Chipper", accent: "hover:shadow-purple-500/5" },
-                { name: "Moniepoint", accent: "hover:shadow-blue-500/5" },
-                { name: "FairMoney", accent: "hover:shadow-amber-500/5" },
-                { name: "Glovo", accent: "hover:shadow-green-500/5" },
-                { name: "Wema Bank", accent: "hover:shadow-red-500/5" },
-                { name: "Arm", accent: "hover:shadow-indigo-500/5" },
-                { name: "Tolaram", accent: "hover:shadow-orange-500/5" },
-                { name: "Chowdeck", accent: "hover:shadow-green-500/5" },
-                { name: "Yellow Card", accent: "hover:shadow-yellow-500/5" },
+                { name: "Lagos Dental Hospital", accent: "hover:shadow-blue-500/5" },
+                { name: "Smile Care Clinic", accent: "hover:shadow-blue-500/5" },
+                { name: "DentalVerse Lagos", accent: "hover:shadow-green-500/5" },
+                { name: "White Pearl Dental", accent: "hover:shadow-purple-500/5" },
+                { name: "Oral Health Centre", accent: "hover:shadow-blue-500/5" },
+                { name: "Family Dental Care", accent: "hover:shadow-amber-500/5" },
+                { name: "Precision Dental", accent: "hover:shadow-green-500/5" },
+                { name: "Dental Excellence", accent: "hover:shadow-red-500/5" },
+                { name: "Bright Smile Clinic", accent: "hover:shadow-indigo-500/5" },
+                { name: "HealthCare Dental", accent: "hover:shadow-orange-500/5" },
+                { name: "Apex Dental Centre", accent: "hover:shadow-green-500/5" },
+                { name: "Nova Dental Care", accent: "hover:shadow-yellow-500/5" },
               ].map((company) => (
                 <div key={company.name} className={`flex items-center justify-center h-[78px] bg-white/70 backdrop-blur-sm hover:bg-white/90 transition-all duration-300 group cursor-default ${company.accent} hover:shadow-lg`}>
                   <span className="text-[13px] font-semibold text-gray-400/80 tracking-wide group-hover:text-gray-500 group-hover:tracking-wider transition-all duration-300">{company.name}</span>
@@ -272,10 +272,10 @@ export default function HomePage() {
           <p className="text-gray-500 text-lg max-w-xl mx-auto mb-16">{t("problem.desc")}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: "!", title: t("landing.problems.triage.title"), desc: t("landing.problems.triage.desc"), gradient: "from-blue-500 to-blue-600", topClass: "card-top-blue" },
-              { icon: "~", title: t("landing.problems.escalation.title"), desc: t("landing.problems.escalation.desc"), gradient: "from-rose-500 to-rose-600", topClass: "card-top-rose" },
-              { icon: "●", title: t("landing.problems.resolution.title"), desc: t("landing.problems.resolution.desc"), gradient: "from-amber-500 to-amber-600", topClass: "card-top-amber" },
-              { icon: "↻", title: t("landing.problems.fallback.title"), desc: t("landing.problems.fallback.desc"), gradient: "from-gray-400 to-gray-500", topClass: "" },
+              { icon: "!", title: "Appointment Overload", desc: "Manual appointment scheduling leads to double bookings and frustrated patients waiting for days.", gradient: "from-blue-500 to-blue-600", topClass: "card-top-blue" },
+              { icon: "~", title: "Communication Gaps", desc: "Patients fall through the cracks with no automated follow-ups or treatment reminders.", gradient: "from-rose-500 to-rose-600", topClass: "card-top-rose" },
+              { icon: "●", title: "Insurance Delays", desc: "Slow manual insurance verification delays treatment and reduces patient satisfaction.", gradient: "from-amber-500 to-amber-600", topClass: "card-top-amber" },
+              { icon: "↻", title: "No Patient Insights", desc: "Lack of analytics means you can't track treatment outcomes or patient satisfaction trends.", gradient: "from-gray-400 to-gray-500", topClass: "" },
             ].map((card, i) => (
               <RevealSection key={card.title} delay={i * 100}>
                 <div className={`text-left p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-xl transition-all duration-300 group bg-white ${card.topClass}`}>
@@ -400,7 +400,7 @@ export default function HomePage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                        <span className="text-xs text-gray-400 font-medium">{channelCounts[ch.stats] || 0} tickets</span>
+                        <span className="text-xs text-gray-400 font-medium">{channelCounts[ch.stats] || 0} messages</span>
                       </div>
                     </div>
                     <h3 className="text-lg font-bold mb-1">{ch.name}</h3>
@@ -453,10 +453,10 @@ export default function HomePage() {
           </RevealSection>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { num: "01", icon: "↓", title: t("landing.steps.ingest.title"), desc: t("landing.steps.ingest.desc"), gradient: "from-blue-500 to-blue-600" },
-              { num: "02", icon: "⚡", title: t("landing.steps.classify.title"), desc: t("landing.steps.classify.desc"), gradient: "from-emerald-500 to-emerald-600" },
-              { num: "03", icon: "↗", title: t("landing.steps.resolve.title"), desc: t("landing.steps.resolve.desc"), gradient: "from-purple-500 to-purple-600" },
-              { num: "04", icon: "✓", title: t("landing.steps.escalate.title"), desc: t("landing.steps.escalate.desc"), gradient: "from-amber-500 to-amber-600" },
+              { num: "01", icon: "↓", title: "Patient Registration", desc: "Patients contact you via any channel — AI instantly captures their information and dental history.", gradient: "from-blue-500 to-blue-600" },
+              { num: "02", icon: "⚡", title: "Smart Classification", desc: "AI classifies dental concerns: routine cleaning, emergency, orthodontic, or cosmetic procedures.", gradient: "from-emerald-500 to-emerald-600" },
+              { num: "03", icon: "↗", title: "Treatment Routing", desc: "Cases are automatically routed to the right dental specialist based on urgency and procedure type.", gradient: "from-purple-500 to-purple-600" },
+              { num: "04", icon: "✓", title: "Follow-up & Care", desc: "Automated post-treatment follow-ups, oral health tips, and appointment reminders keep patients engaged.", gradient: "from-amber-500 to-amber-600" },
             ].map((step, i) => (
               <RevealSection key={step.num} delay={i * 100}>
                 <div className="p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-xl transition-all duration-300 group h-full bg-white relative overflow-hidden">
@@ -504,7 +504,7 @@ export default function HomePage() {
             </h2>
             <p className="text-gray-500 text-lg max-w-2xl mx-auto mb-12">{t("integrations.desc")}</p>
             <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-0 border border-gray-100 rounded-2xl overflow-hidden bg-white max-w-4xl mx-auto mb-8">
-              {["WhatsApp", "Zapier", "Instagram", "Twilio", "Slack", "Gmail", "Mailgun", "Amazon SNS", "Firebase", "Stripe", "HubSpot", "Telegram"].map((name) => (
+              {["WhatsApp", "NHIS Portal", "SMS Gateway", "Twilio", "Dental Imaging", "Gmail", "Paystack", "Google Calendar", "Practice Management", "Insurance APIs", "EHR Systems", "Telehealth"].map((name) => (
                 <div key={name} className="flex items-center justify-center h-20 border-r border-b border-gray-100 last:border-r-0 hover:bg-gray-50/50 transition-colors">
                   <span className="text-xs font-bold text-gray-400">{name}</span>
                 </div>

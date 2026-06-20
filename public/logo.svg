@@ -1,13 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0891b2"/>
+      <stop offset="100%" style="stop-color:#0e7490"/>
     </linearGradient>
   </defs>
-  <!-- Icon: Blue rounded square with SSV -->
-  <rect x="5" y="5" width="50" height="50" rx="12" fill="#3b82f6"/>
-  <text x="30" y="37" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="18" fill="white" text-anchor="middle">SSV</text>
-  <!-- Text: CRM -->
-  <text x="65" y="40" font-family="Arial, Helvetica, sans-serif" font-weight="600" font-size="30" fill="#1e293b">CRM</text>
+  <rect width="200" height="200" rx="40" fill="url(#bg)"/>
+  <path d="M70 50C60 50 55 60 55 70C55 90 65 100 65 115C65 135 50 140 50 160C50 175 65 180 80 180C90 180 95 170 95 155V115C95 105 105 100 105 85C105 65 100 55 90 55C85 55 80 60 80 70V115" fill="white" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <path d="M130 50C140 50 145 60 145 70C145 90 135 100 135 115C135 135 150 140 150 160C150 175 135 180 120 180C110 180 105 170 105 155V115C105 105 95 100 95 85C95 65 100 55 110 55C115 55 120 60 120 70V115" fill="white" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="80" cy="70" r="5" fill="#0891b2"/>
+  <circle cx="120" cy="70" r="5" fill="#0891b2"/>
+  <text x="100" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" letter-spacing="1">DENTALCRM</text>
 </svg>
