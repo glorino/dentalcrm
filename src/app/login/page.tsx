@@ -7,10 +7,10 @@ import { LangToggle } from "@/components/lang-toggle";
 import { useLang } from "@/lib/i18n/context";
 
 const demoLogins = [
-  { email: "admin@dentalcrm.com", password: "admin123", role: "Super Admin", name: "Alex Johnson", avatar: "AJ", gradient: "from-violet-500 to-indigo-600" },
-  { email: "sarah@dentalcrm.com", password: "demo123", role: "Manager", name: "Sarah Kim", avatar: "SK", gradient: "from-emerald-500 to-teal-600" },
-  { email: "tom@dentalcrm.com", password: "demo123", role: "Agent", name: "Tom Chen", avatar: "TC", gradient: "from-blue-500 to-cyan-600" },
-  { email: "viewer@dentalcrm.com", password: "demo123", role: "Viewer", name: "Jordan Lee", avatar: "JL", gradient: "from-gray-500 to-slate-600" },
+  { email: "emeka@dentalcrm.com", password: "admin123", role: "Super Admin", name: "Dr. Chukwuemeka Obi", avatar: "CO", gradient: "from-violet-500 to-indigo-600" },
+  { email: "folake@dentalcrm.com", password: "demo123", role: "Manager", name: "Folake Ogundipe", avatar: "FO", gradient: "from-emerald-500 to-teal-600" },
+  { email: "ngozi@dentalcrm.com", password: "demo123", role: "Agent", name: "Ngozi Okolo", avatar: "NO", gradient: "from-blue-500 to-cyan-600" },
+  { email: "dayo@dentalcrm.com", password: "demo123", role: "Viewer", name: "Dayo Fadugba", avatar: "DF", gradient: "from-gray-500 to-slate-600" },
 ];
 
 export default function LoginPage() {
