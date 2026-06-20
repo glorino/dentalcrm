@@ -118,7 +118,7 @@ export function Sidebar() {
       {/* Main Site Link */}
       <div className="px-3 pb-3">
         <a
-          href="https://supportflow-ai-six.vercel.app"
+          href="https://dentalcrm-beta.vercel.app"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-900 hover:shadow-sm transition-all duration-300 border border-gray-200/60"
