@@ -1,0 +1,7 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="40" fill="#2563eb"/>
+  <path d="M100 40L150 65V110C150 140 130 155 100 165C70 155 50 140 50 110V65L100 40Z" fill="white" stroke="white" stroke-width="2"/>
+  <path d="M100 55L140 75V110C140 135 125 148 100 155C75 148 60 135 60 110V75L100 55Z" fill="#2563eb"/>
+  <path d="M85 110L95 120L120 95" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="100" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">InsureCRM</text>
+</svg>

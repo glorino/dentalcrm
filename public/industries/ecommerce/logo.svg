@@ -1,0 +1,9 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="40" fill="#ea580c"/>
+  <path d="M60 65H155L145 130H70L60 65Z" fill="white" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="80" cy="145" r="10" fill="white"/>
+  <circle cx="130" cy="145" r="10" fill="white"/>
+  <path d="M70 80H145" stroke="#ea580c" stroke-width="3"/>
+  <path d="M75 95H110" stroke="#ea580c" stroke-width="2" opacity="0.5"/>
+  <text x="100" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">ShopCRM</text>
+</svg>
