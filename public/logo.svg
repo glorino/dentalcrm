@@ -1,14 +1,20 @@
 <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0891b2"/>
-      <stop offset="100%" style="stop-color:#0e7490"/>
+      <stop offset="0%" style="stop-color:#06b6d4"/>
+      <stop offset="100%" style="stop-color:#0891b2"/>
     </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.15"/>
+    </filter>
   </defs>
-  <rect width="200" height="200" rx="40" fill="url(#bg)"/>
-  <path d="M70 50C60 50 55 60 55 70C55 90 65 100 65 115C65 135 50 140 50 160C50 175 65 180 80 180C90 180 95 170 95 155V115C95 105 105 100 105 85C105 65 100 55 90 55C85 55 80 60 80 70V115" fill="white" stroke="white" stroke-width="3" stroke-linecap="round"/>
-  <path d="M130 50C140 50 145 60 145 70C145 90 135 100 135 115C135 135 150 140 150 160C150 175 135 180 120 180C110 180 105 170 105 155V115C105 105 95 100 95 85C95 65 100 55 110 55C115 55 120 60 120 70V115" fill="white" stroke="white" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="80" cy="70" r="5" fill="#0891b2"/>
-  <circle cx="120" cy="70" r="5" fill="#0891b2"/>
-  <text x="100" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" letter-spacing="1">DENTALCRM</text>
+  <rect width="200" height="200" rx="44" fill="url(#bg)"/>
+  <!-- Tooth shape - cleaner, more modern -->
+  <g transform="translate(100,88) scale(1.1)" filter="url(#shadow)">
+    <path d="M-8,-42 C-20,-42 -28,-32 -28,-20 C-28,-4 -22,8 -22,20 C-22,36 -32,42 -32,58 C-32,68 -24,72 -14,72 C-4,72 0,62 0,48 L0,10 C0,2 4,-2 8,-2 C12,-2 16,2 16,10 L0,48 C0,62 4,72 14,72 C24,72 32,68 32,58 C32,42 22,36 22,20 C22,8 28,-4 28,-20 C28,-32 20,-42 8,-42 Z" fill="white"/>
+    <!-- Dental cross icon -->
+    <rect x="-3" y="-18" width="6" height="16" rx="2" fill="#06b6d4"/>
+    <rect x="-8" y="-13" width="16" height="6" rx="2" fill="#06b6d4"/>
+  </g>
+  <text x="100" y="178" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="white" letter-spacing="2">DENTALCRM</text>
 </svg>
