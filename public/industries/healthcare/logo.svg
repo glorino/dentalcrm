@@ -1,0 +1,7 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="40" fill="#0891b2"/>
+  <path d="M80 55C75 55 70 60 70 65C70 80 75 90 75 100C75 115 65 120 65 135C65 150 75 160 90 160C100 160 105 150 105 140V100C105 90 115 85 115 70C115 55 110 55 105 55C100 55 95 60 95 70V100C95 110 85 115 85 130C85 145 90 150 95 150C100 150 105 145 105 135C105 120 95 115 95 100C95 85 105 80 105 65C105 60 100 55 95 55" fill="white"/>
+  <circle cx="85" cy="70" r="4" fill="#0891b2"/>
+  <circle cx="105" cy="70" r="4" fill="#0891b2"/>
+  <text x="100" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">DentalCRM</text>
+</svg>
