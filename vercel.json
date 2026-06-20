@@ -1,5 +1,6 @@
 {
   "framework": "nextjs",
+  "name": "dentalcrm",
   "crons": [
     {
       "path": "/api/cron/sla",
