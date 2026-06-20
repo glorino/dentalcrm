@@ -11,6 +11,8 @@ export interface IndustryConfig {
   tagline: string;
   logo: string; // path to logo SVG
   favicon: string;
+  description: string;
+  ticketPrefix: string;
   colors: {
     primary: string;
     primaryLight: string;
@@ -47,6 +49,8 @@ export const industries: Record<IndustrySlug, IndustryConfig> = {
     tagline: "Smart Dental Hospital Support Platform",
     logo: "/industries/healthcare/logo.svg",
     favicon: "/industries/healthcare/favicon.svg",
+    description: "dental hospital support",
+    ticketPrefix: "DNT",
     colors: {
       primary: "#0891b2",
       primaryLight: "#22d3ee",
@@ -124,6 +128,8 @@ Guidelines:
     tagline: "Smart Property Support Platform",
     logo: "/industries/realestate/logo.svg",
     favicon: "/industries/realestate/favicon.svg",
+    description: "real estate and property support",
+    ticketPrefix: "PCR",
     colors: {
       primary: "#059669",
       primaryLight: "#34d399",
@@ -200,6 +206,8 @@ Guidelines:
     tagline: "Intelligent Financial Support Platform",
     logo: "/industries/fintech/logo.svg",
     favicon: "/industries/fintech/favicon.svg",
+    description: "financial services support",
+    ticketPrefix: "FIN",
     colors: {
       primary: "#1e3a5f",
       primaryLight: "#3b82f6",
@@ -276,6 +284,8 @@ Guidelines:
     tagline: "Smart Insurance Support Platform",
     logo: "/industries/insurance/logo.svg",
     favicon: "/industries/insurance/favicon.svg",
+    description: "insurance policy and claims support",
+    ticketPrefix: "INS",
     colors: {
       primary: "#2563eb",
       primaryLight: "#60a5fa",
@@ -352,6 +362,8 @@ Guidelines:
     tagline: "Smart E-Commerce Support Platform",
     logo: "/industries/ecommerce/logo.svg",
     favicon: "/industries/ecommerce/favicon.svg",
+    description: "e-commerce and retail support",
+    ticketPrefix: "SHP",
     colors: {
       primary: "#ea580c",
       primaryLight: "#fb923c",
