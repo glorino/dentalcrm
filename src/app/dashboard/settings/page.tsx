@@ -10,7 +10,7 @@ export default function SettingsPage() {
       title: t("settingsPage.company"),
       icon: "🏢",
       items: [
-        { label: t("settingsPage.companyProfile"), desc: t("settingsPage.companyProfileDesc"), current: "SSV" },
+        { label: t("settingsPage.companyProfile"), desc: t("settingsPage.companyProfileDesc"), current: "DentalCRM" },
         { label: t("settingsPage.workingHours"), desc: t("settingsPage.workingHoursDesc"), current: "Mon-Fri, 9AM-6PM EST" },
         { label: t("settingsPage.timezone"), desc: t("settingsPage.timezoneDesc"), current: "America/New_York" },
         { label: t("settingsPage.contactInfo"), desc: t("settingsPage.contactInfoDesc"), current: "Edit" },

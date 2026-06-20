@@ -7,10 +7,10 @@ import { LangToggle } from "@/components/lang-toggle";
 import { useLang } from "@/lib/i18n/context";
 
 const demoLogins = [
-  { email: "admin@ssv.com", password: "admin123", role: "Super Admin", name: "Alex Johnson", avatar: "AJ", gradient: "from-violet-500 to-indigo-600" },
-  { email: "sarah@ssv.com", password: "demo123", role: "Manager", name: "Sarah Kim", avatar: "SK", gradient: "from-emerald-500 to-teal-600" },
-  { email: "tom@ssv.com", password: "demo123", role: "Agent", name: "Tom Chen", avatar: "TC", gradient: "from-blue-500 to-cyan-600" },
-  { email: "viewer@ssv.com", password: "demo123", role: "Viewer", name: "Jordan Lee", avatar: "JL", gradient: "from-gray-500 to-slate-600" },
+  { email: "admin@dentalcrm.com", password: "admin123", role: "Super Admin", name: "Alex Johnson", avatar: "AJ", gradient: "from-violet-500 to-indigo-600" },
+  { email: "sarah@dentalcrm.com", password: "demo123", role: "Manager", name: "Sarah Kim", avatar: "SK", gradient: "from-emerald-500 to-teal-600" },
+  { email: "tom@dentalcrm.com", password: "demo123", role: "Agent", name: "Tom Chen", avatar: "TC", gradient: "from-blue-500 to-cyan-600" },
+  { email: "viewer@dentalcrm.com", password: "demo123", role: "Viewer", name: "Jordan Lee", avatar: "JL", gradient: "from-gray-500 to-slate-600" },
 ];
 
 export default function LoginPage() {
@@ -75,9 +75,9 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16 w-full">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-16 animate-fade-in">
-            <img src="/logo.svg" alt="SSV CRM" className="h-14 w-14" />
+            <img src="/industries/healthcare/logo.svg" alt="DentalCRM" className="h-14 w-14" />
             <div>
-              <span className="text-3xl font-bold text-white tracking-tight">SSV</span>
+              <span className="text-3xl font-bold text-white tracking-tight">Dental</span>
               <span className="text-3xl font-bold text-blue-300 ml-1.5">CRM</span>
             </div>
           </div>
@@ -138,9 +138,9 @@ export default function LoginPage() {
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-10 animate-slide-up">
             <Link href="/dashboard" className="inline-flex items-center gap-3">
-              <img src="/logo.svg" alt="SSV CRM" className="h-14 w-14" />
+              <img src="/industries/healthcare/logo.svg" alt="DentalCRM" className="h-14 w-14" />
               <div>
-                <span className="text-3xl font-bold text-gray-900 tracking-tight">SSV</span>
+                <span className="text-3xl font-bold text-gray-900 tracking-tight">Dental</span>
                 <span className="text-3xl font-bold text-blue-600 ml-1.5">CRM</span>
               </div>
             </Link>
@@ -197,7 +197,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@ssv.com"
+                  placeholder="you@dentalcrm.com"
                   required
                   className="input-premium"
                 />

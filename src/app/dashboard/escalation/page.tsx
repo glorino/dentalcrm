@@ -276,7 +276,7 @@ export default function EscalationPage() {
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <Link
                     href={`/dashboard/tickets/${e.ticketNumber.replace(
-                      "SSV-",
+                      "DNT-",
                       ""
                     )}`}
                     className="text-xs font-mono text-gray-400 hover:text-blue-600 transition-colors duration-200"

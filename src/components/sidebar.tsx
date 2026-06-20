@@ -86,9 +86,9 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex h-[68px] items-center gap-3 border-b border-gray-100/80 px-5">
         <Link href="/dashboard" className="flex items-center gap-2.5 group">
-          <img src="/logo.svg" alt="SSV CRM" className="h-9 w-9 group-hover:scale-105 transition-transform duration-300" />
+          <img src="/industries/healthcare/logo.svg" alt="DentalCRM" className="h-9 w-9 group-hover:scale-105 transition-transform duration-300" />
           <div>
-            <span className="text-lg font-bold text-gray-900 tracking-tight">SSV</span>
+            <span className="text-lg font-bold text-gray-900 tracking-tight">Dental</span>
             <span className="text-lg font-bold text-blue-600 ml-1">CRM</span>
           </div>
         </Link>

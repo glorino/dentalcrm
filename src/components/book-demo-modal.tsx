@@ -97,7 +97,7 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
           <div className="relative z-10 flex items-center justify-between">
             <div>
               <h3 className="text-white font-bold text-lg">Book a Demo</h3>
-              <p className="text-blue-100 text-sm mt-0.5">See SSV CRM in action — tailored to your team</p>
+              <p className="text-blue-100 text-sm mt-0.5">See DentalCRM in action — tailored to your team</p>
             </div>
             <button onClick={handleClose} className="text-white/70 hover:text-white h-8 w-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -119,7 +119,7 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
             </p>
             <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100 mb-6">
               <p className="text-xs text-blue-600 font-medium">What to expect</p>
-              <p className="text-sm text-gray-600 mt-1">A 30-minute walkthrough of SSV CRM, customized to your industry and team size. No commitment required.</p>
+              <p className="text-sm text-gray-600 mt-1">A 30-minute walkthrough of DentalCRM, customized to your industry and team size. No commitment required.</p>
             </div>
             <button onClick={handleClose} className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl text-sm font-semibold hover:shadow-lg transition-all">
               Done

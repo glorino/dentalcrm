@@ -113,5 +113,5 @@ export async function initDB() {
 
 export async function generateTicketNumber(): Promise<string> {
   const result = await sql`SELECT nextval('ticket_seq') as num`;
-  return `SSV-${result[0].num}`;
+  return `DNT-${result[0].num}`;
 }

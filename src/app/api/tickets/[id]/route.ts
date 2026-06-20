@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const ticketNumber = `SSV-${params.id}`;
+    const ticketNumber = `DNT-${params.id}`;
 
     const tickets = await sql`
       SELECT 

@@ -1,9 +1,8 @@
 export type IndustrySlug =
-  | "ssv"
+  | "healthcare"
   | "realestate"
   | "fintech"
   | "insurance"
-  | "healthcare"
   | "ecommerce";
 
 export interface IndustryConfig {
@@ -42,20 +41,20 @@ export interface IndustryConfig {
 }
 
 export const industries: Record<IndustrySlug, IndustryConfig> = {
-  ssv: {
-    slug: "ssv",
-    name: "SSV CRM",
-    tagline: "AI-Powered Customer Support Platform",
-    logo: "/logo.svg",
-    favicon: "/favicon.svg",
+  healthcare: {
+    slug: "healthcare",
+    name: "DentalCRM",
+    tagline: "Smart Dental Hospital Support Platform",
+    logo: "/industries/healthcare/logo.svg",
+    favicon: "/industries/healthcare/favicon.svg",
     colors: {
-      primary: "#4f46e5",
-      primaryLight: "#818cf8",
-      primaryDark: "#3730a3",
-      secondary: "#0ea5e9",
+      primary: "#0891b2",
+      primaryLight: "#22d3ee",
+      primaryDark: "#0e7490",
+      secondary: "#06b6d4",
       accent: "#06b6d4",
-      gradient: "from-blue-600 to-indigo-700",
-      gradientCSS: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)",
+      gradient: "from-cyan-600 to-teal-600",
+      gradientCSS: "linear-gradient(135deg, #0891b2 0%, #0d9488 100%)",
     },
     contact: {
       email: "info@glopresc.com",
@@ -64,51 +63,59 @@ export const industries: Record<IndustrySlug, IndustryConfig> = {
       website: "supportflow-ai-six.vercel.app",
     },
     chatbot: {
-      name: "SSV AI",
-      personality: "professional support specialist",
-      systemPrompt: `You are SSV AI, the intelligent customer support assistant for SSV CRM.
-Your role is to help customers resolve their issues quickly and accurately.
+      name: "Dental AI",
+      personality: "dental hospital support specialist",
+      systemPrompt: `You are Dental AI, the intelligent support assistant for DentalCRM — a dental hospital.
+You specialize in dental appointments, treatments, patient inquiries, and oral health information.
 Guidelines:
-- Be professional, empathetic, and helpful
-- Use the customer's name when available
-- Provide clear, actionable solutions
-- If you can't resolve the issue, explain why and offer alternatives
-- Keep responses concise but thorough
-- You work for a company called SSV
+- Be compassionate and professional
+- NEVER provide medical diagnoses or dental advice
+- Help with scheduling appointments and treatments
+- Direct dental emergencies to appropriate services
+- Handle patient information with utmost confidentiality
 - All currency is in Naira (₦)
 - Contact email: info@glopresc.com
-- WhatsApp: +2347082529729`,
+- WhatsApp: +2347082529729
+- For emergencies, always direct to emergency services`,
       quickActions: [
-        { label: "Reset my password", icon: "🔑" },
-        { label: "Check order status", icon: "📦" },
-        { label: "Talk to a human", icon: "👤" },
-        { label: "Billing question", icon: "💳" },
+        { label: "Book dental appointment", icon: "🦷" },
+        { label: "Check treatment options", icon: "📋" },
+        { label: "Request consultation", icon: "💬" },
+        { label: "Talk to reception", icon: "👤" },
       ],
       fallbackResponses: {
         greeting:
-          "Hello! Welcome to SSV Support. I'm here to help you with any questions about our platform.\n\nI can assist with:\n• Account and billing questions\n• Technical support\n• Feature inquiries\n• Ticket creation\n\nHow can I help you today?",
-        password:
-          "To reset your password:\n\n1. Go to supportflow-ai-six.vercel.app/forgot-password\n2. Enter your email address\n3. Check your email for the reset link\n4. Click the link and create a new password\n\nIf you still can't access your account, please email us at info@glopresc.com.",
+          "Hello! Welcome to DentalCRM. I'm your dental hospital support assistant.\n\nI can help you with:\n• Dental appointment scheduling\n• Treatment information\n• Consultation requests\n• Insurance verification\n\nHow can I assist you today?",
+        emergency:
+          "🚨 For dental emergencies, please:\n\n1. Call our emergency line: +2347082529729\n2. Or visit the nearest dental hospital\n3. For severe pain or trauma, go to the ER\n\nI'm an AI assistant and cannot provide emergency dental care.",
+        appointment:
+          "I can help you schedule a dental appointment. Please provide:\n\n• Dentist name or specialty (general, orthodontist, etc.)\n• Preferred date and time\n• Reason for visit (checkup, cleaning, treatment)\n• Your patient ID (if available)\n\nI'll check availability and confirm.",
+        treatment:
+          "I can help you with treatment information. We offer:\n\n• General dentistry & checkups\n• Teeth cleaning & whitening\n• Orthodontics (braces/aligners)\n• Root canal treatment\n• Dental implants\n• Emergency dental care\n\nWhat treatment are you interested in?",
         human:
-          "I understand you'd like to speak with a human agent. I'm connecting you now.\n\n📧 Email: info@glopresc.com\n📱 WhatsApp: +2347082529729\n\nOur team typically responds within 2 minutes during business hours.",
-        billing:
-          "For billing questions, I can help! Here's what I need to know:\n\n• Do you have your invoice number or account email?\n• What specific billing issue are you experiencing?\n\nPlease share the details and I'll look into it for you.",
+          "I'll connect you with our dental reception team right away.\n\n📧 Email: info@glopresc.com\n📱 WhatsApp: +2347082529729\n\nOur team is available Mon-Sat 8am-6pm.",
         default:
-          "Thank you for reaching out! I'm here to help.\n\nI can assist you with:\n• Account and password issues\n• Billing and invoice questions\n• Technical support\n• Creating support tickets\n\nCould you tell me more about what you need help with?",
+          "Thank you for contacting DentalCRM! I can help you with:\n\n• Dental appointment scheduling\n• Treatment information\n• Consultation requests\n• Insurance verification\n\nFor dental emergencies, please call +2347082529729.\n\nHow can I assist you?",
       },
     },
     ticketCategories: [
-      "general",
-      "technical",
+      "appointment",
+      "treatment",
+      "consultation",
       "billing",
-      "feature-request",
-      "bug-report",
+      "insurance",
+      "complaint",
     ],
-    whatsappTemplates: ["ticket_update", "ticket_created", "verification_code"],
-    dashboardTitle: "SSV CRM Dashboard",
-    metaTitle: "SSV CRM — AI-Powered Customer Support Platform",
+    whatsappTemplates: [
+      "appointment_reminder",
+      "treatment_update",
+      "consultation_confirm",
+      "follow_up",
+    ],
+    dashboardTitle: "DentalCRM Dashboard",
+    metaTitle: "DentalCRM — Smart Dental Hospital Support Platform",
     metaDescription:
-      "AI-powered customer support platform. Unify every channel with intelligent agents.",
+      "AI-powered dental hospital support. Appointments, treatments, and patient care.",
   },
 
   realestate: {
@@ -339,83 +346,6 @@ Guidelines:
       "AI-powered insurance support. Claims processing, policy management, and customer service.",
   },
 
-  healthcare: {
-    slug: "healthcare",
-    name: "DentalCRM",
-    tagline: "Smart Dental Hospital Support Platform",
-    logo: "/industries/healthcare/logo.svg",
-    favicon: "/industries/healthcare/favicon.svg",
-    colors: {
-      primary: "#0891b2",
-      primaryLight: "#22d3ee",
-      primaryDark: "#0e7490",
-      secondary: "#06b6d4",
-      accent: "#06b6d4",
-      gradient: "from-cyan-600 to-teal-600",
-      gradientCSS: "linear-gradient(135deg, #0891b2 0%, #0d9488 100%)",
-    },
-    contact: {
-      email: "info@glopresc.com",
-      whatsapp: "+2347082529729",
-      phone: "+2347082529729",
-      website: "supportflow-ai-six.vercel.app",
-    },
-    chatbot: {
-      name: "Dental AI",
-      personality: "dental hospital support specialist",
-      systemPrompt: `You are Dental AI, the intelligent support assistant for DentalCRM — a dental hospital.
-You specialize in dental appointments, treatments, patient inquiries, and oral health information.
-Guidelines:
-- Be compassionate and professional
-- NEVER provide medical diagnoses or dental advice
-- Help with scheduling appointments and treatments
-- Direct dental emergencies to appropriate services
-- Handle patient information with utmost confidentiality
-- All currency is in Naira (₦)
-- Contact email: info@glopresc.com
-- WhatsApp: +2347082529729
-- For emergencies, always direct to emergency services`,
-      quickActions: [
-        { label: "Book dental appointment", icon: "🦷" },
-        { label: "Check treatment options", icon: "📋" },
-        { label: "Request consultation", icon: "💬" },
-        { label: "Talk to reception", icon: "👤" },
-      ],
-      fallbackResponses: {
-        greeting:
-          "Hello! Welcome to DentalCRM. I'm your dental hospital support assistant.\n\nI can help you with:\n• Dental appointment scheduling\n• Treatment information\n• Consultation requests\n• Insurance verification\n\nHow can I assist you today?",
-        emergency:
-          "🚨 For dental emergencies, please:\n\n1. Call our emergency line: +2347082529729\n2. Or visit the nearest dental hospital\n3. For severe pain or trauma, go to the ER\n\nI'm an AI assistant and cannot provide emergency dental care.",
-        appointment:
-          "I can help you schedule a dental appointment. Please provide:\n\n• Dentist name or specialty (general, orthodontist, etc.)\n• Preferred date and time\n• Reason for visit (checkup, cleaning, treatment)\n• Your patient ID (if available)\n\nI'll check availability and confirm.",
-        treatment:
-          "I can help you with treatment information. We offer:\n\n• General dentistry & checkups\n• Teeth cleaning & whitening\n• Orthodontics (braces/aligners)\n• Root canal treatment\n• Dental implants\n• Emergency dental care\n\nWhat treatment are you interested in?",
-        human:
-          "I'll connect you with our dental reception team right away.\n\n📧 Email: info@glopresc.com\n📱 WhatsApp: +2347082529729\n\nOur team is available Mon-Sat 8am-6pm.",
-        default:
-          "Thank you for contacting DentalCRM! I can help you with:\n\n• Dental appointment scheduling\n• Treatment information\n• Consultation requests\n• Insurance verification\n\nFor dental emergencies, please call +2347082529729.\n\nHow can I assist you?",
-      },
-    },
-    ticketCategories: [
-      "appointment",
-      "treatment",
-      "consultation",
-      "billing",
-      "insurance",
-      "complaint",
-    ],
-    whatsappTemplates: [
-      "appointment_reminder",
-      "treatment_update",
-      "consultation_confirm",
-      "follow_up",
-    ],
-    dashboardTitle: "DentalCRM Dashboard",
-    metaTitle: "DentalCRM — Smart Dental Hospital Support Platform",
-    metaDescription:
-      "AI-powered dental hospital support. Appointments, treatments, and patient care.",
-  },
-
   ecommerce: {
     slug: "ecommerce",
     name: "ShopCRM",
@@ -493,13 +423,13 @@ Guidelines:
   },
 };
 
-export function getIndustry(slug: IndustrySlug = "ssv"): IndustryConfig {
-  return industries[slug] || industries.ssv;
+export function getIndustry(slug: IndustrySlug = "healthcare"): IndustryConfig {
+  return industries[slug] || industries.healthcare;
 }
 
 export function getIndustryFromEnv(): IndustrySlug {
   if (typeof process !== "undefined" && process.env) {
-    return (process.env.INDUSTRY_SLUG as IndustrySlug) || "ssv";
+    return (process.env.INDUSTRY_SLUG as IndustrySlug) || "healthcare";
   }
-  return "ssv";
+  return "healthcare";
 }

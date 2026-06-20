@@ -323,7 +323,7 @@ export default function DashboardPage() {
               {recentTickets.map((ticket) => (
                 <tr key={ticket.ticketNumber} className="hover:bg-white/60 transition-colors group">
                   <td className="px-7 py-4">
-                    <Link href={`/dashboard/tickets/${ticket.ticketNumber.replace("SSV-", "")}`}>
+                    <Link href={`/dashboard/tickets/${ticket.ticketNumber.replace("DNT-", "")}`}>
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className="text-xs font-mono text-gray-400">{ticket.ticketNumber}</span>
                         <span className="text-xs text-gray-300">·</span>

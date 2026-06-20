@@ -30,7 +30,7 @@ function buildCustomerEmail(data: {
         <tr>
           <td style="background:linear-gradient(135deg,#1e40af,#3b82f6);padding:32px 40px;">
             <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700;">Demo Confirmed</h1>
-            <p style="color:#bfdbfe;margin:6px 0 0;font-size:14px;">SSV CRM</p>
+            <p style="color:#bfdbfe;margin:6px 0 0;font-size:14px;">DentalCRM</p>
           </td>
         </tr>
         <tr>
@@ -60,7 +60,7 @@ function buildCustomerEmail(data: {
               </tr>
             </table>
             <p style="font-size:14px;color:#6b7280;line-height:1.6;margin:0 0 20px;">
-              A calendar invite and meeting link will be sent to you shortly. The demo is a 30-minute walkthrough of SSV CRM, customized to your industry and team size. No commitment required.
+              A calendar invite and meeting link will be sent to you shortly. The demo is a 30-minute walkthrough of DentalCRM, customized to your industry and team size. No commitment required.
             </p>
             <p style="font-size:14px;color:#6b7280;margin:0;">
               Questions? Reply to this email or contact us at <a href="mailto:${ADMIN_EMAIL}" style="color:#2563eb;">${ADMIN_EMAIL}</a>.
@@ -70,7 +70,7 @@ function buildCustomerEmail(data: {
         <tr>
           <td style="padding:20px 40px;border-top:1px solid #f3f4f6;">
             <p style="font-size:12px;color:#9ca3af;margin:0;text-align:center;">
-              © ${new Date().getFullYear()} SSV — AI-Powered Customer Support Platform
+              © ${new Date().getFullYear()} DentalCRM — AI-Powered Customer Support Platform
             </p>
           </td>
         </tr>
@@ -158,7 +158,7 @@ function buildAdminEmail(data: {
         <tr>
           <td style="padding:20px 40px;border-top:1px solid #f3f4f6;">
             <p style="font-size:12px;color:#9ca3af;margin:0;text-align:center;">
-              © ${new Date().getFullYear()} SSV — AI-Powered Customer Support Platform
+              © ${new Date().getFullYear()} DentalCRM — AI-Powered Customer Support Platform
             </p>
           </td>
         </tr>
@@ -199,14 +199,14 @@ export async function POST(req: NextRequest) {
     });
 
     await transporter.sendMail({
-      from: `"SSV CRM" <${smtpUser}>`,
+      from: `"DentalCRM" <${smtpUser}>`,
       to: email,
       subject: `Demo Confirmed — ${date} at ${time}`,
       html: buildCustomerEmail({ name, email, company: company || "", date, time, message: message || "" }),
     });
 
     await transporter.sendMail({
-      from: `"SSV CRM" <${smtpUser}>`,
+      from: `"DentalCRM" <${smtpUser}>`,
       to: ADMIN_EMAIL,
       subject: `New Demo Request from ${name}${company ? ` (${company})` : ""}`,
       html: buildAdminEmail({ name, email, company: company || "", phone: phone || "", date, time, message: message || "" }),

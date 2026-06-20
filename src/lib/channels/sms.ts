@@ -2,7 +2,7 @@ const TERMII_API_URL = "https://api.termii.com/api/v1";
 
 export async function sendSMS(to: string, message: string): Promise<boolean> {
   const apiKey = process.env.TERMII_API_KEY;
-  const senderId = process.env.TERMII_SENDER_ID || "SSVCRM";
+  const senderId = process.env.TERMII_SENDER_ID || "DENTALCRM";
 
   if (!apiKey) {
     console.error("Termii API key not configured");

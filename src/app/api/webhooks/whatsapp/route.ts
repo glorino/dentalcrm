@@ -73,7 +73,7 @@ async function processIncomingWhatsApp(from: string, text: string) {
 
   let customerId: string | null = null;
   let customerName = "there";
-  let ticketNumber = `SSV-${Date.now().toString().slice(-6)}`;
+  let ticketNumber = `DNT-${Date.now().toString().slice(-6)}`;
 
   if (dbReady) {
     try {
@@ -253,7 +253,7 @@ Our billing team responds within 1 hour during business hours (Mon-Fri, 9AM-6PM 
 I'd be happy to help you track your order or resolve a delivery issue, ${customerName}.
 
 *To look up your order, please provide:*
-• Your order number (starts with # or SSV-)
+• Your order number (starts with # or DNT-)
 • OR the email address used to place the order
 • OR the name on the order
 
@@ -456,7 +456,7 @@ Please provide the details above, and I'll escalate this to our technical team.`
 
 Great question, ${customerName}! Here's everything you need to know about our pricing.
 
-*SSV CRM Plans:*
+*DentalCRM Plans:*
 
 • *Starter Plan* — Perfect for small teams
   - Up to 500 tickets/month
@@ -493,7 +493,7 @@ Need help choosing? Book a free consultation: supportflow-ai-six.vercel.app/demo
   if (fuzzyMatch(lower, ["demo", "trial", "try", "free", "book demo", "schedule demo", "demo request"])) {
     return `🎯 *Book a Free Demo*
 
-We'd love to show you how SSV CRM can transform your customer support, ${customerName}!
+We'd love to show you how DentalCRM can transform your customer support, ${customerName}!
 
 *What to expect:*
 ✓ 30-minute personalized walkthrough
@@ -612,7 +612,7 @@ Have a wonderful day! ✨`;
   }
 
   if (fuzzyMatch(lower, ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "helo", "heloo", "hii", "heythere"])) {
-    return `Hello ${customerName}! 👋 Welcome to SSV Support.
+    return `Hello ${customerName}! 👋 Welcome to DentalCRM Support.
 
 I'm your AI assistant, ready to help you with:
 

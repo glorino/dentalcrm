@@ -375,7 +375,7 @@ export default function ChannelsPage() {
                   {t("channelsPage.developer.titleConnect") || "Connect in"} <span className="italic text-blue-600">{t("channelsPage.developer.titleTime") || "minutes, not days"}</span>
                 </h2>
                 <p className="text-gray-500 text-lg leading-relaxed mb-8">
-                  {t("channelsPage.developer.desc") || "SSV provides a clean, intuitive API that makes channel integration effortless. One endpoint per channel, consistent response formats, and comprehensive documentation."}
+                  {t("channelsPage.developer.desc") || "DentalCRM provides a clean, intuitive API that makes channel integration effortless. One endpoint per channel, consistent response formats, and comprehensive documentation."}
                 </p>
                 <div className="space-y-4">
                   {[
@@ -407,14 +407,14 @@ export default function ChannelsPage() {
                     <span className="ml-3 text-xs font-mono text-gray-400">{t("channelsPage.developer.codeFileName") || "channels.ts"}</span>
                   </div>
                   <pre className="p-6 text-sm font-mono text-gray-300 overflow-x-auto leading-relaxed">
-                    <code>{`import { SSV } from '@ssv/sdk';
+                    <code>{`import { DentalCRM } from '@dentalcrm/sdk';
 
-const ssv = new SSV({
+const dentalcrm = new DentalCRM({
   apiKey: 'your-api-key'
 });
 
 // ${t("channelsPage.developer.commentWhatsApp") || "Connect WhatsApp channel"}
-await ssv.channels.connect({
+await dentalcrm.channels.connect({
   type: 'whatsapp',
   phone: '+234801234567',
   webhook: 'https://your-app.com/webhook',
@@ -423,7 +423,7 @@ await ssv.channels.connect({
 });
 
 // ${t("channelsPage.developer.commentEmail") || "Connect Email channel"}
-await ssv.channels.connect({
+await dentalcrm.channels.connect({
   type: 'email',
   imap: 'imap.example.com',
   smtp: 'smtp.example.com',
@@ -436,16 +436,16 @@ await ssv.channels.connect({
 });
 
 // ${t("channelsPage.developer.commentSms") || "Connect SMS via Termii"}
-await ssv.channels.connect({
+await dentalcrm.channels.connect({
   type: 'sms',
   provider: 'termii',
   apiKey: process.env.TERMII_KEY,
-  senderId: 'SSV',
+  senderId: 'DNT',
   autoReply: true
 });
 
 // ${t("channelsPage.developer.commentAllLive") || "All channels are now live"}
-const status = await ssv.channels.list();
+const status = await dentalcrm.channels.list();
 console.log(status);`}</code>
                   </pre>
                 </div>
