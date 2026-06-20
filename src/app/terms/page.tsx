@@ -19,14 +19,14 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Acceptance of Terms</h2>
             <p className="text-gray-600 leading-relaxed">
-              By accessing or using SSV CRM (the &quot;Service&quot;), you agree to be bound by these Terms &amp; Conditions (&quot;Terms&quot;). If you do not agree to these Terms, do not use the Service. These Terms constitute a legally binding agreement between you (&quot;you,&quot; &quot;your,&quot; or &quot;User&quot;) and SSV (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;).
+              By accessing or using DentalCRM (the &quot;Service&quot;), you agree to be bound by these Terms &amp; Conditions (&quot;Terms&quot;). If you do not agree to these Terms, do not use the Service. These Terms constitute a legally binding agreement between you (&quot;you,&quot; &quot;your,&quot; or &quot;User&quot;) and DentalCRM (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;).
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Description of Service</h2>
             <p className="text-gray-600 leading-relaxed">
-              SSV CRM is an AI-powered customer support platform that provides:
+              DentalCRM is an AI-powered customer support platform that provides:
             </p>
             <ul className="list-disc list-inside text-gray-600 mt-2 space-y-1">
               <li>Unified inbox for multi-channel customer support (WhatsApp, Email, SMS, Facebook Messenger, Instagram, Web Chat)</li>
@@ -85,7 +85,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Intellectual Property</h2>
             <p className="text-gray-600 leading-relaxed">
-              The Service and its original content, features, and functionality are owned by SSV and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws. You may not copy, modify, distribute, sell, or lease any part of the Service without our express written permission.
+              The Service and its original content, features, and functionality are owned by DentalCRM and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws. You may not copy, modify, distribute, sell, or lease any part of the Service without our express written permission.
             </p>
           </section>
 
@@ -120,7 +120,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">10. Limitation of Liability</h2>
             <p className="text-gray-600 leading-relaxed">
-              To the maximum extent permitted by law, SSV shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenue, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from:
+              To the maximum extent permitted by law, DentalCRM shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenue, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from:
             </p>
             <ul className="list-disc list-inside text-gray-600 mt-2 space-y-1">
               <li>Your use of or inability to use the Service</li>
@@ -134,7 +134,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">11. Indemnification</h2>
             <p className="text-gray-600 leading-relaxed">
-              You agree to indemnify, defend, and hold harmless SSV and its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including legal fees) arising from your use of the Service or violation of these Terms.
+              You agree to indemnify, defend, and hold harmless DentalCRM and its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including legal fees) arising from your use of the Service or violation of these Terms.
             </p>
           </section>
 
@@ -170,7 +170,7 @@ export default function TermsPage() {
               If you have questions about these Terms, please contact us at:
             </p>
             <div className="mt-3 p-4 bg-gray-50 rounded-xl">
-              <p className="text-gray-700 font-medium">SSV CRM</p>
+              <p className="text-gray-700 font-medium">DentalCRM</p>
               <p className="text-gray-600">Email: info@glopresc.com</p>
               <p className="text-gray-600">Phone: +234 905 998 0991</p>
             </div>

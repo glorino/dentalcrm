@@ -14,7 +14,7 @@ const dmSans = DM_Sans({
 const industry = getIndustryFromEnv();
 const industryConfig = (() => {
   const { industries } = require("@/lib/industry/config");
-  return industries[industry] || industries.ssv;
+  return industries[industry] || industries.healthcare;
 })();
 
 export const metadata: Metadata = {

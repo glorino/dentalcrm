@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Introduction</h2>
             <p className="text-gray-600 leading-relaxed">
-              Welcome to SSV CRM (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our customer support platform and related services (collectively, the &quot;Service&quot;).
+              Welcome to DentalCRM (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our customer support platform and related services (collectively, the &quot;Service&quot;).
             </p>
             <p className="text-gray-600 leading-relaxed mt-3">
               By using the Service, you agree to the collection and use of information in accordance with this policy. If you do not agree with the terms of this policy, please do not access the Service.
@@ -166,7 +166,7 @@ export default function PrivacyPolicyPage() {
               If you have questions about this Privacy Policy, please contact us at:
             </p>
             <div className="mt-3 p-4 bg-gray-50 rounded-xl">
-              <p className="text-gray-700 font-medium">SSV CRM</p>
+              <p className="text-gray-700 font-medium">DentalCRM</p>
               <p className="text-gray-600">Email: info@glopresc.com</p>
               <p className="text-gray-600">Phone: +234 905 998 0991</p>
             </div>

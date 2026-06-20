@@ -46,7 +46,7 @@ async function processIncomingSMS(from: string, text: string): Promise<string> {
     await initDB();
   } catch {
     console.error("DB not available for SMS processing");
-    return `SSV-${Date.now().toString().slice(-6)}`;
+    return `DNT-${Date.now().toString().slice(-6)}`;
   }
 
   try {
@@ -66,7 +66,7 @@ async function processIncomingSMS(from: string, text: string): Promise<string> {
 
     const count = await sql`SELECT COUNT(*) as cnt FROM tickets`;
     const num = Number(count[0].cnt) + 1235;
-    const ticketNumber = `SSV-${num}`;
+    const ticketNumber = `DNT-${num}`;
     const slaDue = new Date(Date.now() + 7200000);
 
     await sql`
@@ -85,7 +85,7 @@ async function processIncomingSMS(from: string, text: string): Promise<string> {
     return ticketNumber;
   } catch (error) {
     console.error("SMS processing error:", error);
-    return `SSV-${Date.now().toString().slice(-6)}`;
+    return `DNT-${Date.now().toString().slice(-6)}`;
   }
 }
 
@@ -109,7 +109,7 @@ function generateSMSResponse(text: string, ticketNumber: string): string {
   }
 
   if (lower.includes("hello") || lower.includes("hi") || lower.includes("hey")) {
-    return `Hello! Welcome to SSV Support. How can we help you today? Reply with your question. Ticket: ${ticketNumber}`;
+    return `Hello! Welcome to DentalCRM Support. How can we help you today? Reply with your question. Ticket: ${ticketNumber}`;
   }
 
   return `Hi! Thanks for your message. We've created ticket ${ticketNumber} and our team will respond shortly. Need immediate help? Email info@glopresc.com or WhatsApp: ${WHATSAPP_NUMBER}`;

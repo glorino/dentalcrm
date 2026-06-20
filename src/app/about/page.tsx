@@ -73,7 +73,7 @@ const team = [
     tagline: "Building the future of support",
     image: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=400&h=400&fit=crop&crop=face",
     shortBio: "Former VP of Engineering at Flutterwave. 12+ years building scalable platforms across Africa.",
-    fullBio: "Chidinma founded SSV after witnessing firsthand how fragmented support tools were losing customers for businesses across Nigeria. With a background in electrical engineering from the University of Lagos and an MBA from Lagos Business School, she previously led engineering teams at Flutterwave and Paystack. Under her leadership, SSV has grown from a 3-person team in Lagos to a 50+ person operation serving hundreds of businesses across Africa. She is a recipient of the Forbes Africa 30 Under 30 award and a frequent speaker on AI and African tech.",
+    fullBio: "Chidinma founded DentalCRM after witnessing firsthand how fragmented support tools were losing customers for businesses across Nigeria. With a background in electrical engineering from the University of Lagos and an MBA from Lagos Business School, she previously led engineering teams at Flutterwave and Paystack. Under her leadership, DentalCRM has grown from a 3-person team in Lagos to a 50+ person operation serving hundreds of businesses across Africa. She is a recipient of the Forbes Africa 30 Under 30 award and a frequent speaker on AI and African tech.",
     linkedin: "https://linkedin.com/in/chidinmaokafor",
   },
   {
@@ -82,7 +82,7 @@ const team = [
     tagline: "AI infrastructure at scale",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
     shortBio: "Ex-Google AI engineer. Built NLP systems processing 1B+ messages daily.",
-    fullBio: "Emeka brings deep expertise in natural language processing and machine learning infrastructure. Before joining SSV, he spent 6 years at Google AI working on multilingual NLP models used by millions. He holds a PhD in Computer Science from the University of Oxford and has published 15+ papers on transformer architectures and sentiment analysis. At SSV, he leads the AI agent pipeline that classifies, routes, and resolves 67% of tickets autonomously. He is passionate about making AI accessible to African businesses.",
+    fullBio: "Emeka brings deep expertise in natural language processing and machine learning infrastructure. Before joining DentalCRM, he spent 6 years at Google AI working on multilingual NLP models used by millions. He holds a PhD in Computer Science from the University of Oxford and has published 15+ papers on transformer architectures and sentiment analysis. At DentalCRM, he leads the AI agent pipeline that classifies, routes, and resolves 67% of tickets autonomously. He is passionate about making AI accessible to African businesses.",
     linkedin: "https://linkedin.com/in/emekanosu",
   },
   {
@@ -91,7 +91,7 @@ const team = [
     tagline: "User experience is everything",
     image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop&crop=face",
     shortBio: "Designed products used by 50M+ users across 3 continents.",
-    fullBio: "Aisha is a product design veteran with a track record of building intuitive enterprise software. She spent 5 years at Andela leading product design for their talent platform, and prior to that, she was a senior designer at Interswitch. She holds a degree in Human-Computer Interaction from the University of Lagos. At SSV, she obsesses over every pixel and interaction, ensuring that even complex AI workflows feel simple and natural. She mentors junior designers across Lagos and is an advocate for inclusive design.",
+    fullBio: "Aisha is a product design veteran with a track record of building intuitive enterprise software. She spent 5 years at Andela leading product design for their talent platform, and prior to that, she was a senior designer at Interswitch. She holds a degree in Human-Computer Interaction from the University of Lagos. At DentalCRM, she obsesses over every pixel and interaction, ensuring that even complex AI workflows feel simple and natural. She mentors junior designers across Lagos and is an advocate for inclusive design.",
     linkedin: "https://linkedin.com/in/aishabello",
   },
   {
@@ -100,13 +100,13 @@ const team = [
     tagline: "Scaling globally from Lagos",
     image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face",
     shortBio: "Grew 3 startups from seed to Series B. Deep expertise in African markets.",
-    fullBio: "Tunde is a growth strategist who has helped multiple African startups scale from local operations to pan-African presence. He previously led growth at Kuda Bank, taking them from 100K to 3M users in 18 months, and before that, he ran marketing operations at Carbon (formerly Paylater). He holds a degree in Economics from the University of Ibadan and an MSc from the London School of Economics. At SSV, he drives customer acquisition, partnerships, and expansion into new African markets.",
+    fullBio: "Tunde is a growth strategist who has helped multiple African startups scale from local operations to pan-African presence. He previously led growth at Kuda Bank, taking them from 100K to 3M users in 18 months, and before that, he ran marketing operations at Carbon (formerly Paylater). He holds a degree in Economics from the University of Ibadan and an MSc from the London School of Economics. At DentalCRM, he drives customer acquisition, partnerships, and expansion into new African markets.",
     linkedin: "https://linkedin.com/in/tundeadesanya",
   },
 ];
 
 const statItems = [
-  { value: "500+", labelKey: "aboutPage.numbers.teams", fallback: "Teams Using SSV" },
+  { value: "500+", labelKey: "aboutPage.numbers.teams", fallback: "Teams Using DentalCRM" },
   { value: "3B+", labelKey: "aboutPage.numbers.tickets", fallback: "Tickets Processed" },
   { value: "99.99%", labelKey: "aboutPage.numbers.uptime", fallback: "Uptime SLA" },
   { value: "<50ms", labelKey: "aboutPage.numbers.response", fallback: "Avg Response Time" },
@@ -157,10 +157,10 @@ export default function AboutPage() {
         <div className="max-w-[1200px] mx-auto px-6 py-28 sm:py-36 text-center relative">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 mb-8">
             <span className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
-            <span className="text-[13px] font-semibold text-blue-300 uppercase tracking-wider">{t("aboutPage.title") || "About SSV"}</span>
+            <span className="text-[13px] font-semibold text-blue-300 uppercase tracking-wider">{t("aboutPage.title") || "About DentalCRM"}</span>
           </div>
           <h1 className="text-[40px] sm:text-[56px] lg:text-[68px] font-extrabold leading-[0.95] tracking-tight text-white mb-6">
-            {t("aboutPage.title") || "About SSV"}{" "}
+            {t("aboutPage.title") || "About DentalCRM"}{" "}
             <span className="italic text-blue-400">CRM</span>
           </h1>
           <p className="text-lg text-gray-300/90 max-w-2xl mx-auto leading-relaxed">
@@ -178,7 +178,7 @@ export default function AboutPage() {
             <span className="italic text-blue-600">AI</span>
           </h2>
           <p className="text-gray-500 text-lg max-w-3xl mx-auto leading-relaxed">
-            {t("aboutPage.mission.desc") || "SSV empowers businesses to deliver exceptional customer experiences through intelligent automation."}
+            {t("aboutPage.mission.desc") || "DentalCRM empowers dental hospitals to deliver exceptional patient experiences through intelligent automation."}
           </p>
         </RevealSection>
       </section>
@@ -220,7 +220,7 @@ export default function AboutPage() {
                   {t("aboutPage.story.title") || "Born from"} <span className="italic text-blue-400">{t("aboutPage.story.subtitle") || "frustration"}</span>
                 </h2>
                 <p className="text-gray-300/80 text-lg leading-relaxed mb-6">
-                  {t("aboutPage.story.p1") || "Founded in Nigeria, SSV was born from the frustration of managing customer support across too many channels."}
+                  {t("aboutPage.story.p1") || "Founded in Nigeria, DentalCRM was born from the frustration of managing patient support across too many channels."}
                 </p>
                 <p className="text-gray-300/80 text-lg leading-relaxed">
                   {t("aboutPage.story.p2") || "We built the platform we wished existed — a single place where AI handles the repetitive work."}
@@ -257,7 +257,7 @@ export default function AboutPage() {
           <p className="text-sm font-bold text-blue-600 uppercase tracking-[0.2em] mb-4">{t("aboutPage.team.label") || "Our Team"}</p>
           <h2 className="text-[36px] sm:text-[48px] font-extrabold tracking-tight leading-[1.05]">
             {t("aboutPage.team.title") || "The people behind"}{" "}
-            <span className="italic text-blue-600">SSV</span>
+            <span className="italic text-blue-600">DentalCRM</span>
           </h2>
         </RevealSection>
 
@@ -331,7 +331,7 @@ export default function AboutPage() {
               <Link href="/support" className="inline-flex items-center gap-2 px-10 py-4 bg-white text-gray-900 rounded-full text-[15px] font-semibold hover:bg-gray-100 transition-all shadow-lg">
                 {t("aboutPage.cta.getStarted") || "Get Started"}
               </Link>
-              <a href="mailto:careers@ssv.com" className="inline-flex items-center gap-2 px-10 py-4 bg-transparent border-2 border-blue-400/40 text-blue-300 rounded-full text-[15px] font-semibold hover:bg-blue-400/10 transition-all">
+              <a href="mailto:careers@dentalcrm.com" className="inline-flex items-center gap-2 px-10 py-4 bg-transparent border-2 border-blue-400/40 text-blue-300 rounded-full text-[15px] font-semibold hover:bg-blue-400/10 transition-all">
                 {t("aboutPage.cta.careers") || "View Careers"}
               </a>
             </div>

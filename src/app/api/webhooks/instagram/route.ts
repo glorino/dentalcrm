@@ -60,7 +60,7 @@ async function processIncomingInstagram(senderId: string, text: string) {
 
   const count = await sql`SELECT COUNT(*) as cnt FROM tickets`;
   const num = Number(count[0].cnt) + 1235;
-  const ticketNumber = `SSV-${num}`;
+  const ticketNumber = `DNT-${num}`;
   const slaDue = new Date(Date.now() + 14400000);
 
   await sql`

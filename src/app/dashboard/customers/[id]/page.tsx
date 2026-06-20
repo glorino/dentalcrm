@@ -232,7 +232,7 @@ export default function CustomerDetailPage() {
               {recentTickets.map((ticket, i) => (
                 <Link
                   key={ticket.ticketNumber}
-                  href={`/dashboard/tickets/${ticket.ticketNumber.replace("SSV-", "")}`}
+                  href={`/dashboard/tickets/${ticket.ticketNumber.replace("DNT-", "")}`}
                   className="flex items-center gap-4 p-4 rounded-2xl border border-gray-100 hover:border-blue-200 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-transparent transition-all duration-300 group animate-fade-in"
                   style={{ animationDelay: `${i * 50}ms` }}
                 >

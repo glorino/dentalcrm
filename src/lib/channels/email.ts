@@ -47,7 +47,7 @@ export async function sendEmail(to: string, subject: string, text: string, html?
     const from = process.env.SMTP_USER || process.env.EMAIL_ADDRESS;
 
     await transport.sendMail({
-      from: `"SSV CRM" <${from}>`,
+      from: `"DentalCRM" <${from}>`,
       to,
       subject,
       text,
@@ -66,7 +66,7 @@ export async function sendTicketCreatedEmail(to: string, ticketNumber: string, s
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; padding: 20px; border-radius: 10px 10px 0 0;">
-        <h1 style="margin: 0; font-size: 24px;">SSV CRM Support</h1>
+        <h1 style="margin: 0; font-size: 24px;">DentalCRM Support</h1>
       </div>
       <div style="background: #f8fafc; padding: 30px; border: 1px solid #e2e8f0; border-top: none;">
         <h2 style="color: #1e293b;">Ticket Created Successfully</h2>
@@ -90,7 +90,7 @@ export async function sendTicketCreatedEmail(to: string, ticketNumber: string, s
         </p>
       </div>
       <div style="background: #1e293b; color: #94a3b8; padding: 15px; border-radius: 0 0 10px 10px; text-align: center; font-size: 12px;">
-        SSV CRM - AI-Powered Customer Support Platform
+        DentalCRM - AI-Powered Customer Support Platform
       </div>
     </div>
   `;
@@ -102,7 +102,7 @@ export async function sendTicketUpdateEmail(to: string, ticketNumber: string, st
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; padding: 20px; border-radius: 10px 10px 0 0;">
-        <h1 style="margin: 0; font-size: 24px;">SSV CRM Support</h1>
+        <h1 style="margin: 0; font-size: 24px;">DentalCRM Support</h1>
       </div>
       <div style="background: #f8fafc; padding: 30px; border: 1px solid #e2e8f0; border-top: none;">
         <h2 style="color: #1e293b;">Ticket Updated</h2>
@@ -116,7 +116,7 @@ export async function sendTicketUpdateEmail(to: string, ticketNumber: string, st
         </p>
       </div>
       <div style="background: #1e293b; color: #94a3b8; padding: 15px; border-radius: 0 0 10px 10px; text-align: center; font-size: 12px;">
-        SSV CRM - AI-Powered Customer Support Platform
+        DentalCRM - AI-Powered Customer Support Platform
       </div>
     </div>
   `;
@@ -150,7 +150,7 @@ export async function processIncomingEmail(from: string, subject: string, body: 
 
     const count = await sql`SELECT COUNT(*) as cnt FROM tickets`;
     const num = Number(count[0].cnt) + 1235;
-    const ticketNumber = `SSV-${num}`;
+    const ticketNumber = `DNT-${num}`;
     const slaDue = new Date(Date.now() + 14400000);
 
     await sql`

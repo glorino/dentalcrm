@@ -278,7 +278,7 @@ function TicketsContent() {
                     />
                   </td>
                   <td className="px-5 py-4">
-                    <Link href={`/dashboard/tickets/${tk.ticketNumber.replace("SSV-", "")}`} className="block hover-lift rounded-xl p-1 -m-1">
+                    <Link href={`/dashboard/tickets/${tk.ticketNumber.replace("DNT-", "")}`} className="block hover-lift rounded-xl p-1 -m-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-xs font-mono text-gray-400">{tk.ticketNumber}</span>
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${channelColor[tk.channel] || "bg-gray-100 text-gray-600"}`}>{getChannelDisplayNames(t)[tk.channel] || tk.channel}</span>

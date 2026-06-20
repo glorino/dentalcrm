@@ -26,8 +26,8 @@ export default function PublicShell({ children }: { children: React.ReactNode })
         <div className="max-w-[1200px] mx-auto px-6 h-[72px] flex items-center justify-between">
           <div className="flex items-center gap-10">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <img src="/logo.svg" alt="SSV CRM" className="h-9 w-9" />
-              <span className="text-[22px] font-extrabold tracking-tight text-gray-900">SSV CRM</span>
+              <img src="/industries/healthcare/logo.svg" alt="DentalCRM" className="h-9 w-9" />
+              <span className="text-[22px] font-extrabold tracking-tight text-gray-900">DentalCRM</span>
             </Link>
             <div className="hidden lg:flex items-center gap-1">
               {navItems.map((item) => (
@@ -120,8 +120,8 @@ export default function PublicShell({ children }: { children: React.ReactNode })
           <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-16">
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2.5 mb-4">
-                <img src="/logo.svg" alt="SSV CRM" className="h-8 w-8" />
-                <span className="text-lg font-extrabold">SSV CRM</span>
+                <img src="/industries/healthcare/logo.svg" alt="DentalCRM" className="h-8 w-8" />
+                <span className="text-lg font-extrabold">DentalCRM</span>
               </div>
               <p className="text-sm text-gray-400 leading-relaxed">{t("footer.desc")}</p>
             </div>
