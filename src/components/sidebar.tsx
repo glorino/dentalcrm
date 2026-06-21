@@ -23,20 +23,21 @@ const settingsNav = [
   { label: "Settings", tKey: "dashboard.settings", href: "/dashboard/settings", icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z", badge: null, roles: ["super_admin", "admin"] },
 ];
 
-const roleConfig: Record<string, { label: string; color: string; gradient: string }> = {
-  super_admin: { label: "Super Admin", color: "bg-purple-100/80 text-purple-700 border-purple-200/60", gradient: "from-violet-500 to-indigo-600" },
-  admin: { label: "Admin", color: "bg-blue-100/80 text-blue-700 border-blue-200/60", gradient: "from-blue-500 to-indigo-600" },
-  manager: { label: "Manager", color: "bg-emerald-100/80 text-emerald-700 border-emerald-200/60", gradient: "from-emerald-500 to-teal-600" },
-  agent: { label: "Agent", color: "bg-amber-100/80 text-amber-700 border-amber-200/60", gradient: "from-amber-500 to-orange-600" },
-  viewer: { label: "Viewer", color: "bg-gray-100/80 text-gray-600 border-gray-200/60", gradient: "from-gray-500 to-slate-600" },
-};
+const getRoleConfig = (t: (key: string) => string): Record<string, { label: string; color: string; gradient: string }> => ({
+  super_admin: { label: t("roles.superAdmin"), color: "bg-purple-100/80 text-purple-700 border-purple-200/60", gradient: "from-violet-500 to-indigo-600" },
+  admin: { label: t("roles.admin"), color: "bg-blue-100/80 text-blue-700 border-blue-200/60", gradient: "from-blue-500 to-indigo-600" },
+  manager: { label: t("roles.manager"), color: "bg-emerald-100/80 text-emerald-700 border-emerald-200/60", gradient: "from-emerald-500 to-teal-600" },
+  agent: { label: t("roles.agent"), color: "bg-amber-100/80 text-amber-700 border-amber-200/60", gradient: "from-amber-500 to-orange-600" },
+  viewer: { label: t("roles.viewer"), color: "bg-gray-100/80 text-gray-600 border-gray-200/60", gradient: "from-gray-500 to-slate-600" },
+});
 
 export function Sidebar() {
   const pathname = usePathname();
   const { user } = useAuth();
   const { t } = useLang();
   const userRole = user?.role || "agent";
-  const config = roleConfig[userRole] || roleConfig.agent;
+  const roleConfigMap = getRoleConfig(t);
+  const config = roleConfigMap[userRole] || roleConfigMap.agent;
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
@@ -118,7 +119,7 @@ export function Sidebar() {
       {/* Main Site Link */}
       <div className="px-3 pb-3">
         <a
-          href="https://dentalcrm-beta.vercel.app"
+          href="/"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-900 hover:shadow-sm transition-all duration-300 border border-gray-200/60"

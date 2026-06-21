@@ -2,7 +2,11 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { sql } from "../db";
 
-const JWT_SECRET = process.env.JWT_SECRET || "supportflow-ai-secret-key-2024";
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required");
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_EXPIRY = "7d";
 
 export interface User {

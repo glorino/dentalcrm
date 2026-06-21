@@ -198,6 +198,27 @@ export const translations = {
   agentsPage: {
     title: { en: "AI Agent Suite", fr: "Suite d'Agents IA" },
     subtitle: { en: "Nine intelligent agents working together to resolve your support tickets.", fr: "Neuf agents intelligents travaillant ensemble pour résoudre vos tickets de support." },
+    hero: {
+      badge: { en: "9 AI agents working in harmony", fr: "9 agents IA travaillant en harmonie" },
+      title: { en: "Meet Your AI", fr: "Découvrez votre IA" },
+      titleHighlight: { en: "Support Team", fr: "Équipe de Support" },
+      subtitle: { en: "Specialized agents that collaborate seamlessly to deliver faster, smarter, and more empathetic customer support.", fr: "Des agents spécialisés qui collaborent de manière transparente pour offrir un support client plus rapide, plus intelligent et plus empathique." },
+    },
+    cards: {
+      title: { en: "Specialized AI Agents", fr: "Agents IA spécialisés" },
+      subtitle: { en: "Each agent is purpose-built to handle a specific aspect of customer support with precision.", fr: "Chaque agent est conçu pour gérer un aspect spécifique du support client avec précision." },
+    },
+    pipeline: {
+      title: { en: "How Agents Work Together", fr: "Comment les agents travaillent ensemble" },
+      subtitle: { en: "Every ticket flows through a smart pipeline of specialized agents to ensure the best outcome.", fr: "Chaque ticket traverse un pipeline intelligent d'agents spécialisés pour garantir le meilleur résultat." },
+      note: { en: "The pipeline adapts dynamically — simple tickets skip steps, while complex issues trigger the full agent chain for thorough resolution.", fr: "Le pipeline s'adapte dynamiquement — les tickets simples sautent des étapes, tandis que les problèmes complexes déclenchent la chaîne complète d'agents." },
+    },
+    cta: {
+      title: { en: "Ready to Deploy Your AI Team?", fr: "Prêt à déployer votre équipe IA ?" },
+      subtitle: { en: "Set up your specialized AI agents in minutes and watch your support transform.", fr: "Configurez vos agents IA spécialisés en quelques minutes et regardez votre support se transformer." },
+      primary: { en: "Get Started", fr: "Commencer" },
+      secondary: { en: "Schedule a Demo", fr: "Planifier une démo" },
+    },
     intake: {
       name: { en: "Intake Agent", fr: "Agent Réception" },
       desc: { en: "Classifies and routes incoming tickets based on intent, sentiment, and priority levels.", fr: "Classe et route les tickets entrants selon l'intention, le sentiment et les niveaux de priorité." },
@@ -440,6 +461,7 @@ export const translations = {
     user: { en: "User", fr: "Utilisateur" },
     unknown: { en: "Unknown", fr: "Inconnu" },
     active: { en: "Active", fr: "Actif" },
+    inactive: { en: "Inactive", fr: "Inactif" },
     na: { en: "N/A", fr: "N/A" },
     justNow: { en: "just now", fr: "à l'instant" },
     minAgo: { en: "min ago", fr: "min avant" },
