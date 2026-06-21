@@ -54,7 +54,6 @@ export async function sendEmail(to: string, subject: string, text: string, html?
       html: html || text.replace(/\n/g, "<br>"),
     });
 
-    console.log(`Email sent to ${to}: ${subject}`);
     return true;
   } catch (error) {
     console.error("Email send error:", error);

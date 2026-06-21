@@ -344,7 +344,7 @@ export default function TeamsPage() {
                           roleColor[u.role] || "bg-gray-100 text-gray-600"
                         }`}
                       >
-                        {u.role.replace("_", " ")}
+                        {t(`roles.${u.role}`) || u.role.replace("_", " ")}
                       </span>
                     </td>
                     <td className="hidden sm:table-cell px-6 py-4">
@@ -363,7 +363,7 @@ export default function TeamsPage() {
                             statusColor[u.status] || "bg-gray-300"
                           }`}
                         />
-                        <span className="capitalize">{u.status}</span>
+                        <span className="capitalize">{t(`misc.${u.status}`) || u.status}</span>
                       </div>
                     </td>
                     <td className="hidden sm:table-cell px-6 py-4">

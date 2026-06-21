@@ -10,10 +10,10 @@ export default function LoginPage() {
   const { t } = useLang();
 
   const demoLogins = [
-    { email: "emeka@dentalcrm.com", password: "admin123", role: t("roles.superAdmin"), name: "Dr. Chukwuemeka Obi", avatar: "CO", gradient: "from-violet-500 to-indigo-600" },
-    { email: "folake@dentalcrm.com", password: "demo123", role: t("roles.manager"), name: "Folake Ogundipe", avatar: "FO", gradient: "from-emerald-500 to-teal-600" },
-    { email: "ngozi@dentalcrm.com", password: "demo123", role: t("roles.agent"), name: "Ngozi Okolo", avatar: "NO", gradient: "from-blue-500 to-cyan-600" },
-    { email: "dayo@dentalcrm.com", password: "demo123", role: t("roles.viewer"), name: "Dayo Fadugba", avatar: "DF", gradient: "from-gray-500 to-slate-600" },
+    { email: "emeka@dentalcrm.com", role: t("roles.superAdmin"), name: "Dr. Chukwuemeka Obi", avatar: "CO", gradient: "from-violet-500 to-indigo-600" },
+    { email: "folake@dentalcrm.com", role: t("roles.manager"), name: "Folake Ogundipe", avatar: "FO", gradient: "from-emerald-500 to-teal-600" },
+    { email: "ngozi@dentalcrm.com", role: t("roles.agent"), name: "Ngozi Okolo", avatar: "NO", gradient: "from-blue-500 to-cyan-600" },
+    { email: "dayo@dentalcrm.com", role: t("roles.viewer"), name: "Dayo Fadugba", avatar: "DF", gradient: "from-gray-500 to-slate-600" },
   ];
 
   const [email, setEmail] = useState("");
@@ -37,8 +37,6 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok) {
-        document.cookie = `auth-token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax; Secure`;
-        document.cookie = `user=${encodeURIComponent(JSON.stringify(data.user))}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax; Secure`;
         window.location.href = "/dashboard";
       } else {
         setStatus("error");
@@ -50,9 +48,25 @@ export default function LoginPage() {
     }
   };
 
-  const handleDemoLogin = (demo: typeof demoLogins[0]) => {
-    setEmail(demo.email);
-    setPassword(demo.password);
+  const handleDemoLogin = async (demo: typeof demoLogins[0]) => {
+    setStatus("loading");
+    setError("");
+    try {
+      const res = await fetch("/api/auth/demo-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: demo.email }),
+      });
+      if (res.ok) {
+        window.location.href = "/dashboard";
+      } else {
+        setStatus("error");
+        setError(t("loginPage.errorLoginFailed"));
+      }
+    } catch {
+      setStatus("error");
+      setError(t("loginPage.errorConnection"));
+    }
   };
 
   return (

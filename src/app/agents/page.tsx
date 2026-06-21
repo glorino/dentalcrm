@@ -183,20 +183,17 @@ export default function AgentsPage() {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-sm text-white/70">
-                {t("agents.hero.badge", "9 AI agents working in harmony")}
+                {t("agentsPage.hero.badge")}
               </span>
             </div>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 tracking-tight">
-              {t("agents.hero.title", "Meet Your AI")}{" "}
+              {t("agentsPage.hero.title")}{" "}
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent">
-                {t("agents.hero.titleHighlight", "Support Team")}
+                {t("agentsPage.hero.titleHighlight")}
               </span>
             </h1>
             <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
-              {t(
-                "agents.hero.subtitle",
-                "Specialized agents that collaborate seamlessly to deliver faster, smarter, and more empathetic customer support."
-              )}
+              {t("agentsPage.hero.subtitle")}
             </p>
           </div>
         </section>
@@ -228,13 +225,10 @@ export default function AgentsPage() {
         <section className="max-w-6xl mx-auto px-4 py-16">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              {t("agents.cards.title", "Specialized AI Agents")}
+              {t("agentsPage.cards.title")}
             </h2>
             <p className="text-white/50 max-w-xl mx-auto">
-              {t(
-                "agents.cards.subtitle",
-                "Each agent is purpose-built to handle a specific aspect of customer support with precision."
-              )}
+              {t("agentsPage.cards.subtitle")}
             </p>
           </div>
 
@@ -287,13 +281,10 @@ export default function AgentsPage() {
         >
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              {t("agents.pipeline.title", "How Agents Work Together")}
+              {t("agentsPage.pipeline.title")}
             </h2>
             <p className="text-white/50 max-w-xl mx-auto">
-              {t(
-                "agents.pipeline.subtitle",
-                "Every ticket flows through a智能 pipeline of specialized agents to ensure the best outcome."
-              )}
+              {t("agentsPage.pipeline.subtitle")}
             </p>
           </div>
 
@@ -369,10 +360,7 @@ export default function AgentsPage() {
             style={{ transitionDelay: "800ms" }}
           >
             <p className="text-white/50 text-sm leading-relaxed max-w-2xl mx-auto">
-              {t(
-                "agents.pipeline.note",
-                "The pipeline adapts dynamically — simple tickets skip steps, while complex issues trigger the full agent chain for thorough resolution."
-              )}
+              {t("agentsPage.pipeline.note")}
             </p>
           </div>
         </section>
@@ -382,20 +370,17 @@ export default function AgentsPage() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.02),transparent)]" />
             <div className="relative text-center">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                {t("agents.cta.title", "Ready to Deploy Your AI Team?")}
+                {t("agentsPage.cta.title")}
               </h2>
               <p className="text-white/50 mb-8 max-w-lg mx-auto">
-                {t(
-                  "agents.cta.subtitle",
-                  "Set up your specialized AI agents in minutes and watch your support transform."
-                )}
+                {t("agentsPage.cta.subtitle")}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="/support" className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02]">
-                  {t("agents.cta.primary", "Get Started")}
+                  {t("agentsPage.cta.primary")}
                 </a>
                 <button onClick={() => setDemoOpen(true)} className="px-8 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white/80 font-medium hover:bg-white/[0.1] hover:text-white transition-all duration-300">
-                  {t("agents.cta.secondary", "Schedule a Demo")}
+                  {t("agentsPage.cta.secondary")}
                 </button>
               </div>
             </div>
