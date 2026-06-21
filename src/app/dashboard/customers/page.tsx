@@ -166,14 +166,14 @@ export default function CustomersPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-gray-100/50">
-                <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+                <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t("dashboardPageExtra.customers.customer")}</th>
                 <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t("customersPage.source")}</th>
                 <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t("customersPage.segment")}</th>
                 <th className="hidden sm:table-cell text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t("customersPage.plan")}</th>
                 <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t("customersPage.ltv")}</th>
-                <th className="hidden sm:table-cell text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Tickets</th>
-                <th className="hidden sm:table-cell text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">CSAT</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="hidden sm:table-cell text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t("dashboardPageExtra.customers.tickets")}</th>
+                <th className="hidden sm:table-cell text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t("dashboardPageExtra.customers.csat")}</th>
+                <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t("dashboardPageExtra.customers.status")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">

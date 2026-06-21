@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
       setMessage(data.message);
     } catch {
       setStatus("error");
-      setMessage("Something went wrong. Please try again.");
+      setMessage(t("forgotPassword.error"));
     }
   };
 
@@ -69,7 +69,7 @@ export default function ForgotPasswordPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@company.com"
+                  placeholder={t("forgotPassword.emailPlaceholder")}
                   required
                   className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />

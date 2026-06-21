@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLang } from "@/lib/i18n/context";
 
 interface BookDemoModalProps {
   isOpen: boolean;
@@ -33,19 +34,20 @@ function getAvailableDates(): string[] {
   return dates;
 }
 
-function formatDateDisplay(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-}
-
 export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
   const [step, setStep] = useState<"form" | "success">("form");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [form, setForm] = useState({ name: "", email: "", company: "", phone: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
+  const { t, locale } = useLang();
 
   const dates = getAvailableDates();
+
+  const formatDateDisplay = (dateStr: string): string => {
+    const d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", { weekday: "short", month: "short", day: "numeric" });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,6 +84,8 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
 
   if (!isOpen) return null;
 
+  const lang = locale === "fr" ? "fr-FR" : "en-US";
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
@@ -96,8 +100,8 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
           </div>
           <div className="relative z-10 flex items-center justify-between">
             <div>
-              <h3 className="text-white font-bold text-lg">Book a Demo</h3>
-              <p className="text-blue-100 text-sm mt-0.5">See DentalCRM in action — tailored to your team</p>
+              <h3 className="text-white font-bold text-lg">{t("bookDemo.title")}</h3>
+              <p className="text-blue-100 text-sm mt-0.5">{t("bookDemo.subtitle")}</p>
             </div>
             <button onClick={handleClose} className="text-white/70 hover:text-white h-8 w-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -110,26 +114,23 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
             <div className="h-16 w-16 rounded-2xl bg-green-100 mx-auto mb-5 flex items-center justify-center">
               <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
             </div>
-            <h4 className="text-xl font-bold text-gray-900 mb-2">Demo Scheduled!</h4>
+            <h4 className="text-xl font-bold text-gray-900 mb-2">{t("bookDemo.scheduled")}</h4>
             <p className="text-sm text-gray-500 mb-6">
-              You&apos;re booked for <strong>{formatDateDisplay(selectedDate)}</strong> at <strong>{selectedTime}</strong>.
-              <br /><br />
-              A confirmation email has been sent to <strong>{form.email}</strong>.
-              Our team will reach out shortly with meeting details.
+              {t("bookDemo.scheduledDesc")}
             </p>
             <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100 mb-6">
-              <p className="text-xs text-blue-600 font-medium">What to expect</p>
-              <p className="text-sm text-gray-600 mt-1">A 30-minute walkthrough of DentalCRM, customized to your industry and team size. No commitment required.</p>
+              <p className="text-xs text-blue-600 font-medium">{t("bookDemo.whatToExpect")}</p>
+              <p className="text-sm text-gray-600 mt-1">{t("bookDemo.whatToExpectDesc")}</p>
             </div>
             <button onClick={handleClose} className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl text-sm font-semibold hover:shadow-lg transition-all">
-              Done
+              {t("bookDemo.done")}
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
             {/* Date Picker */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Select a Date</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">{t("bookDemo.selectDate")}</label>
               <div className="grid grid-cols-5 gap-2">
                 {dates.map((d) => (
                   <button
@@ -142,9 +143,9 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
                         : "border-gray-100 hover:border-gray-200 text-gray-600 hover:bg-gray-50"
                     }`}
                   >
-                    <div className="text-[10px] font-medium uppercase">{new Date(d + "T00:00:00").toLocaleDateString("en-US", { weekday: "short" })}</div>
+                    <div className="text-[10px] font-medium uppercase">{new Date(d + "T00:00:00").toLocaleDateString(lang, { weekday: "short" })}</div>
                     <div className="text-lg font-bold mt-0.5">{new Date(d + "T00:00:00").getDate()}</div>
-                    <div className="text-[10px] text-gray-400">{new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short" })}</div>
+                    <div className="text-[10px] text-gray-400">{new Date(d + "T00:00:00").toLocaleDateString(lang, { month: "short" })}</div>
                   </button>
                 ))}
               </div>
@@ -153,20 +154,20 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
             {/* Time Picker */}
             {selectedDate && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Select a Time</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">{t("bookDemo.selectTime")}</label>
                 <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto">
-                  {timeSlots.map((t) => (
+                  {timeSlots.map((slot) => (
                     <button
-                      key={t}
+                      key={slot}
                       type="button"
-                      onClick={() => setSelectedTime(t)}
+                      onClick={() => setSelectedTime(slot)}
                       className={`rounded-xl px-3 py-2 text-xs font-medium transition-all border-2 ${
-                        selectedTime === t
+                        selectedTime === slot
                           ? "border-blue-500 bg-blue-50 text-blue-700"
                           : "border-gray-100 hover:border-gray-200 text-gray-600 hover:bg-gray-50"
                       }`}
                     >
-                      {t}
+                      {slot}
                     </button>
                   ))}
                 </div>
@@ -178,27 +179,27 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
               <div className="space-y-3 pt-2 border-t border-gray-100">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">Full Name *</label>
-                    <input type="text" required value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder="John Doe" className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">{t("bookDemo.fullName")}</label>
+                    <input type="text" required value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder={t("bookDemo.namePlaceholder")} className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">Work Email *</label>
-                    <input type="email" required value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder="john@company.com" className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">{t("bookDemo.workEmail")}</label>
+                    <input type="email" required value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder={t("bookDemo.emailPlaceholder")} className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">Company</label>
-                    <input type="text" value={form.company} onChange={(e) => setForm(f => ({ ...f, company: e.target.value }))} placeholder="Company Inc." className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">{t("bookDemo.company")}</label>
+                    <input type="text" value={form.company} onChange={(e) => setForm(f => ({ ...f, company: e.target.value }))} placeholder={t("bookDemo.companyPlaceholder")} className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">Phone</label>
-                    <input type="tel" value={form.phone} onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="+234 ..." className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">{t("bookDemo.phone")}</label>
+                    <input type="tel" value={form.phone} onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))} placeholder={t("bookDemo.phonePlaceholder")} className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">Message (optional)</label>
-                  <textarea rows={2} value={form.message} onChange={(e) => setForm(f => ({ ...f, message: e.target.value }))} placeholder="Tell us about your support needs..." className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all resize-none" />
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">{t("bookDemo.message")}</label>
+                  <textarea rows={2} value={form.message} onChange={(e) => setForm(f => ({ ...f, message: e.target.value }))} placeholder={t("bookDemo.messagePlaceholder")} className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all resize-none" />
                 </div>
               </div>
             )}
@@ -212,7 +213,7 @@ export function BookDemoModal({ isOpen, onClose }: BookDemoModalProps) {
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
-                  Scheduling...
+                  {t("bookDemo.scheduling")}
                 </span>
               ) : (
                 `Confirm Demo — ${formatDateDisplay(selectedDate)} at ${selectedTime || "..."}`

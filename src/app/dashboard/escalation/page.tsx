@@ -182,12 +182,12 @@ export default function EscalationPage() {
         {/* Rules Grid */}
         <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           {[
-            { trigger: "Sentiment < -0.5", action: "Route to senior agent", priority: "High", active: true },
-            { trigger: "Billing dispute detected", action: "Route to Billing team", priority: "High", active: true },
-            { trigger: "Technical bug confirmed", action: "Route to Engineering", priority: "Medium", active: true },
-            { trigger: "VIP customer", action: "Priority routing", priority: "Critical", active: true },
-            { trigger: "AI confidence < 60%", action: "Route to human", priority: "Medium", active: true },
-            { trigger: "Legal/compliance keywords", action: "Route to Legal team", priority: "Critical", active: false },
+            { trigger: t("escalationRules.triggerSentiment"), action: t("escalationRules.actionSeniorAgent"), priority: t("escalationRules.priorityHigh"), active: true },
+            { trigger: t("escalationRules.triggerBilling"), action: t("escalationRules.actionBillingTeam"), priority: t("escalationRules.priorityHigh"), active: true },
+            { trigger: t("escalationRules.triggerTechnical"), action: t("escalationRules.actionEngineering"), priority: t("escalationRules.priorityMedium"), active: true },
+            { trigger: t("escalationRules.triggerVip"), action: t("escalationRules.actionPriorityRouting"), priority: t("escalationRules.priorityCritical"), active: true },
+            { trigger: t("escalationRules.triggerAiLow"), action: t("escalationRules.actionRouteHuman"), priority: t("escalationRules.priorityMedium"), active: true },
+            { trigger: t("escalationRules.triggerLegal"), action: t("escalationRules.actionLegalTeam"), priority: t("escalationRules.priorityCritical"), active: false },
           ].map((r, i) => (
             <div
               key={i}

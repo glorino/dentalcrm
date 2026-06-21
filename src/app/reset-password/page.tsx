@@ -17,13 +17,13 @@ export default function ResetPasswordPage() {
 
     if (password !== confirmPassword) {
       setStatus("error");
-      setMessage("Passwords do not match");
+      setMessage(t("resetPassword.passwordsNoMatch"));
       return;
     }
 
     if (password.length < 8) {
       setStatus("error");
-      setMessage("Password must be at least 8 characters");
+      setMessage(t("resetPassword.passwordTooShort"));
       return;
     }
 
@@ -35,7 +35,7 @@ export default function ResetPasswordPage() {
 
       if (!token) {
         setStatus("error");
-        setMessage("Invalid reset link");
+        setMessage(t("resetPassword.invalidLink"));
         return;
       }
 
@@ -55,11 +55,11 @@ export default function ResetPasswordPage() {
         }, 2000);
       } else {
         setStatus("error");
-        setMessage(data.error || "Failed to reset password");
+        setMessage(data.error || t("resetPassword.failed"));
       }
     } catch {
       setStatus("error");
-      setMessage("Something went wrong. Please try again.");
+      setMessage(t("resetPassword.generalError"));
     }
   };
 
