@@ -60,12 +60,12 @@ const priorityColor: Record<string, string> = {
 };
 
 const getChannelDisplayNames = (t: (key: string) => string): Record<string, string> => ({
-  whatsapp: t("channels.whatsapp.name") || "WhatsApp",
-  email: t("channels.email.name") || "Email",
-  web: t("channels.webchat.name") || "Web Chat",
-  sms: t("channels.sms.name") || "SMS",
-  messenger: t("channels.messenger.name") || "Messenger",
-  instagram: t("channels.instagram.name") || "Instagram",
+  whatsapp: t("dashboardPage.channels.whatsapp"),
+  email: t("dashboardPage.channels.email"),
+  web: t("dashboardPage.channels.web"),
+  sms: t("dashboardPage.channels.sms"),
+  messenger: t("dashboardPage.channels.messenger"),
+  instagram: t("dashboardPage.channels.instagram"),
 });
 
 function formatTime(dateStr: string): string {
@@ -302,7 +302,7 @@ export default function TicketDetailPage() {
             </h3>
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                <span className="text-gray-400">Status</span>
+                <span className="text-gray-400">{t("ticketDetailPage.status")}</span>
                 <span
                   className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusColor[ticket.status] || "bg-gray-100 text-gray-600"}`}
                 >

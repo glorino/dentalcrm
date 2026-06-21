@@ -22,19 +22,19 @@ interface TeamInfo {
   openTickets: number;
 }
 
-const teamColors: Record<string, string> = {
-  "AI Operations": "from-cyan-500 to-blue-600",
-  "Support Engineering": "from-blue-500 to-indigo-600",
-  "Billing & Accounts": "from-green-500 to-emerald-600",
-  "Customer Success": "from-purple-500 to-indigo-600",
-};
+const getTeamColors = (t: (key: string) => string): Record<string, string> => ({
+  [t("teamNames.aiOperations")]: "from-cyan-500 to-blue-600",
+  [t("teamNames.supportEngineering")]: "from-blue-500 to-indigo-600",
+  [t("teamNames.billingAccounts")]: "from-green-500 to-emerald-600",
+  [t("teamNames.customerSuccess")]: "from-purple-500 to-indigo-600",
+});
 
-const teamCardClasses: Record<string, string> = {
-  "AI Operations": "card-premium-cyan",
-  "Support Engineering": "card-premium-blue",
-  "Billing & Accounts": "card-premium-green",
-  "Customer Success": "card-premium-purple",
-};
+const getTeamCardClasses = (t: (key: string) => string): Record<string, string> => ({
+  [t("teamNames.aiOperations")]: "card-premium-cyan",
+  [t("teamNames.supportEngineering")]: "card-premium-blue",
+  [t("teamNames.billingAccounts")]: "card-premium-green",
+  [t("teamNames.customerSuccess")]: "card-premium-purple",
+});
 
 const roleColor: Record<string, string> = {
   super_admin: "bg-purple-100 text-purple-700 border border-purple-200/60",
@@ -60,6 +60,8 @@ export default function TeamsPage() {
   const [teams, setTeams] = useState<TeamInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useLang();
+  const teamColors = getTeamColors(t);
+  const teamCardClasses = getTeamCardClasses(t);
 
   useEffect(() => {
     fetch("/api/teams")

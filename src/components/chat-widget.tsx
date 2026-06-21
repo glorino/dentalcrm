@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState, Component, ReactNode, ErrorInfo } from "react";
 import { useChat } from "@ai-sdk/react";
 import { useIndustry, useIndustryColors, useIndustryChatbot } from "@/lib/industry/context";
+import { useLang } from "@/lib/i18n/context";
 
 class ChatErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   state = { hasError: false };
@@ -25,6 +26,7 @@ function ChatWidgetInner() {
   const { config } = useIndustry();
   const colors = useIndustryColors();
   const chatbot = useIndustryChatbot();
+  const { t } = useLang();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -75,7 +77,7 @@ function ChatWidgetInner() {
                 <h3 className="text-white font-semibold text-sm">{chatbot.name} Support</h3>
                 <div className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-                  <p className="text-white/80 text-xs">Online · Typically replies instantly</p>
+                  <p className="text-white/80 text-xs">{t("chatWidget.online")}</p>
                 </div>
               </div>
             </div>
@@ -94,8 +96,8 @@ function ChatWidgetInner() {
             {messages.length === 0 && (
               <div className="text-center py-6">
                 <img src={config.logo} alt={config.name} className="h-16 w-16 mx-auto mb-4" />
-                <h4 className="text-gray-900 font-bold text-lg mb-1">Welcome to {config.name}</h4>
-                <p className="text-sm text-gray-500 mb-6">Our AI agents are ready to help you.</p>
+                <h4 className="text-gray-900 font-bold text-lg mb-1">{t("chatWidget.welcomeTitle", `Welcome to ${config.name}`)}</h4>
+                <p className="text-sm text-gray-500 mb-6">{t("chatWidget.welcomeDesc")}</p>
                 <div className="grid grid-cols-2 gap-2">
                   {chatbot.quickActions.map((action) => (
                     <button
@@ -163,7 +165,7 @@ function ChatWidgetInner() {
                     >
                       <span className="text-white text-[8px] font-bold">AI</span>
                     </div>
-                    <span className="text-[10px] font-medium text-gray-500">Thinking...</span>
+                    <span className="text-[10px] font-medium text-gray-500">{t("chatWidget.thinking")}</span>
                   </div>
                   <div className="flex gap-1">
                     <span className="h-2 w-2 rounded-full animate-bounce [animation-delay:-0.3s]" style={{ backgroundColor: colors.primary }} />
@@ -178,7 +180,7 @@ function ChatWidgetInner() {
               <div className="flex justify-center">
                 <div className="bg-red-50 border border-red-200 text-red-700 text-xs px-4 py-2 rounded-xl flex items-center gap-2">
                   <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  Something went wrong. Please try again.
+                  {t("chatWidget.error")}
                 </div>
               </div>
             )}
@@ -196,7 +198,7 @@ function ChatWidgetInner() {
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Type a message..."
+                placeholder={t("chatWidget.placeholder")}
                 disabled={isLoading}
                 className="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 transition-all disabled:opacity-50"
                 style={{ "--tw-ring-color": `${colors.primary}40` } as React.CSSProperties}
@@ -219,7 +221,7 @@ function ChatWidgetInner() {
               </button>
             </div>
             <p className="text-[10px] text-gray-400 mt-2 text-center">
-              Powered by {chatbot.name} · AI-Powered Support
+              {t("chatWidget.poweredBy", `Powered by ${chatbot.name} · AI-Powered Support`)}
             </p>
           </form>
         </div>

@@ -62,8 +62,8 @@ export default function KnowledgePage() {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
     if (hours < 1) return t("misc.justNow");
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
+    if (hours < 24) return `${hours}${t("misc.hoursAgo")}`;
+    if (days < 7) return `${days}${t("misc.daysAgo")}`;
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   }
 
@@ -343,7 +343,7 @@ export default function KnowledgePage() {
                   </div>
                   <div>
                     <p className="text-base font-bold text-gray-900">{t("knowledgePage.notFound")}</p>
-                    <p className="text-sm text-gray-500 mt-1">Try adjusting your search or filters</p>
+                    <p className="text-sm text-gray-500 mt-1">{t("dashboardPageExtra.knowledge.emptyState")}</p>
                   </div>
                 </div>
               </div>

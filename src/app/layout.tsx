@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n/context";
+import { LangSync } from "@/lib/i18n/lang-sync";
 import { IndustryProvider } from "@/lib/industry/context";
 import { getIndustryFromEnv } from "@/lib/industry/config";
 
@@ -34,7 +35,10 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className={`${dmSans.variable} font-sans`}>
         <IndustryProvider slug={industry}>
-          <LanguageProvider>{children}</LanguageProvider>
+          <LanguageProvider>
+            <LangSync />
+            {children}
+          </LanguageProvider>
         </IndustryProvider>
       </body>
     </html>

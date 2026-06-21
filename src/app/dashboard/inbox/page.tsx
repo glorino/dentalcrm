@@ -37,9 +37,9 @@ interface InboxData {
 }
 
 const getChannelMeta = (t: (key: string) => string) => ({
-  all: { name: t("inboxPage.allChannels"), icon: "📥", gradient: "from-slate-500 to-gray-600" },
+  all: { name: t("dashboardPageExtra.inbox.allChannels"), icon: "📥", gradient: "from-slate-500 to-gray-600" },
   whatsapp: { name: "WhatsApp", icon: "📱", gradient: "from-green-500 to-emerald-600" },
-  email: { name: "Email", icon: "📧", gradient: "from-purple-500 to-violet-600" },
+  email: { name: t("dashboardPageExtra.inbox.emailChannel"), icon: "📧", gradient: "from-purple-500 to-violet-600" },
   web: { name: t("dashboardPage.channels.web"), icon: "💬", gradient: "from-blue-500 to-indigo-600" },
   sms: { name: "SMS", icon: "💬", gradient: "from-amber-500 to-orange-600" },
   messenger: { name: "Messenger", icon: "💬", gradient: "from-blue-400 to-blue-600" },
@@ -381,10 +381,10 @@ export default function InboxPage() {
               <div className="flex items-center gap-2">
                 <div className={`px-3 py-1.5 rounded-xl text-xs font-semibold border ${sentimentBg[selectedConversation.sentiment]}`}>
                   <span className={sentimentColor[selectedConversation.sentiment]}>●</span>{" "}
-                  {selectedConversation.sentiment} ({selectedConversation.sentimentScore > 0 ? "+" : ""}{selectedConversation.sentimentScore})
+                  {selectedConversation.sentiment === "positive" ? t("dashboardPageExtra.inbox.positive") : selectedConversation.sentiment === "neutral" ? t("dashboardPageExtra.inbox.neutral") : selectedConversation.sentiment === "negative" ? t("dashboardPageExtra.inbox.negative") : selectedConversation.sentiment} ({selectedConversation.sentimentScore > 0 ? "+" : ""}{selectedConversation.sentimentScore})
                 </div>
                 <div className="px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700">
-                  AI: {selectedConversation.aiConfidence}%
+                  {t("dashboardPageExtra.inbox.aiPrefix")} {selectedConversation.aiConfidence}%
                 </div>
                 <button className="btn-ghost text-xs">
                   <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -548,7 +548,7 @@ export default function InboxPage() {
                       {selectedConversation.sentimentScore > 0 ? "+" : ""}{selectedConversation.sentimentScore}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1 capitalize">{selectedConversation.sentiment} · {t("inboxPage.trendStable")}</div>
+                  <div className="text-xs text-gray-500 mt-1 capitalize">{selectedConversation.sentiment === "positive" ? t("dashboardPageExtra.inbox.positive") : selectedConversation.sentiment === "neutral" ? t("dashboardPageExtra.inbox.neutral") : selectedConversation.sentiment === "negative" ? t("dashboardPageExtra.inbox.negative") : selectedConversation.sentiment} · {t("inboxPage.trendStable")}</div>
                 </div>
                 <div className="rounded-xl card-premium-blue p-3 hover-lift">
                   <div className="flex items-center justify-between">
