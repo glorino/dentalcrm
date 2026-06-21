@@ -428,6 +428,7 @@ export const translations = {
     teams: { en: "Teams", fr: "Équipes" },
     escalation: { en: "Escalation", fr: "Escalade" },
     settings: { en: "Settings", fr: "Paramètres" },
+    mainSite: { en: "Main Site", fr: "Site Principal" },
   },
   misc: {
     poweredBy: { en: "DentalCRM-powered delivery", fr: "Livraison propulsée par DentalCRM" },
@@ -826,9 +827,6 @@ export const translations = {
     apiKeysDesc: { en: "Manage API keys and tokens", fr: "Gérez les clés et tokens API" },
     auditLog: { en: "Audit Log", fr: "Journal d'audit" },
     auditLogDesc: { en: "Activity tracking and compliance", fr: "Suivi d'activité et conformité" },
-  },
-  sidebar: {
-    mainSite: { en: "Main Site", fr: "Site Principal" },
   },
   chatWidget: {
     online: { en: "Online · Typically replies instantly", fr: "En ligne · Répond généralement instantanément" },
