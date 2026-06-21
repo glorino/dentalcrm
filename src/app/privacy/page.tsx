@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useLang } from "@/lib/i18n/context";
 
 export default function PrivacyPolicyPage() {
+  const { t } = useLang();
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-6 py-16">
@@ -8,10 +12,10 @@ export default function PrivacyPolicyPage() {
         <div className="mb-12">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-6 transition">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            Back to Home
+            {t("misc.backToHome")}
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">Privacy Policy</h1>
-          <p className="text-gray-500">Last updated: June 15, 2026</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">{t("misc.privacyPolicy")}</h1>
+          <p className="text-gray-500">{t("misc.lastUpdated")}</p>
         </div>
 
         {/* Content */}
