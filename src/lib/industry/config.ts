@@ -64,7 +64,7 @@ export const industries: Record<IndustrySlug, IndustryConfig> = {
       email: "info@glopresc.com",
       whatsapp: "+2347082529729",
       phone: "+2347082529729",
-      website: "supportflow-ai-six.vercel.app",
+      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app",
     },
     chatbot: {
       name: "Dental AI",
@@ -143,7 +143,7 @@ Guidelines:
       email: "info@glopresc.com",
       whatsapp: "+2347082529729",
       phone: "+2347082529729",
-      website: "supportflow-ai-six.vercel.app",
+      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app",
     },
     chatbot: {
       name: "Property AI",
@@ -221,7 +221,7 @@ Guidelines:
       email: "info@glopresc.com",
       whatsapp: "+2347082529729",
       phone: "+2347082529729",
-      website: "supportflow-ai-six.vercel.app",
+      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app",
     },
     chatbot: {
       name: "Fin AI",
@@ -299,7 +299,7 @@ Guidelines:
       email: "info@glopresc.com",
       whatsapp: "+2347082529729",
       phone: "+2347082529729",
-      website: "supportflow-ai-six.vercel.app",
+      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app",
     },
     chatbot: {
       name: "Insure AI",
@@ -377,7 +377,7 @@ Guidelines:
       email: "info@glopresc.com",
       whatsapp: "+2347082529729",
       phone: "+2347082529729",
-      website: "supportflow-ai-six.vercel.app",
+      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app",
     },
     chatbot: {
       name: "Shop AI",

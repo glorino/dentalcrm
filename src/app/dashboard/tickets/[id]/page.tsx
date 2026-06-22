@@ -165,13 +165,13 @@ export default function TicketDetailPage() {
           <span
             className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${statusColor[ticket.status] || "bg-gray-100 text-gray-600"}`}
           >
-            {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
+            {t(`dashboardPage.status.${ticket.status}`)}
           </span>
           <span className={`text-sm capitalize ${priorityColor[ticket.priority] || "text-gray-500"}`}>
             <svg className="inline h-3.5 w-3.5 mr-0.5 -mt-0.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
             </svg>
-            {ticket.priority}
+            {t(`dashboardPage.priority.${ticket.priority}`)}
           </span>
         </div>
       </div>
@@ -306,13 +306,13 @@ export default function TicketDetailPage() {
                 <span
                   className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusColor[ticket.status] || "bg-gray-100 text-gray-600"}`}
                 >
-                  {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
+                  {t(`dashboardPage.status.${ticket.status}`)}
                 </span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-gray-100">
                 <span className="text-gray-400">{t("ticketDetailPage.priority")}</span>
                 <span className={`font-medium capitalize ${priorityColor[ticket.priority] || "text-gray-500"}`}>
-                  {ticket.priority}
+            {t(`dashboardPage.priority.${ticket.priority}`)}
                 </span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-gray-100">
@@ -342,7 +342,7 @@ export default function TicketDetailPage() {
               <div className="flex items-center justify-between py-2">
                 <span className="text-gray-400">{t("ticketDetailPage.sentiment")}</span>
                 <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700 capitalize">
-                  {ticket.sentiment}
+                  {t(`dashboardPage.sentiment.${ticket.sentiment}`)}
                 </span>
               </div>
             </div>

@@ -215,6 +215,7 @@ export default function KnowledgePage() {
           <div className="flex items-center gap-1.5 bg-gray-100/80 rounded-xl p-1">
             <button
               onClick={() => setView("grid")}
+              aria-label="Grid view"
               className={`h-8 w-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
                 view === "grid"
                   ? "bg-white text-gray-900 shadow-md shadow-gray-200/50"
@@ -225,6 +226,7 @@ export default function KnowledgePage() {
             </button>
             <button
               onClick={() => setView("list")}
+              aria-label="List view"
               className={`h-8 w-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
                 view === "list"
                   ? "bg-white text-gray-900 shadow-md shadow-gray-200/50"

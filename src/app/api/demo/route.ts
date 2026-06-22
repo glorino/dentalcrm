@@ -184,7 +184,6 @@ export async function POST(req: NextRequest) {
     const smtpPass = process.env.SMTP_PASS;
 
     if (!smtpHost || !smtpUser || !smtpPass) {
-      console.log("Demo booking (email not configured):", { name, email, company, date, time });
       return NextResponse.json({
         success: true,
         message: "Demo booked. Email confirmation will be sent once SMTP is configured.",

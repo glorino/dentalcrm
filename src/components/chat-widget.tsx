@@ -84,6 +84,7 @@ function ChatWidgetInner() {
             <button
               onClick={() => setIsOpen(false)}
               className="text-white/70 hover:text-white transition-colors relative z-10 h-8 w-8 rounded-lg hover:bg-white/10 flex items-center justify-center"
+              aria-label="Close chat"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

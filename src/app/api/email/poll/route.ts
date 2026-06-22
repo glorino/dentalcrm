@@ -28,51 +28,53 @@ export async function POST(req: NextRequest) {
     };
 
     const connection = await imap.connect(config);
-    await connection.openBox("INBOX");
+    try {
+      await connection.openBox("INBOX");
 
-    const searchCriteria = ["UNSEEN"];
-    const fetchOptions = {
-      bodies: ["HEADER", "TEXT"],
-      markSeen: true,
-    };
+      const searchCriteria = ["UNSEEN"];
+      const fetchOptions = {
+        bodies: ["HEADER", "TEXT"],
+        markSeen: true,
+      };
 
-    const messages = await connection.search(searchCriteria, fetchOptions);
-    let processedCount = 0;
+      const messages = await connection.search(searchCriteria, fetchOptions);
+      let processedCount = 0;
 
-    for (const message of messages) {
-      try {
-        const all = message.parts.find((part: { which: string }) => part.which === "TEXT");
-        const header = message.parts.find((part: { which: string }) => part.which === "HEADER");
+      for (const message of messages) {
+        try {
+          const all = message.parts.find((part: { which: string }) => part.which === "TEXT");
+          const header = message.parts.find((part: { which: string }) => part.which === "HEADER");
 
-        if (header && all) {
-          const headerData = header.body;
-          const from = headerData.from?.[0]?.address || headerData.from || "";
-          const subject = headerData.subject || "No Subject";
-          const body = all.body || "";
+          if (header && all) {
+            const headerData = header.body;
+            const from = headerData.from?.[0]?.address || headerData.from || "";
+            const subject = headerData.subject || "No Subject";
+            const body = all.body || "";
 
-          if (from && !from.includes(email)) {
-            const ticketNumber = await processIncomingEmail(from, subject, body);
+            if (from && !from.includes(email)) {
+              const ticketNumber = await processIncomingEmail(from, subject, body);
 
-            if (ticketNumber !== "error") {
-              broadcastInboxUpdate({
-                type: "new_message",
-                channel: "email",
-                from,
-                message: body.substring(0, 200),
-                ticketNumber,
-              });
-              processedCount++;
+              if (ticketNumber !== "error") {
+                broadcastInboxUpdate({
+                  type: "new_message",
+                  channel: "email",
+                  from,
+                  message: body.substring(0, 200),
+                  ticketNumber,
+                });
+                processedCount++;
+              }
             }
           }
+        } catch (e) {
+          console.error("Error processing email message:", e);
         }
-      } catch (e) {
-        console.error("Error processing email message:", e);
       }
+
+      return NextResponse.json({ status: "ok", processed: processedCount });
+    } finally {
+      connection.end();
     }
-
-    connection.end();
-
-    return NextResponse.json({ status: "ok", processed: processedCount });
   } catch (error) {
     console.error("Email poll error:", error);
     return NextResponse.json({ error: "Email polling failed" }, { status: 500 });
