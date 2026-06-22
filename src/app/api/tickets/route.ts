@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sql } from "@/lib/db";
+import { getSql } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,7 +9,39 @@ export async function GET(request: NextRequest) {
     const priority = searchParams.get("priority");
     const search = searchParams.get("search");
 
-    let query = sql`
+    const conditions: string[] = ["1=1"];
+    const values: unknown[] = [];
+    let paramIndex = 1;
+
+    if (channel) {
+      conditions.push(`LOWER(t.channel) = LOWER($${paramIndex})`);
+      values.push(channel);
+      paramIndex++;
+    }
+
+    if (status) {
+      conditions.push(`LOWER(t.status) = LOWER($${paramIndex})`);
+      values.push(status);
+      paramIndex++;
+    }
+
+    if (priority) {
+      conditions.push(`LOWER(t.priority) = LOWER($${paramIndex})`);
+      values.push(priority);
+      paramIndex++;
+    }
+
+    if (search) {
+      conditions.push(`(
+        t.ticket_number ILIKE $${paramIndex}
+        OR t.subject ILIKE $${paramIndex}
+        OR c.name ILIKE $${paramIndex}
+      )`);
+      values.push(`%${search}%`);
+      paramIndex++;
+    }
+
+    const query = `
       SELECT 
         t.id,
         t.ticket_number,
@@ -31,67 +63,15 @@ export async function GET(request: NextRequest) {
         c.company as customer_company
       FROM tickets t
       LEFT JOIN customers c ON t.customer_id = c.id
-      WHERE 1=1
+      WHERE ${conditions.join(" AND ")}
+      ORDER BY t.created_at DESC
     `;
 
-    if (channel) {
-      query = sql`
-        SELECT 
-          t.id,
-          t.ticket_number,
-          t.subject,
-          t.message,
-          t.status,
-          t.priority,
-          t.channel,
-          t.ai_confidence,
-          t.sla_status,
-          t.sla_due,
-          t.sentiment,
-          t.sentiment_score,
-          t.tags,
-          t.created_at,
-          t.updated_at,
-          c.name as customer_name,
-          c.email as customer_email,
-          c.company as customer_company
-        FROM tickets t
-        LEFT JOIN customers c ON t.customer_id = c.id
-        WHERE LOWER(t.channel) = LOWER(${channel})
-      `;
-    }
-
-    if (status) {
-      query = sql`
-        ${query}
-        AND LOWER(t.status) = LOWER(${status})
-      `;
-    }
-
-    if (priority) {
-      query = sql`
-        ${query}
-        AND LOWER(t.priority) = LOWER(${priority})
-      `;
-    }
-
-    if (search) {
-      query = sql`
-        ${query}
-        AND (
-          t.ticket_number ILIKE ${`%${search}%`}
-          OR t.subject ILIKE ${`%${search}%`}
-          OR c.name ILIKE ${`%${search}%`}
-        )
-      `;
-    }
-
-    query = sql`${query} ORDER BY t.created_at DESC`;
-
-    const tickets = await query;
+    const sql = getSql();
+    const tickets = await sql(query, values);
 
     return NextResponse.json({
-      tickets: tickets.map(t => ({
+      tickets: tickets.map((t: Record<string, unknown>) => ({
         id: t.id,
         ticketNumber: t.ticket_number,
         subject: t.subject,
