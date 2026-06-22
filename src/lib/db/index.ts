@@ -1,15 +1,24 @@
-import { neon } from "@neondatabase/serverless";
+import { neon, NeonQueryFunction } from "@neondatabase/serverless";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is required");
+let _sql: NeonQueryFunction<false, false> | null = null;
+
+export function getSql(): NeonQueryFunction<false, false> {
+  if (!_sql) {
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is required");
+    }
+    _sql = neon(process.env.DATABASE_URL);
+  }
+  return _sql;
 }
 
-const sql = neon(process.env.DATABASE_URL);
-
-export { sql };
+export function sql(strings: TemplateStringsArray, ...values: unknown[]) {
+  return getSql()(strings, ...values);
+}
 
 export async function initDB() {
-  await sql`
+  const s = getSql();
+  await s`
     CREATE TABLE IF NOT EXISTS users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       email VARCHAR(255) UNIQUE NOT NULL,
@@ -26,7 +35,7 @@ export async function initDB() {
     );
   `;
 
-  await sql`
+  await s`
     CREATE TABLE IF NOT EXISTS customers (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       email VARCHAR(255) UNIQUE NOT NULL,
@@ -43,7 +52,7 @@ export async function initDB() {
     );
   `;
 
-  await sql`
+  await s`
     CREATE TABLE IF NOT EXISTS tickets (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       ticket_number VARCHAR(20) UNIQUE NOT NULL,
@@ -67,7 +76,7 @@ export async function initDB() {
     );
   `;
 
-  await sql`
+  await s`
     CREATE TABLE IF NOT EXISTS messages (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       ticket_id UUID REFERENCES tickets(id),
@@ -80,7 +89,7 @@ export async function initDB() {
     );
   `;
 
-  await sql`
+  await s`
     CREATE TABLE IF NOT EXISTS knowledge_articles (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       title VARCHAR(500) NOT NULL,
@@ -97,7 +106,7 @@ export async function initDB() {
     );
   `;
 
-  await sql`
+  await s`
     CREATE TABLE IF NOT EXISTS password_resets (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       email VARCHAR(255) NOT NULL,
@@ -108,14 +117,15 @@ export async function initDB() {
     );
   `;
 
-  await sql`ALTER TABLE customers ADD COLUMN IF NOT EXISTS phone VARCHAR(50)`;
+  await s`ALTER TABLE customers ADD COLUMN IF NOT EXISTS phone VARCHAR(50)`;
 
-  await sql`
+  await s`
     CREATE SEQUENCE IF NOT EXISTS ticket_seq START WITH 1235 INCREMENT BY 1
   `;
 }
 
 export async function generateTicketNumber(): Promise<string> {
-  const result = await sql`SELECT nextval('ticket_seq') as num`;
+  const s = getSql();
+  const result = await s`SELECT nextval('ticket_seq') as num`;
   return `DNT-${result[0].num}`;
 }
