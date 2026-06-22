@@ -2,18 +2,27 @@ import { neon, NeonQueryFunction } from "@neondatabase/serverless";
 
 let _sql: NeonQueryFunction<false, false> | null = null;
 
-export function getSql(): NeonQueryFunction<false, false> {
+type SqlFn = {
+  (strings: TemplateStringsArray, ...values: unknown[]): Promise<any[]>;
+  (query: string, values?: unknown[]): Promise<any[]>;
+};
+
+export function getSql(): SqlFn {
   if (!_sql) {
     if (!process.env.DATABASE_URL) {
       throw new Error("DATABASE_URL environment variable is required");
     }
     _sql = neon(process.env.DATABASE_URL);
   }
-  return _sql;
+  return _sql as unknown as SqlFn;
 }
 
-export function sql(strings: TemplateStringsArray, ...values: unknown[]) {
-  return getSql()(strings, ...values);
+export function sql(stringsOrQuery: TemplateStringsArray | string, ...values: unknown[]) {
+  const s = getSql();
+  if (typeof stringsOrQuery === "string") {
+    return s(stringsOrQuery, values);
+  }
+  return s(stringsOrQuery, ...values);
 }
 
 export async function initDB() {

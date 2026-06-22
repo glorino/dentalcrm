@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sql } from "@/lib/db";
+import { getSql } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,40 +7,42 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
     const segment = searchParams.get("segment");
 
-    let query = sql`
+    const conditions: string[] = ["1=1"];
+    const values: unknown[] = [];
+    let paramIndex = 1;
+
+    if (search) {
+      conditions.push(`(
+        c.name ILIKE $${paramIndex}
+        OR c.email ILIKE $${paramIndex}
+        OR c.company ILIKE $${paramIndex}
+      )`);
+      values.push(`%${search}%`);
+      paramIndex++;
+    }
+
+    if (segment) {
+      conditions.push(`LOWER(c.segment) = LOWER($${paramIndex})`);
+      values.push(segment);
+      paramIndex++;
+    }
+
+    const query = `
       SELECT 
         c.*,
         (SELECT COUNT(*) FROM tickets t WHERE t.customer_id = c.id) as ticket_count,
         (SELECT t.channel FROM tickets t WHERE t.customer_id = c.id ORDER BY t.created_at DESC LIMIT 1) as source_channel,
         (SELECT t.created_at FROM tickets t WHERE t.customer_id = c.id ORDER BY t.created_at ASC LIMIT 1) as first_ticket_date
       FROM customers c
-      WHERE 1=1
+      WHERE ${conditions.join(" AND ")}
+      ORDER BY c.created_at DESC
     `;
 
-    if (search) {
-      query = sql`
-        ${query}
-        AND (
-          c.name ILIKE ${`%${search}%`}
-          OR c.email ILIKE ${`%${search}%`}
-          OR c.company ILIKE ${`%${search}%`}
-        )
-      `;
-    }
-
-    if (segment) {
-      query = sql`
-        ${query}
-        AND LOWER(c.segment) = LOWER(${segment})
-      `;
-    }
-
-    query = sql`${query} ORDER BY c.created_at DESC`;
-
-    const customers = await query;
+    const sql = getSql();
+    const customers = await sql(query, values);
 
     return NextResponse.json({
-      customers: customers.map(c => ({
+      customers: customers.map((c: Record<string, unknown>) => ({
         id: c.id,
         email: c.email,
         name: c.name,

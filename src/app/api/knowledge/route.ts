@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sql } from "@/lib/db";
+import { getSql } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,42 +8,43 @@ export async function GET(request: NextRequest) {
     const collection = searchParams.get("collection");
     const status = searchParams.get("status");
 
-    let query = sql`
+    const conditions: string[] = ["1=1"];
+    const values: unknown[] = [];
+    let paramIndex = 1;
+
+    if (search) {
+      conditions.push(`(
+        ka.title ILIKE $${paramIndex}
+        OR ka.content ILIKE $${paramIndex}
+      )`);
+      values.push(`%${search}%`);
+      paramIndex++;
+    }
+
+    if (collection) {
+      conditions.push(`ka.collection = $${paramIndex}`);
+      values.push(collection);
+      paramIndex++;
+    }
+
+    if (status) {
+      conditions.push(`ka.status = $${paramIndex}`);
+      values.push(status);
+      paramIndex++;
+    }
+
+    const query = `
       SELECT 
         ka.*,
         u.name as author_name
       FROM knowledge_articles ka
       LEFT JOIN users u ON ka.created_by = u.id
-      WHERE 1=1
+      WHERE ${conditions.join(" AND ")}
+      ORDER BY ka.updated_at DESC
     `;
 
-    if (search) {
-      query = sql`
-        ${query}
-        AND (
-          ka.title ILIKE ${`%${search}%`}
-          OR ka.content ILIKE ${`%${search}%`}
-        )
-      `;
-    }
-
-    if (collection) {
-      query = sql`
-        ${query}
-        AND ka.collection = ${collection}
-      `;
-    }
-
-    if (status) {
-      query = sql`
-        ${query}
-        AND ka.status = ${status}
-      `;
-    }
-
-    query = sql`${query} ORDER BY ka.updated_at DESC`;
-
-    const articles = await query;
+    const sql = getSql();
+    const articles = await sql(query, values);
 
     const collectionCounts = await sql`
       SELECT collection, COUNT(*) as count
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest) {
     `;
 
     return NextResponse.json({
-      articles: articles.map(a => ({
+      articles: articles.map((a: Record<string, unknown>) => ({
         id: a.id,
         title: a.title,
         content: a.content,
@@ -78,7 +79,7 @@ export async function GET(request: NextRequest) {
         createdAt: a.created_at,
         updatedAt: a.updated_at,
       })),
-      collections: collectionCounts.map(c => ({
+      collections: collectionCounts.map((c: Record<string, unknown>) => ({
         name: c.collection,
         count: c.count,
       })),
