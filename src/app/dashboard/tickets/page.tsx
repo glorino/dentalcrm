@@ -210,6 +210,7 @@ function TicketsContent() {
         <select
           value={channelFilter}
           onChange={(e) => handleChannelChange(e.target.value)}
+          aria-label="Filter by channel"
           className="rounded-2xl border-2 border-gray-100 bg-white/80 backdrop-blur-sm px-4 py-3.5 text-sm font-medium text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
         >
           <option value="all">{t("ticketsPage.allChannels")}</option>
@@ -223,6 +224,7 @@ function TicketsContent() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
+          aria-label="Filter by status"
           className="rounded-2xl border-2 border-gray-100 bg-white/80 backdrop-blur-sm px-4 py-3.5 text-sm font-medium text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
         >
           <option value="all">{t("ticketsPage.allStatus")}</option>
@@ -255,7 +257,7 @@ function TicketsContent() {
             <thead>
               <tr className="border-b border-gray-200/60 bg-gradient-to-r from-gray-50/80 to-white/50">
                 <th className="w-12 px-5 py-4">
-                  <input type="checkbox" className="rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500/20" />
+                  <input type="checkbox" aria-label="Select all tickets" className="rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500/20" />
                 </th>
                 <th className="text-left px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t("dashboardPage.th.ticket")}</th>
                 <th className="text-left px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t("dashboardPage.th.customer")}</th>
@@ -310,7 +312,7 @@ function TicketsContent() {
                     </span>
                   </td>
                   <td className="hidden sm:table-cell px-5 py-4">
-                    <span className={`text-xs capitalize font-medium ${priorityColor[tk.priority] || "text-gray-500"}`}>{tk.priority.charAt(0).toUpperCase() + tk.priority.slice(1)}</span>
+                    <span className={`text-xs capitalize font-medium ${priorityColor[tk.priority] || "text-gray-500"}`}>{t(`dashboardPage.priority.${tk.priority}`)}</span>
                   </td>
                   <td className="px-5 py-4">
                     <div className={`text-xs font-semibold ${slaColor[tk.slaStatus] || "text-gray-400"}`}>
@@ -325,10 +327,10 @@ function TicketsContent() {
                   </td>
                   <td className="px-5 py-4 text-right">
                     <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-all duration-200">
-                      <button className="h-8 w-8 rounded-xl hover:bg-blue-50 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors">
+                      <button aria-label="Start chat" className="h-8 w-8 rounded-xl hover:bg-blue-50 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                       </button>
-                      <button className="h-8 w-8 rounded-xl hover:bg-amber-50 flex items-center justify-center text-gray-400 hover:text-amber-600 transition-colors">
+                      <button aria-label="Bookmark ticket" className="h-8 w-8 rounded-xl hover:bg-amber-50 flex items-center justify-center text-gray-400 hover:text-amber-600 transition-colors">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
                       </button>
                     </div>

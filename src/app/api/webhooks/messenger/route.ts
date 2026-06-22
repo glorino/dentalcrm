@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyMessengerSignature, verifyMessengerHub, sendMessengerMessage } from "@/lib/channels/messenger";
 import { broadcastInboxUpdate } from "@/lib/events";
-import { initDB, sql } from "@/lib/db";
+import { initDB, sql, generateTicketNumber } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
@@ -58,9 +58,7 @@ async function processIncomingMessenger(senderId: string, text: string) {
     customerId = customers[0].id;
   }
 
-  const count = await sql`SELECT COUNT(*) as cnt FROM tickets`;
-  const num = Number(count[0].cnt) + 1235;
-  const ticketNumber = `DNT-${num}`;
+  const ticketNumber = await generateTicketNumber();
   const slaDue = new Date(Date.now() + 14400000);
 
   await sql`

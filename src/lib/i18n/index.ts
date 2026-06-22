@@ -527,6 +527,12 @@ export const translations = {
       messenger: { en: "Messenger", fr: "Messenger" },
       instagram: { en: "Instagram", fr: "Instagram" },
     },
+    priority: {
+      low: { en: "Low", fr: "Basse" },
+      medium: { en: "Medium", fr: "Moyenne" },
+      high: { en: "High", fr: "Haute" },
+      urgent: { en: "Urgent", fr: "Urgente" },
+    },
     title: { en: "Dashboard", fr: "Tableau de bord" },
     welcomeBack: { en: "Welcome back, {name}. Here's your DentalCRM support overview.", fr: "Bon retour, {name}. Voici votre aperçu du support DentalCRM." },
     export: { en: "Export", fr: "Exporter" },

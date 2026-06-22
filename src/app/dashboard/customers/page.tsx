@@ -36,14 +36,14 @@ const channelIcon: Record<string, string> = {
   instagram: "📸",
 };
 
-const channelDisplayNames: Record<string, string> = {
-  whatsapp: "WhatsApp",
-  email: "Email",
-  web: "Web Chat",
-  sms: "SMS",
-  messenger: "Messenger",
-  instagram: "Instagram",
-};
+const getChannelDisplayNames = (t: (key: string) => string): Record<string, string> => ({
+  whatsapp: t("dashboardPage.channels.whatsapp"),
+  email: t("dashboardPage.channels.email"),
+  web: t("dashboardPage.channels.web"),
+  sms: t("dashboardPage.channels.sms"),
+  messenger: t("dashboardPage.channels.messenger"),
+  instagram: t("dashboardPage.channels.instagram"),
+});
 
 function formatNaira(amount: number | string): string {
   return `₦${Number(amount || 0).toLocaleString()}`;
@@ -150,6 +150,7 @@ export default function CustomersPage() {
         <select
           value={segmentFilter}
           onChange={(e) => setSegmentFilter(e.target.value)}
+          aria-label="Filter by segment"
           className="rounded-2xl border-2 border-gray-100 bg-white/80 backdrop-blur-sm px-4 py-3.5 text-sm font-medium text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
         >
           <option value="all">{t("customersPage.allSegments")}</option>
@@ -199,7 +200,7 @@ export default function CustomersPage() {
                       <Link href={`/dashboard/tickets?channel=${encodeURIComponent(c.sourceChannel)}`} className="flex items-center gap-2 group/source">
                         <span className="text-lg">{channelIcon[c.sourceChannel] || "💬"}</span>
                         <div>
-                          <div className="text-sm font-medium text-gray-900 group-hover/source:text-blue-600 transition-colors">{channelDisplayNames[c.sourceChannel] || c.sourceChannel}</div>
+                          <div className="text-sm font-medium text-gray-900 group-hover/source:text-blue-600 transition-colors">{getChannelDisplayNames(t)[c.sourceChannel] || c.sourceChannel}</div>
                           {c.firstTicketDate && (
                             <div className="text-[10px] text-gray-400">{t("customersPage.since")} {formatDate(c.firstTicketDate)}</div>
                           )}
@@ -226,7 +227,7 @@ export default function CustomersPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1.5">
                       <span className={`h-2.5 w-2.5 rounded-full ${c.status === "active" ? "bg-green-500" : "bg-gray-300"}`} />
-                      <span className="text-xs font-medium text-gray-600 capitalize">{c.status}</span>
+                      <span className="text-xs font-medium text-gray-600 capitalize">{c.status === "active" ? t("misc.active") : t("misc.inactive")}</span>
                     </div>
                   </td>
                 </tr>

@@ -70,7 +70,7 @@ export default function SettingsPage() {
           </div>
           <div className="divide-y divide-gray-50 bg-white/80">
             {section.items.map((item) => (
-              <div key={item.label} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50/50 transition-colors cursor-pointer group">
+              <div key={item.label} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") e.preventDefault(); }} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50/50 transition-colors cursor-pointer group">
                 <div>
                   <div className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition">{item.label}</div>
                   <div className="text-xs text-gray-500 mt-0.5">{item.desc}</div>

@@ -62,15 +62,15 @@ function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-function timeAgo(dateStr: string): string {
+function timeAgo(dateStr: string, t: (key: string) => string): string {
   const date = new Date(dateStr);
   const now = new Date();
   const diff = now.getTime() - date.getTime();
   const hours = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
-  if (hours < 1) return "Just now";
-  if (hours < 24) return `${hours}h ago`;
-  if (days < 7) return `${days}d ago`;
+  if (hours < 1) return t("misc.justNow");
+  if (hours < 24) return `${hours}${t("misc.hoursAgo")}`;
+  if (days < 7) return `${days}${t("misc.daysAgo")}`;
   return formatDate(dateStr);
 }
 
@@ -141,7 +141,7 @@ export default function CustomerDetailPage() {
             <div className="flex flex-wrap items-center gap-3 mb-1.5">
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{customer.name}</h1>
               <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${customer.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                {customer.status}
+                {customer.status === "active" ? t("misc.active") : t("misc.inactive")}
               </span>
             </div>
             <p className="text-sm text-gray-500 mb-1">{customer.email} · {customer.company}</p>
@@ -240,17 +240,17 @@ export default function CustomerDetailPage() {
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xs font-mono text-gray-400">{ticket.ticketNumber}</span>
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${statusColor[ticket.status] || "bg-gray-100 text-gray-600"}`}>
-                        {ticket.status}
+                        {t(`dashboardPage.status.${ticket.status}`)}
                       </span>
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${priorityColor[ticket.priority] || "bg-gray-100 text-gray-600"}`}>
-                        {ticket.priority}
+                        {t(`dashboardPage.priority.${ticket.priority}`)}
                       </span>
                     </div>
                     <div className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
                       {ticket.subject}
                     </div>
                   </div>
-                  <span className="text-xs text-gray-400 shrink-0">{timeAgo(ticket.createdAt)}</span>
+                  <span className="text-xs text-gray-400 shrink-0">{timeAgo(ticket.createdAt, t)}</span>
                 </Link>
               ))}
               {recentTickets.length === 0 && (

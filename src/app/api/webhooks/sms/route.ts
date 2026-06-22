@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { initDB, sql } from "@/lib/db";
+import { initDB, sql, generateTicketNumber } from "@/lib/db";
 import { sendSMS } from "@/lib/channels/sms";
 import { broadcastInboxUpdate } from "@/lib/events";
 
-const WHATSAPP_NUMBER = "+2347082529729";
+const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || "+2347082529729";
 
 export async function POST(req: NextRequest) {
   try {
@@ -64,9 +64,7 @@ async function processIncomingSMS(from: string, text: string): Promise<string> {
       customerId = customers[0].id;
     }
 
-    const count = await sql`SELECT COUNT(*) as cnt FROM tickets`;
-    const num = Number(count[0].cnt) + 1235;
-    const ticketNumber = `DNT-${num}`;
+    const ticketNumber = await generateTicketNumber();
     const slaDue = new Date(Date.now() + 7200000);
 
     await sql`
@@ -93,7 +91,7 @@ function generateSMSResponse(text: string, ticketNumber: string): string {
   const lower = text.toLowerCase();
 
   if (lower.includes("password") || lower.includes("reset") || lower.includes("login")) {
-    return `Hi! To reset your password, visit: supportflow-ai-six.vercel.app/forgot-password. Enter your email and follow the instructions. Ticket: ${ticketNumber}`;
+    return `Hi! To reset your password, visit: ${process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app"}/forgot-password. Enter your email and follow the instructions. Ticket: ${ticketNumber}`;
   }
 
   if (lower.includes("billing") || lower.includes("invoice") || lower.includes("payment")) {

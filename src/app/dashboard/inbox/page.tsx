@@ -38,12 +38,12 @@ interface InboxData {
 
 const getChannelMeta = (t: (key: string) => string) => ({
   all: { name: t("dashboardPageExtra.inbox.allChannels"), icon: "📥", gradient: "from-slate-500 to-gray-600" },
-  whatsapp: { name: "WhatsApp", icon: "📱", gradient: "from-green-500 to-emerald-600" },
+  whatsapp: { name: t("dashboardPage.channels.whatsapp"), icon: "📱", gradient: "from-green-500 to-emerald-600" },
   email: { name: t("dashboardPageExtra.inbox.emailChannel"), icon: "📧", gradient: "from-purple-500 to-violet-600" },
   web: { name: t("dashboardPage.channels.web"), icon: "💬", gradient: "from-blue-500 to-indigo-600" },
-  sms: { name: "SMS", icon: "💬", gradient: "from-amber-500 to-orange-600" },
-  messenger: { name: "Messenger", icon: "💬", gradient: "from-blue-400 to-blue-600" },
-  instagram: { name: "Instagram", icon: "📸", gradient: "from-pink-500 to-rose-600" },
+  sms: { name: t("dashboardPage.channels.sms"), icon: "💬", gradient: "from-amber-500 to-orange-600" },
+  messenger: { name: t("dashboardPage.channels.messenger"), icon: "💬", gradient: "from-blue-400 to-blue-600" },
+  instagram: { name: t("dashboardPage.channels.instagram"), icon: "📸", gradient: "from-pink-500 to-rose-600" },
 });
 
 const sentimentColor: Record<string, string> = {
@@ -140,8 +140,8 @@ export default function InboxPage() {
       const res = await fetch(`/api/inbox${params.toString() ? `?${params}` : ""}`);
       const data: InboxData = await res.json();
       setInboxData(data);
-      if (data.conversations.length > 0 && !selectedConversation) {
-        setSelectedConversation(data.conversations[0]);
+      if (data.conversations.length > 0) {
+        setSelectedConversation(prev => prev ?? data.conversations[0]);
       }
     } catch {
       setInboxData({ conversations: [], channelCounts: [], total: 0 });
@@ -240,7 +240,7 @@ export default function InboxPage() {
             <h2 className="text-base font-bold text-gradient">{t("inboxPage.title")}</h2>
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-400 font-medium">{filteredConversations.length} {t("inboxPage.conversations")}</span>
-              <button className="h-7 w-7 rounded-xl hover:bg-white/60 flex items-center justify-center text-gray-400 transition-all hover:text-gray-600">
+              <button aria-label="More options" className="h-7 w-7 rounded-xl hover:bg-white/60 flex items-center justify-center text-gray-400 transition-all hover:text-gray-600">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                 </svg>
@@ -295,6 +295,9 @@ export default function InboxPage() {
                 <div
                   key={c.id}
                   onClick={() => handleSelectConversation(c)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleSelectConversation(c); } }}
                   className={`flex items-start gap-3 px-4 py-3.5 cursor-pointer border-b border-white/20 transition-all duration-200 animate-fade-in animate-stagger-in stagger-${Math.min(idx + 1, 8)} ${
                     isSelected
                       ? "bg-gradient-to-r from-blue-50/80 to-indigo-50/60 border-l-[3px] border-l-blue-600 shadow-sm"
@@ -371,7 +374,7 @@ export default function InboxPage() {
                       <span className={`h-1.5 w-1.5 rounded-full bg-gradient-to-br ${
                         channelMeta[selectedConversation.channel]?.gradient || "from-gray-400 to-gray-500"
                       }`} />
-                      {selectedConversation.channel}
+                      {channelMeta[selectedConversation.channel]?.name || selectedConversation.channel}
                     </span>
                     <span>·</span>
                     <span className="text-gray-300">{selectedConversation.ticketNumber}</span>
@@ -447,12 +450,12 @@ export default function InboxPage() {
                     className="w-full rounded-2xl border border-gray-200/80 bg-white/80 backdrop-blur-sm px-4 py-3 text-sm resize-none focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
                   />
                   <div className="absolute right-2 bottom-2 flex items-center gap-1">
-                    <button className="h-7 w-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all">
+                    <button aria-label="Attach file" className="h-7 w-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                       </svg>
                     </button>
-                    <button className="h-7 w-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all">
+                    <button aria-label="Add emoji" className="h-7 w-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
