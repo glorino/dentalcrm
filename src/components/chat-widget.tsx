@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState, Component, ReactNode, ErrorInfo } from "react";
+import { useRef, useEffect, useState, useCallback, Component, ReactNode, ErrorInfo } from "react";
 import { useChat } from "@ai-sdk/react";
 import { useIndustry, useIndustryColors, useIndustryChatbot } from "@/lib/industry/context";
 import { useLang } from "@/lib/i18n/context";
@@ -15,18 +15,97 @@ class ChatErrorBoundary extends Component<{ children: ReactNode }, { hasError: b
   }
 }
 
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: Event & { error: string }) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: new () => SpeechRecognition;
+    webkitSpeechRecognition?: new () => SpeechRecognition;
+  }
+}
+
 function ChatWidgetInner() {
   const { messages, sendMessage, status, error } = useChat();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const [interimText, setInterimText] = useState("");
+  const [voiceSupported, setVoiceSupported] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const isLoading = status === "streaming" || status === "submitted";
 
   const { config } = useIndustry();
   const colors = useIndustryColors();
   const chatbot = useIndustryChatbot();
   const { t } = useLang();
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setVoiceSupported(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let finalTranscript = "";
+      let interim = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interim += transcript;
+        }
+      }
+
+      if (finalTranscript) {
+        setInput(prev => prev + finalTranscript);
+        setInterimText("");
+      } else {
+        setInterimText(interim);
+      }
+    };
+
+    recognition.onerror = () => {
+      setIsRecording(false);
+      setInterimText("");
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      setInterimText("");
+    };
+
+    recognitionRef.current = recognition;
+
+    return () => {
+      recognition.abort();
+      recognitionRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -36,11 +115,38 @@ function ChatWidgetInner() {
     if (isOpen) inputRef.current?.focus();
   }, [isOpen]);
 
+  const toggleRecording = useCallback(() => {
+    const recognition = recognitionRef.current;
+    if (!recognition) return;
+
+    if (isRecording) {
+      recognition.stop();
+      setIsRecording(false);
+      setInterimText("");
+    } else {
+      setInput("");
+      setInterimText("");
+      recognition.start();
+      setIsRecording(true);
+    }
+  }, [isRecording]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      setIsRecording(false);
+      setInterimText("");
+    }
     if (!input.trim() || isLoading) return;
     sendMessage({ text: input });
     setInput("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      handleSubmit(e);
+    }
   };
 
   return (
@@ -99,6 +205,14 @@ function ChatWidgetInner() {
                 <img src={config.logo} alt={config.name} className="h-16 w-16 mx-auto mb-4" />
                 <h4 className="text-gray-900 font-bold text-lg mb-1">{t("chatWidget.welcomeTitle", `Welcome to ${config.name}`)}</h4>
                 <p className="text-sm text-gray-500 mb-6">{t("chatWidget.welcomeDesc")}</p>
+                {voiceSupported && (
+                  <div className="flex items-center justify-center gap-2 mb-4 text-xs text-gray-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                    {t("chatWidget.voiceHint", "Tap the mic icon to speak instead of typing")}
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-2">
                   {chatbot.quickActions.map((action) => (
                     <button
@@ -189,17 +303,66 @@ function ChatWidgetInner() {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Recording Indicator */}
+          {isRecording && (
+            <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+                </span>
+                <span className="text-xs font-medium text-red-600">{t("chatWidget.listening", "Listening...")}</span>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                {interimText ? (
+                  <p className="text-xs text-gray-500 italic truncate">{interimText}</p>
+                ) : (
+                  <div className="flex items-center gap-0.5">
+                    {[...Array(8)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-0.5 bg-red-300 rounded-full voice-bar"
+                        style={{
+                          animationDelay: `${i * 0.1}s`,
+                          height: "12px",
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Input */}
           <form
             onSubmit={handleSubmit}
             className="p-4 border-t border-gray-100 shrink-0 bg-white"
           >
             <div className="flex items-center gap-2">
+              {voiceSupported && (
+                <button
+                  type="button"
+                  onClick={toggleRecording}
+                  disabled={isLoading}
+                  className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 transition-all ${
+                    isRecording
+                      ? "bg-red-500 text-white shadow-lg animate-pulse"
+                      : "bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+                  } disabled:opacity-50`}
+                  aria-label={isRecording ? "Stop recording" : "Start voice input"}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </button>
+              )}
               <input
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={t("chatWidget.placeholder")}
+                onKeyDown={handleKeyDown}
+                placeholder={isRecording ? t("chatWidget.speakingPlaceholder", "Speak now...") : t("chatWidget.placeholder")}
                 disabled={isLoading}
                 className="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 transition-all disabled:opacity-50"
                 style={{ "--tw-ring-color": `${colors.primary}40` } as React.CSSProperties}
@@ -236,6 +399,13 @@ function ChatWidgetInner() {
         @keyframes messageFadeIn {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes voiceBar {
+          0%, 100% { transform: scaleY(0.3); }
+          50% { transform: scaleY(1); }
+        }
+        .voice-bar {
+          animation: voiceBar 0.6s ease-in-out infinite;
         }
       `}</style>
     </>
