@@ -4,6 +4,8 @@ import { useRef, useEffect, useState, useCallback, Component, ReactNode, ErrorIn
 import { useChat } from "@ai-sdk/react";
 import { useIndustry, useIndustryColors, useIndustryChatbot } from "@/lib/industry/context";
 import { useLang } from "@/lib/i18n/context";
+import { VoiceAgent } from "@/components/voice-agent";
+import type { SpeechRecognitionInstance, SpeechRecognitionEvent } from "@/types/voice";
 
 class ChatErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   state = { hasError: false };
@@ -15,30 +17,6 @@ class ChatErrorBoundary extends Component<{ children: ReactNode }, { hasError: b
   }
 }
 
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-  resultIndex: number;
-}
-
-interface SpeechRecognition extends EventTarget {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onresult: ((event: SpeechRecognitionEvent) => void) | null;
-  onerror: ((event: Event & { error: string }) => void) | null;
-  onend: (() => void) | null;
-  start(): void;
-  stop(): void;
-  abort(): void;
-}
-
-declare global {
-  interface Window {
-    SpeechRecognition?: new () => SpeechRecognition;
-    webkitSpeechRecognition?: new () => SpeechRecognition;
-  }
-}
-
 function ChatWidgetInner() {
   const { messages, sendMessage, status, error } = useChat();
   const [isOpen, setIsOpen] = useState(false);
@@ -46,9 +24,10 @@ function ChatWidgetInner() {
   const [isRecording, setIsRecording] = useState(false);
   const [interimText, setInterimText] = useState("");
   const [voiceSupported, setVoiceSupported] = useState(true);
+  const [voiceMode, setVoiceMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const isLoading = status === "streaming" || status === "submitted";
 
   const { config } = useIndustry();
@@ -151,21 +130,36 @@ function ChatWidgetInner() {
 
   return (
     <>
-      {/* Floating Button */}
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className={`fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-to-br ${colors.gradient} shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 group`}
-          style={{ boxShadow: `0 10px 25px -5px ${colors.primary}40` }}
-          aria-label="Open chat"
-        >
-          <svg className="w-6 h-6 text-white transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
-          <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-green-500 border-2 border-white">
-            <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75" />
-          </span>
-        </button>
+      {/* Floating Buttons */}
+      {!isOpen && !voiceMode && (
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+          <button
+            onClick={() => setVoiceMode(true)}
+            className="h-14 w-14 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 group"
+            style={{ boxShadow: "0 10px 25px -5px rgba(16, 185, 129, 0.4)" }}
+            aria-label="Open voice assistant"
+          >
+            <svg className="w-6 h-6 text-white transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-green-500 border-2 border-white">
+              <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75" />
+            </span>
+          </button>
+          <button
+            onClick={() => setIsOpen(true)}
+            className={`h-14 w-14 rounded-full bg-gradient-to-br ${colors.gradient} shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 group`}
+            style={{ boxShadow: `0 10px 25px -5px ${colors.primary}40` }}
+            aria-label="Open chat"
+          >
+            <svg className="w-6 h-6 text-white transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-green-500 border-2 border-white">
+              <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75" />
+            </span>
+          </button>
+        </div>
       )}
 
       {/* Chat Window */}
@@ -187,15 +181,27 @@ function ChatWidgetInner() {
                 </div>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-white/70 hover:text-white transition-colors relative z-10 h-8 w-8 rounded-lg hover:bg-white/10 flex items-center justify-center"
-              aria-label="Close chat"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <div className="flex items-center gap-1 relative z-10">
+              <button
+                onClick={() => { setIsOpen(false); setVoiceMode(true); }}
+                className="text-white/70 hover:text-white transition-colors h-8 w-8 rounded-lg hover:bg-white/10 flex items-center justify-center"
+                aria-label="Open voice assistant"
+                title="Voice Assistant"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-white/70 hover:text-white transition-colors h-8 w-8 rounded-lg hover:bg-white/10 flex items-center justify-center"
+                aria-label="Close chat"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
@@ -390,6 +396,8 @@ function ChatWidgetInner() {
           </form>
         </div>
       )}
+
+      <VoiceAgent isOpen={voiceMode} onClose={() => setVoiceMode(false)} />
 
       <style>{`
         @keyframes chatSlideUp {

@@ -129,6 +129,20 @@ export async function initDB() {
   await s`ALTER TABLE customers ADD COLUMN IF NOT EXISTS phone VARCHAR(50)`;
 
   await s`
+    CREATE TABLE IF NOT EXISTS voice_conversations (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      customer_id UUID REFERENCES customers(id),
+      transcript JSONB DEFAULT '[]',
+      duration_seconds INT DEFAULT 0,
+      sentiment VARCHAR(20) DEFAULT 'neutral',
+      sentiment_score DECIMAL(4,2) DEFAULT 0,
+      status VARCHAR(20) DEFAULT 'completed',
+      channel VARCHAR(50) DEFAULT 'voice-web',
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  await s`
     CREATE SEQUENCE IF NOT EXISTS ticket_seq START WITH 1235 INCREMENT BY 1
   `;
 }

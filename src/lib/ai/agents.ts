@@ -1,6 +1,7 @@
 import { openai } from "@ai-sdk/openai";
 import { tool } from "ai";
 import { z } from "zod";
+import { sql } from "@/lib/db";
 
 export const intakeAgent = {
   name: "Intake Agent",
@@ -71,13 +72,44 @@ Always cite your sources with article IDs and titles.`,
         category: z.string().optional().describe("Filter by category"),
         limit: z.number().default(5).describe("Maximum number of results"),
       }),
-      execute: async ({ query }) => {
-        return {
-          results: [],
-          query,
-          totalResults: 0,
-          searchedAt: new Date().toISOString(),
-        };
+      execute: async ({ query, category, limit }) => {
+        try {
+          let results;
+          if (category) {
+            results = await sql`
+              SELECT id, title, content, collection, views, ai_used, helpful
+              FROM knowledge_articles
+              WHERE status = 'published'
+                AND collection = ${category}
+                AND (title ILIKE ${`%${query}%`} OR content ILIKE ${`%${query}%`} OR ${query} = ANY(tags))
+              ORDER BY views DESC
+              LIMIT ${limit}
+            `;
+          } else {
+            results = await sql`
+              SELECT id, title, content, collection, views, ai_used, helpful
+              FROM knowledge_articles
+              WHERE status = 'published'
+                AND (title ILIKE ${`%${query}%`} OR content ILIKE ${`%${query}%`} OR ${query} = ANY(tags))
+              ORDER BY views DESC
+              LIMIT ${limit}
+            `;
+          }
+          return {
+            results: results.map((r: Record<string, unknown>) => ({
+              id: r.id,
+              title: r.title,
+              content: r.content,
+              collection: r.collection,
+              views: r.views,
+            })),
+            query,
+            totalResults: results.length,
+            searchedAt: new Date().toISOString(),
+          };
+        } catch {
+          return { results: [], query, totalResults: 0, searchedAt: new Date().toISOString() };
+        }
       },
     }),
     getArticle: tool({
@@ -86,7 +118,21 @@ Always cite your sources with article IDs and titles.`,
         articleId: z.string().describe("The article ID"),
       }),
       execute: async ({ articleId }) => {
-        return { articleId, found: false };
+        try {
+          const results = await sql`
+            SELECT id, title, content, collection, views, ai_used, helpful, tags
+            FROM knowledge_articles WHERE id = ${articleId} LIMIT 1
+          `;
+          if (results.length === 0) return { articleId, found: false };
+          const r = results[0];
+          return {
+            articleId,
+            found: true,
+            article: { id: r.id, title: r.title, content: r.content, collection: r.collection, views: r.views },
+          };
+        } catch {
+          return { articleId, found: false };
+        }
       },
     }),
   },
@@ -116,14 +162,33 @@ Never make up information. If you don't know, say so and escalate.`,
       }),
       execute: async (params) => params,
     }),
-    executeAction: tool({
-      description: "Execute an automated action (e.g., send password reset, issue refund)",
+    createTicket: tool({
+      description: "Create a support ticket for the customer issue",
       inputSchema: z.object({
-        action: z.string().describe("Action to execute"),
-        parameters: z.record(z.string(), z.string()).describe("Action parameters"),
+        subject: z.string().describe("Brief subject line"),
+        message: z.string().describe("Detailed description"),
+        priority: z.enum(["low", "medium", "high", "urgent"]).describe("Ticket priority"),
+        channel: z.string().describe("Channel source"),
+        customerEmail: z.string().optional().describe("Customer email"),
       }),
-      execute: async (params) => {
-        return { ...params, executed: true, executedAt: new Date().toISOString() };
+      execute: async ({ subject, message, priority, channel, customerEmail }) => {
+        try {
+          const count = await sql`SELECT nextval('ticket_seq') as num`;
+          const ticketNumber = `DNT-${count[0].num}`;
+          const slaDue = new Date(Date.now() + (priority === "urgent" ? 3600000 : priority === "high" ? 7200000 : 14400000));
+          let customerId = null;
+          if (customerEmail) {
+            const cust = await sql`SELECT id FROM customers WHERE email ILIKE ${`%${customerEmail}%`} LIMIT 1`;
+            if (cust.length > 0) customerId = cust[0].id;
+          }
+          await sql`
+            INSERT INTO tickets (ticket_number, subject, message, status, priority, channel, customer_id, sla_status, sla_due, tags)
+            VALUES (${ticketNumber}, ${subject}, ${message}, 'open', ${priority}, ${channel}, ${customerId}, 'ok', ${slaDue.toISOString()}, ARRAY['ai-created'])
+          `;
+          return { created: true, ticketNumber, subject, priority, status: "open" };
+        } catch {
+          return { created: false, note: "Failed to create ticket" };
+        }
       },
     }),
   },
@@ -194,16 +259,40 @@ Route to the appropriate team based on skills and availability.`,
         reason: z.string().describe("Reason for escalation"),
         urgency: z.enum(["normal", "urgent", "critical"]).describe("Escalation urgency"),
       }),
-      execute: async (params) => params,
+      execute: async ({ team, agentId, reason, urgency }) => {
+        try {
+          if (agentId) {
+            await sql`UPDATE users SET status = 'busy' WHERE id = ${agentId} AND role = 'agent'`;
+          }
+          return { routed: true, team, agentId, reason, urgency, routedAt: new Date().toISOString() };
+        } catch {
+          return { routed: false, note: "Failed to route" };
+        }
+      },
     }),
     checkAvailability: tool({
       description: "Check agent/team availability",
       inputSchema: z.object({
-        available: z.boolean().describe("Whether agents are available"),
-        waitTime: z.string().optional().describe("Estimated wait time"),
-        nextAvailable: z.string().optional().describe("When next agent becomes available"),
+        team: z.string().optional().describe("Team to check"),
       }),
-      execute: async (params) => params,
+      execute: async ({ team }) => {
+        try {
+          let agents;
+          if (team) {
+            agents = await sql`SELECT id, name, status FROM users WHERE role = 'agent' AND team = ${team} AND status = 'active'`;
+          } else {
+            agents = await sql`SELECT id, name, status FROM users WHERE role = 'agent' AND status = 'active'`;
+          }
+          const available = agents.filter((a: Record<string, unknown>) => a.status === "active");
+          return {
+            available: available.length > 0,
+            count: available.length,
+            agents: available.map((a: Record<string, unknown>) => ({ id: a.id, name: a.name })),
+          };
+        } catch {
+          return { available: false, count: 0, agents: [] };
+        }
+      },
     }),
   },
 };
@@ -221,23 +310,57 @@ You must:
 5. Provide satisfaction predictions`,
   tools: {
     analyzeSentiment: tool({
-      description: "Analyze the sentiment of a message",
+      description: "Analyze the sentiment of a message and store it",
       inputSchema: z.object({
+        ticketId: z.string().optional().describe("Ticket ID to update"),
         sentiment: z.enum(["positive", "neutral", "negative", "angry", "frustrated"]),
         score: z.number().min(-1).max(1),
         emotions: z.array(z.string()).describe("Detected emotions"),
         triggers: z.array(z.string()).describe("What triggered this sentiment"),
       }),
-      execute: async (params) => params,
+      execute: async ({ ticketId, sentiment, score, emotions, triggers }) => {
+        try {
+          if (ticketId) {
+            await sql`
+              UPDATE tickets SET sentiment = ${sentiment}, sentiment_score = ${score}, updated_at = NOW()
+              WHERE id = ${ticketId}
+            `;
+          }
+          return { analyzed: true, ticketId, sentiment, score, emotions, triggers, analyzedAt: new Date().toISOString() };
+        } catch {
+          return { analyzed: false, sentiment, score };
+        }
+      },
     }),
     detectTrend: tool({
       description: "Detect sentiment trend over conversation",
       inputSchema: z.object({
+        ticketId: z.string().describe("Ticket to analyze"),
         trend: z.enum(["improving", "stable", "declining"]),
         changeRate: z.number().describe("Rate of sentiment change"),
         alertNeeded: z.boolean().describe("Whether an alert should be triggered"),
       }),
-      execute: async (params) => params,
+      execute: async ({ ticketId, trend, changeRate, alertNeeded }) => {
+        try {
+          if (alertNeeded) {
+            const messages = await sql`
+              SELECT sentiment, sentiment_score FROM tickets WHERE id = ${ticketId}
+            `;
+            return {
+              trendDetected: true,
+              ticketId,
+              trend,
+              changeRate,
+              alertTriggered: true,
+              currentSentiment: messages[0]?.sentiment,
+              detectedAt: new Date().toISOString(),
+            };
+          }
+          return { trendDetected: true, ticketId, trend, changeRate, alertTriggered: false };
+        } catch {
+          return { trendDetected: false, trend, changeRate };
+        }
+      },
     }),
   },
 };
@@ -264,15 +387,48 @@ You must:
       }),
       execute: async (params) => params,
     }),
-    forecastVolume: tool({
-      description: "Forecast future ticket volume",
-      inputSchema: z.object({
-        period: z.string().describe("Forecast period (e.g., 'next 7 days')"),
-        predicted: z.number().describe("Predicted ticket count"),
-        confidence: z.number().min(0).max(1),
-        factors: z.array(z.string()).describe("Factors influencing forecast"),
-      }),
-      execute: async (params) => params,
+    getAnalytics: tool({
+      description: "Get current support analytics and metrics",
+      inputSchema: z.object({}),
+      execute: async () => {
+        try {
+          const [total, open, pending, escalated, resolved, customers, recentTickets, channelStats] = await Promise.all([
+            sql`SELECT COUNT(*) as cnt FROM tickets`,
+            sql`SELECT COUNT(*) as cnt FROM tickets WHERE status = 'open'`,
+            sql`SELECT COUNT(*) as cnt FROM tickets WHERE status = 'pending'`,
+            sql`SELECT COUNT(*) as cnt FROM tickets WHERE status = 'escalated'`,
+            sql`SELECT COUNT(*) as cnt FROM tickets WHERE status = 'resolved'`,
+            sql`SELECT COUNT(*) as cnt FROM customers`,
+            sql`SELECT ticket_number, subject, status, priority, channel, created_at FROM tickets ORDER BY created_at DESC LIMIT 5`,
+            sql`SELECT channel, COUNT(*) as count FROM tickets GROUP BY channel`,
+          ]);
+          const totalNum = Number(total[0].cnt);
+          const resolvedNum = Number(resolved[0].cnt);
+          return {
+            totalTickets: totalNum,
+            openTickets: Number(open[0].cnt),
+            pendingTickets: Number(pending[0].cnt),
+            escalatedTickets: Number(escalated[0].cnt),
+            resolvedTickets: resolvedNum,
+            totalCustomers: Number(customers[0].cnt),
+            resolutionRate: totalNum > 0 ? `${Math.round((resolvedNum / totalNum) * 100)}%` : "N/A",
+            recentTickets: recentTickets.map((t: Record<string, unknown>) => ({
+              ticketNumber: t.ticket_number,
+              subject: t.subject,
+              status: t.status,
+              priority: t.priority,
+              channel: t.channel,
+              createdAt: t.created_at,
+            })),
+            channelBreakdown: channelStats.map((c: Record<string, unknown>) => ({
+              channel: c.channel,
+              count: Number(c.count),
+            })),
+          };
+        } catch {
+          return { note: "Analytics unavailable" };
+        }
+      },
     }),
   },
 };
