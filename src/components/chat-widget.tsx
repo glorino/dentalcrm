@@ -132,10 +132,11 @@ function ChatWidgetInner() {
     <>
       {/* Floating Buttons */}
       {!isOpen && !voiceMode && (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+        <>
+          {/* Voice button - bottom left */}
           <button
             onClick={() => setVoiceMode(true)}
-            className="h-14 w-14 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 group"
+            className="fixed bottom-6 left-6 z-[9999] h-14 w-14 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 group"
             style={{ boxShadow: "0 10px 25px -5px rgba(16, 185, 129, 0.4)" }}
             aria-label="Open voice assistant"
           >
@@ -146,9 +147,10 @@ function ChatWidgetInner() {
               <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75" />
             </span>
           </button>
+          {/* Chat button - bottom right */}
           <button
             onClick={() => setIsOpen(true)}
-            className={`h-14 w-14 rounded-full bg-gradient-to-br ${colors.gradient} shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 group`}
+            className={`fixed bottom-6 right-6 z-[9999] h-14 w-14 rounded-full bg-gradient-to-br ${colors.gradient} shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:scale-110 group`}
             style={{ boxShadow: `0 10px 25px -5px ${colors.primary}40` }}
             aria-label="Open chat"
           >
@@ -159,12 +161,12 @@ function ChatWidgetInner() {
               <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75" />
             </span>
           </button>
-        </div>
+        </>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-[400px] h-[600px] max-h-[calc(100vh-48px)] rounded-2xl bg-white shadow-2xl border border-gray-200 flex flex-col overflow-hidden" style={{ animation: "chatSlideUp 0.3s ease-out" }}>
+        <div className="fixed bottom-6 right-6 z-[9999] w-[400px] h-[600px] max-h-[calc(100vh-48px)] rounded-2xl bg-white shadow-2xl border border-gray-200 flex flex-col overflow-hidden" style={{ animation: "chatSlideUp 0.3s ease-out" }}>
           {/* Header */}
           <div className={`bg-gradient-to-r ${colors.gradient} px-5 py-4 flex items-center justify-between shrink-0 relative overflow-hidden`}>
             <div className="absolute inset-0 opacity-10">
