@@ -4,6 +4,8 @@ import { z } from "zod";
 import { sql } from "@/lib/db";
 import { getIndustryFromEnv, getIndustry } from "@/lib/industry/config";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: Request) {
   const { message, history = [] } = await req.json();
   const apiKey = process.env.OPENAI_API_KEY;
