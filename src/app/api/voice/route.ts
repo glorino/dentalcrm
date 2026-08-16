@@ -1,8 +1,10 @@
 import { openai } from "@ai-sdk/openai";
-import { generateText, tool } from "ai";
+import { generateText, tool, stepCountIs } from "ai";
 import { z } from "zod";
 import { sql } from "@/lib/db";
 import { getIndustryFromEnv, getIndustry } from "@/lib/industry/config";
+import { lookupPatient, findOrCreatePatient, getPatientHistory } from "@/lib/db/patients";
+import { getDoctors, getAvailableSlots, createAppointment } from "@/lib/db/appointments";
 
 export const dynamic = "force-dynamic";
 
@@ -19,34 +21,46 @@ export async function POST(req: Request) {
   const slug = getIndustryFromEnv();
   const config = getIndustry(slug);
 
-  const voiceSystemPrompt = `You are a voice assistant for ${config.name}, a ${config.description}.
+  const voiceSystemPrompt = `You are an intelligent AI voice assistant for ${config.name}, a dental clinic support platform.
 
 CRITICAL VOICE RULES:
 - Keep responses SHORT: 1-3 sentences max for simple questions, up to 5 sentences for complex ones
 - NEVER use markdown, bullet points, or formatting — this is voice, not text
 - Speak naturally like a real person having a conversation
 - Use conversational transitions: "Well," "So," "Actually," "Let me check that for you"
-- Be warm, friendly, and professional — like a helpful receptionist
+- Be warm, friendly, and professional — like a helpful dental receptionist
+- Dental patients may be anxious — be especially empathetic and reassuring
 - If you need to list things, say them naturally: "First... Second... Third..."
 - Never say "asterisk" or "dash" or read out any formatting
 - For complex information, summarize briefly and offer to help further
 - Always end with something helpful or a question to keep the conversation going
 
-AVAILABLE TOOLS:
-- searchKnowledgeBase: Find articles about dental topics
-- lookupCustomer: Look up patient by email or name
-- createTicket: Create a support ticket
-- lookupTicket: Check ticket status by number
+YOUR CAPABILITIES:
+1. Look up patients by email, phone, or name
+2. View patient history (past tickets, appointments)
+3. Schedule dental appointments with available doctors
+4. Answer common dental questions
+5. Create support tickets for complex issues
+6. Escalate to human agents when needed
+
+APPOINTMENT TYPES AVAILABLE:
+General Checkup, Teeth Cleaning, Filling, Root Canal, Extraction, Orthodontic Consultation, Teeth Whitening, Emergency Dental Care, Follow-up Visit
+
+WORKFLOW:
+- First, identify the patient (ask for email, phone, or name)
+- Then help with their request (schedule appointment, check history, etc.)
+- Confirm details before taking actions
+- Always be helpful and reassuring
 
 INDUSTRY CONTEXT:
 - Company: ${config.name}
 - Contact: ${config.contact.email}
 - All currency is in Naira (₦)
 
-Be concise. Be helpful. Be human.`;
+Be concise. Be helpful. Be human. Be reassuring.`;
 
   try {
-    const { text } = await generateText({
+    const { text, toolResults } = await generateText({
       model: openai("gpt-4o"),
       system: voiceSystemPrompt,
       messages: [
@@ -57,6 +71,115 @@ Be concise. Be helpful. Be human.`;
         { role: "user" as const, content: message },
       ],
       tools: {
+        lookupPatient: tool({
+          description: "Look up a patient by email, phone number, or name",
+          inputSchema: z.object({
+            identifier: z.string().describe("Email, phone number, or patient name"),
+          }),
+          execute: async ({ identifier }) => {
+            const patient = await lookupPatient(identifier);
+            if (!patient) return { found: false, identifier };
+            return {
+              found: true,
+              id: patient.id,
+              name: patient.name,
+              email: patient.email,
+              phone: patient.phone,
+              totalTickets: patient.total_tickets,
+            };
+          },
+        }),
+
+        getPatientHistory: tool({
+          description: "Get patient history including tickets and appointments",
+          inputSchema: z.object({
+            patientId: z.string().describe("Patient ID"),
+          }),
+          execute: async ({ patientId }) => {
+            const history = await getPatientHistory(patientId);
+            return {
+              recentTickets: history.recentTickets.slice(0, 3).map(t => ({
+                number: t.ticket_number,
+                subject: t.subject,
+                status: t.status,
+              })),
+              upcomingAppointments: history.upcomingAppointments.slice(0, 2).map(a => ({
+                number: a.appointment_number,
+                type: a.appointment_type,
+                date: a.scheduled_at,
+                doctor: a.doctor_name,
+              })),
+              totalTickets: history.totalTickets,
+              lastVisit: history.lastVisit,
+            };
+          },
+        }),
+
+        getDoctors: tool({
+          description: "Get list of available dental doctors and their specialties",
+          inputSchema: z.object({
+            specialty: z.string().optional().describe("Filter by specialty"),
+          }),
+          execute: async ({ specialty }) => {
+            const doctors = await getDoctors(specialty);
+            return {
+              doctors: doctors.map(d => ({
+                id: d.id,
+                name: d.name,
+                specialty: d.specialty,
+              })),
+            };
+          },
+        }),
+
+        getAvailableSlots: tool({
+          description: "Get available appointment slots for a doctor on a specific date",
+          inputSchema: z.object({
+            doctorId: z.string().describe("Doctor ID"),
+            date: z.string().describe("Date in YYYY-MM-DD format"),
+          }),
+          execute: async ({ doctorId, date }) => {
+            const slots = await getAvailableSlots(doctorId, date);
+            return { slots, date };
+          },
+        }),
+
+        scheduleAppointment: tool({
+          description: "Schedule a dental appointment",
+          inputSchema: z.object({
+            patientId: z.string().describe("Patient ID"),
+            doctorId: z.string().describe("Doctor ID"),
+            appointmentType: z.string().describe("Type of appointment"),
+            scheduledAt: z.string().describe("DateTime in ISO format"),
+            reason: z.string().optional().describe("Reason for visit"),
+          }),
+          execute: async ({ patientId, doctorId, appointmentType, scheduledAt, reason }) => {
+            const patient = await lookupPatient(patientId);
+            const doctor = (await sql`SELECT * FROM doctors WHERE id = ${doctorId} LIMIT 1`)[0];
+
+            if (!patient || !doctor) return { success: false, error: "Patient or doctor not found" };
+
+            const apt = await createAppointment({
+              customerId: patientId,
+              doctorId,
+              appointmentType,
+              scheduledAt,
+              reason,
+              channel: "voice",
+              aiConfidence: 0.95,
+            });
+
+            return {
+              success: true,
+              appointmentNumber: apt.appointment_number,
+              doctorName: doctor.name,
+              specialty: doctor.specialty,
+              date: scheduledAt,
+              patientName: patient.name,
+            };
+          },
+        }),
+
         searchKnowledgeBase: tool({
           description: "Search the knowledge base for dental articles",
           inputSchema: z.object({
@@ -82,58 +205,24 @@ Be concise. Be helpful. Be human.`;
             }
           },
         }),
-        lookupCustomer: tool({
-          description: "Look up a patient by email or name",
-          inputSchema: z.object({
-            email: z.string().optional().describe("Patient email"),
-            name: z.string().optional().describe("Patient name"),
-          }),
-          execute: async ({ email, name }) => {
-            try {
-              let customers;
-              if (email) {
-                customers = await sql`SELECT id, name, email, phone, plan, total_tickets FROM customers WHERE email ILIKE ${`%${email}%`} LIMIT 1`;
-              } else if (name) {
-                customers = await sql`SELECT id, name, email, phone, plan, total_tickets FROM customers WHERE name ILIKE ${`%${name}%`} LIMIT 1`;
-              } else {
-                return { found: false };
-              }
-              if (customers.length === 0) return { found: false };
-              const c = customers[0];
-              return {
-                found: true,
-                name: c.name,
-                email: c.email,
-                phone: c.phone,
-                plan: c.plan,
-                totalTickets: c.total_tickets,
-              };
-            } catch {
-              return { found: false };
-            }
-          },
-        }),
+
         createTicket: tool({
-          description: "Create a support ticket",
+          description: "Create a support ticket for complex issues",
           inputSchema: z.object({
+            patientId: z.string().describe("Patient ID"),
             subject: z.string().describe("Ticket subject"),
             message: z.string().describe("Ticket description"),
             priority: z.enum(["low", "medium", "high", "urgent"]).describe("Priority"),
-            customerEmail: z.string().optional().describe("Customer email"),
           }),
-          execute: async ({ subject, message, priority, customerEmail }) => {
+          execute: async ({ patientId, subject, message, priority }) => {
             try {
               const count = await sql`SELECT nextval('ticket_seq') as num`;
               const ticketNumber = `DNT-${count[0].num}`;
               const slaDue = new Date(Date.now() + (priority === "urgent" ? 3600000 : priority === "high" ? 7200000 : 14400000));
-              let customerId = null;
-              if (customerEmail) {
-                const cust = await sql`SELECT id FROM customers WHERE email ILIKE ${`%${customerEmail}%`} LIMIT 1`;
-                if (cust.length > 0) customerId = cust[0].id;
-              }
+
               await sql`
-                INSERT INTO tickets (ticket_number, subject, message, status, priority, channel, customer_id, sla_status, sla_due, tags)
-                VALUES (${ticketNumber}, ${subject}, ${message}, 'open', ${priority}, 'voice', ${customerId}, 'ok', ${slaDue.toISOString()}, ARRAY['voice-agent'])
+                INSERT INTO tickets (ticket_number, subject, message, status, priority, channel, customer_id, sla_status, sla_due, tags, ai_confidence)
+                VALUES (${ticketNumber}, ${subject}, ${message}, 'open', ${priority}, 'voice', ${patientId}, 'ok', ${slaDue.toISOString()}, ARRAY['voice-agent', 'ai-created'], 90)
               `;
               return { created: true, ticketNumber };
             } catch {
@@ -141,35 +230,19 @@ Be concise. Be helpful. Be human.`;
             }
           },
         }),
-        lookupTicket: tool({
-          description: "Look up a ticket by number",
+
+        escalateToHuman: tool({
+          description: "Escalate to a human agent when you cannot resolve the issue",
           inputSchema: z.object({
-            ticketNumber: z.string().describe("Ticket number like DNT-1234"),
+            reason: z.string().describe("Reason for escalation"),
+            urgency: z.enum(["normal", "urgent", "critical"]).describe("Urgency level"),
           }),
-          execute: async ({ ticketNumber }) => {
-            try {
-              const tickets = await sql`
-                SELECT t.ticket_number, t.subject, t.status, t.priority, t.sla_status, c.name as customer_name
-                FROM tickets t LEFT JOIN customers c ON t.customer_id = c.id
-                WHERE t.ticket_number ILIKE ${`%${ticketNumber}%`} LIMIT 1
-              `;
-              if (tickets.length === 0) return { found: false };
-              const t = tickets[0];
-              return {
-                found: true,
-                ticketNumber: t.ticket_number,
-                subject: t.subject,
-                status: t.status,
-                priority: t.priority,
-                slaStatus: t.sla_status,
-                customerName: t.customer_name,
-              };
-            } catch {
-              return { found: false };
-            }
+          execute: async ({ reason, urgency }) => {
+            return { escalated: true, reason, urgency, message: "Transferring you to a human agent. Please hold." };
           },
         }),
       },
+      stopWhen: stepCountIs(10),
     });
 
     return Response.json({ reply: text });

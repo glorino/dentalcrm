@@ -102,6 +102,40 @@ async function seed() {
     }
   }
 
+  // Create doctors
+  const demoDoctors = [
+    { name: "Dr. Adebayo Ogundimu", email: "adebayo@dentalcrm.com", phone: "+2348012345678", specialty: "General Dentistry", bio: "Experienced general dentist with 15+ years in patient care." },
+    { name: "Dr. Fatima Al-Rashid", email: "fatima@dentalcrm.com", phone: "+2348023456789", specialty: "Orthodontics", bio: "Specialist in braces, aligners, and bite correction." },
+    { name: "Dr. Chen Wei", email: "chen@dentalcrm.com", phone: "+2348034567890", specialty: "Oral Surgery", bio: "Expert in extractions, implants, and surgical procedures." },
+    { name: "Dr. Amara Okafor", email: "amara@dentalcrm.com", phone: "+2348045678901", specialty: "Pediatric Dentistry", bio: "Gentle care for children and teenagers." },
+    { name: "Dr. James Adekunle", email: "james@dentalcrm.com", phone: "+2348056789012", specialty: "Endodontics", bio: "Root canal specialist with advanced techniques." },
+  ];
+
+  for (const doctor of demoDoctors) {
+    try {
+      const result = await sql`
+        INSERT INTO doctors (name, email, phone, specialty, bio)
+        VALUES (${doctor.name}, ${doctor.email}, ${doctor.phone}, ${doctor.specialty}, ${doctor.bio})
+        ON CONFLICT (email) DO NOTHING
+        RETURNING id
+      `;
+
+      if (result.length > 0) {
+        const doctorId = result[0].id;
+        // Add default schedule (Mon-Fri, 9AM-5PM)
+        for (let day = 1; day <= 5; day++) {
+          await sql`
+            INSERT INTO doctor_schedules (doctor_id, day_of_week, start_time, end_time, is_available)
+            VALUES (${doctorId}, ${day}, '09:00', '17:00', TRUE)
+          `;
+        }
+        console.log(`Created doctor: ${doctor.name}`);
+      }
+    } catch (e) {
+      console.log(`Doctor ${doctor.email} already exists`);
+    }
+  }
+
   console.log("Seed complete!");
   console.log("\nDemo Logins:");
   console.log("Admin:    admin@supportflow.ai / admin123");

@@ -145,6 +145,82 @@ export async function initDB() {
   await s`
     CREATE SEQUENCE IF NOT EXISTS ticket_seq START WITH 1235 INCREMENT BY 1
   `;
+
+  // Doctors table
+  await s`
+    CREATE TABLE IF NOT EXISTS doctors (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      phone VARCHAR(50),
+      specialty VARCHAR(255) NOT NULL,
+      bio TEXT,
+      avatar_url VARCHAR(500),
+      consultation_duration_minutes INT DEFAULT 30,
+      status VARCHAR(20) DEFAULT 'active',
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  // Doctor availability schedules
+  await s`
+    CREATE TABLE IF NOT EXISTS doctor_schedules (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      doctor_id UUID REFERENCES doctors(id) ON DELETE CASCADE,
+      day_of_week INT NOT NULL CHECK (day_of_week >= 0 AND day_of_week <= 6),
+      start_time TIME NOT NULL,
+      end_time TIME NOT NULL,
+      is_available BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  // Appointments table
+  await s`
+    CREATE TABLE IF NOT EXISTS appointments (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      appointment_number VARCHAR(20) UNIQUE NOT NULL,
+      customer_id UUID REFERENCES customers(id),
+      doctor_id UUID REFERENCES doctors(id),
+      ticket_id UUID REFERENCES tickets(id),
+      appointment_type VARCHAR(100) NOT NULL,
+      reason TEXT,
+      scheduled_at TIMESTAMP NOT NULL,
+      duration_minutes INT DEFAULT 30,
+      status VARCHAR(20) DEFAULT 'scheduled',
+      notes TEXT,
+      ai_confidence DECIMAL(3,2) DEFAULT 0,
+      channel VARCHAR(50) DEFAULT 'self-service',
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW(),
+      cancelled_at TIMESTAMP,
+      completed_at TIMESTAMP
+    )
+  `;
+
+  // Appointment sequence
+  await s`
+    CREATE SEQUENCE IF NOT EXISTS appointment_seq START WITH 1001 INCREMENT BY 1
+  `;
+
+  // AI conversation log
+  await s`
+    CREATE TABLE IF NOT EXISTS ai_conversations (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      customer_id UUID REFERENCES customers(id),
+      channel VARCHAR(50) NOT NULL,
+      messages JSONB DEFAULT '[]',
+      resolution_status VARCHAR(20) DEFAULT 'pending',
+      escalated BOOLEAN DEFAULT FALSE,
+      escalation_reason TEXT,
+      ticket_id UUID REFERENCES tickets(id),
+      appointment_id UUID REFERENCES appointments(id),
+      duration_seconds INT DEFAULT 0,
+      created_at TIMESTAMP DEFAULT NOW(),
+      resolved_at TIMESTAMP
+    )
+  `;
 }
 
 export async function generateTicketNumber(): Promise<string> {
