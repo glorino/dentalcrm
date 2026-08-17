@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 async function safeSql(query: string, params?: unknown[]): Promise<any[]> {
   try {
     const { sql } = await import("@/lib/db");
-    if (params) return await sql(query, params);
+    if (params && params.length > 0) return await sql(query, ...params);
     return await sql(query);
   } catch (e) {
     console.error("DB error:", e);
@@ -298,10 +298,12 @@ Be concise. Be helpful. Be human. Be reassuring.`;
     });
 
     return Response.json({ reply: text });
-  } catch (error) {
-    console.error("Voice API error:", error);
+  } catch (error: any) {
+    console.error("Voice API error:", error?.message, error?.cause);
+    const detail = error?.message || "Unknown error";
     return Response.json({
       reply: "I'm sorry, I encountered an issue. Could you please repeat that?",
+      error: process.env.NODE_ENV === "development" ? detail : undefined,
     });
   }
 }
