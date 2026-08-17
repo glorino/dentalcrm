@@ -1,5 +1,5 @@
-import { sql } from "../lib/db";
-import { hashPassword } from "../lib/auth";
+import { sql } from "../src/lib/db";
+import { hashPassword } from "../src/lib/auth";
 
 const demoUsers = [
   { email: "admin@supportflow.ai", password: "admin123", name: "Alex Johnson", role: "super_admin", team: "AI Operations" },
