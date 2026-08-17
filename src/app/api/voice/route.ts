@@ -5,11 +5,14 @@ import { getIndustryFromEnv, getIndustry } from "@/lib/industry/config";
 
 export const dynamic = "force-dynamic";
 
-async function safeSql(query: string, params?: unknown[]): Promise<any[]> {
+async function dbQuery(query: string, params?: unknown[]): Promise<any[]> {
   try {
-    const { sql } = await import("@/lib/db");
-    if (params && params.length > 0) return await sql(query, ...params);
-    return await sql(query);
+    const neon = (await import("@neondatabase/serverless")).neon;
+    const url = process.env.DATABASE_URL;
+    if (!url) return [];
+    const sql = neon(url);
+    const result = params ? await sql.query(query, params) : await sql.query(query);
+    return result as any[];
   } catch (e) {
     console.error("DB error:", e);
     return [];
@@ -85,9 +88,10 @@ Be concise. Be helpful. Be human. Be reassuring.`;
           }),
           execute: async ({ identifier }) => {
             try {
-              const results = await safeSql(
+              const like = `%${identifier}%`;
+              const results = await dbQuery(
                 `SELECT id, name, email, phone, total_tickets FROM customers WHERE email ILIKE $1 OR phone ILIKE $1 OR name ILIKE $1 LIMIT 1`,
-                [`%${identifier}%`]
+                [like]
               );
               if (results.length === 0) return { found: false, identifier };
               const p = results[0];
@@ -105,17 +109,17 @@ Be concise. Be helpful. Be human. Be reassuring.`;
           }),
           execute: async ({ patientId }) => {
             try {
-              const tickets = await safeSql(
+              const tickets = await dbQuery(
                 `SELECT ticket_number, subject, status FROM tickets WHERE customer_id = $1 ORDER BY created_at DESC LIMIT 3`,
                 [patientId]
               );
-              const total = await safeSql(
+              const total = await dbQuery(
                 `SELECT COUNT(*) as cnt FROM tickets WHERE customer_id = $1`,
                 [patientId]
               );
               let appointments: any[] = [];
               try {
-                appointments = await safeSql(
+                appointments = await dbQuery(
                   `SELECT a.appointment_number, a.appointment_type, a.scheduled_at, d.name as doctor_name
                    FROM appointments a JOIN doctors d ON a.doctor_id = d.id
                    WHERE a.customer_id = $1 AND a.scheduled_at >= NOW() AND a.status IN ('scheduled','confirmed')
@@ -143,12 +147,13 @@ Be concise. Be helpful. Be human. Be reassuring.`;
             try {
               let results;
               if (specialty) {
-                results = await safeSql(
+                const like = `%${specialty}%`;
+                results = await dbQuery(
                   `SELECT id, name, specialty FROM doctors WHERE status = 'active' AND specialty ILIKE $1 ORDER BY name`,
-                  [`%${specialty}%`]
+                  [like]
                 );
               } else {
-                results = await safeSql(
+                results = await dbQuery(
                   `SELECT id, name, specialty FROM doctors WHERE status = 'active' ORDER BY name`
                 );
               }
@@ -169,14 +174,14 @@ Be concise. Be helpful. Be human. Be reassuring.`;
             try {
               const dateObj = new Date(date);
               const dayOfWeek = dateObj.getDay();
-              const schedule = await safeSql(
+              const schedule = await dbQuery(
                 `SELECT start_time, end_time FROM doctor_schedules WHERE doctor_id = $1 AND day_of_week = $2 AND is_available = TRUE`,
                 [doctorId, dayOfWeek]
               );
               if (schedule.length === 0) return { slots: [], date, message: "No availability on this date" };
-              const doctor = await safeSql(`SELECT consultation_duration_minutes FROM doctors WHERE id = $1 LIMIT 1`, [doctorId]);
+              const doctor = await dbQuery(`SELECT consultation_duration_minutes FROM doctors WHERE id = $1 LIMIT 1`, [doctorId]);
               const duration = doctor[0]?.consultation_duration_minutes || 30;
-              const existing = await safeSql(
+              const existing = await dbQuery(
                 `SELECT scheduled_at, duration_minutes FROM appointments WHERE doctor_id = $1 AND DATE(scheduled_at) = $2 AND status IN ('scheduled','confirmed')`,
                 [doctorId, date]
               );
@@ -216,12 +221,12 @@ Be concise. Be helpful. Be human. Be reassuring.`;
           }),
           execute: async ({ patientId, doctorId, appointmentType, scheduledAt, reason }) => {
             try {
-              const patient = await safeSql(`SELECT id, name, email FROM customers WHERE id = $1 LIMIT 1`, [patientId]);
-              const doctor = await safeSql(`SELECT id, name, specialty FROM doctors WHERE id = $1 LIMIT 1`, [doctorId]);
+              const patient = await dbQuery(`SELECT id, name, email FROM customers WHERE id = $1 LIMIT 1`, [patientId]);
+              const doctor = await dbQuery(`SELECT id, name, specialty FROM doctors WHERE id = $1 LIMIT 1`, [doctorId]);
               if (!patient[0] || !doctor[0]) return { success: false, error: "Patient or doctor not found" };
-              const count = await safeSql(`SELECT nextval('appointment_seq') as num`);
+              const count = await dbQuery(`SELECT nextval('appointment_seq') as num`);
               const aptNum = `APT-${count[0]?.num || Date.now()}`;
-              await safeSql(
+              await dbQuery(
                 `INSERT INTO appointments (appointment_number, customer_id, doctor_id, appointment_type, reason, scheduled_at, status, channel, ai_confidence)
                  VALUES ($1, $2, $3, $4, $5, $6, 'scheduled', 'voice', 0.95)`,
                 [aptNum, patientId, doctorId, appointmentType, reason || null, scheduledAt]
@@ -247,9 +252,10 @@ Be concise. Be helpful. Be human. Be reassuring.`;
           }),
           execute: async ({ query }) => {
             try {
-              const results = await safeSql(
+              const like = `%${query}%`;
+              const results = await dbQuery(
                 `SELECT title, content FROM knowledge_articles WHERE status = 'published' AND (title ILIKE $1 OR content ILIKE $1) ORDER BY views DESC LIMIT 3`,
-                [`%${query}%`]
+                [like]
               );
               return { results: results.map((r: any) => ({ title: r.title, content: String(r.content).slice(0, 200) })) };
             } catch {
@@ -268,10 +274,10 @@ Be concise. Be helpful. Be human. Be reassuring.`;
           }),
           execute: async ({ patientId, subject, message, priority }) => {
             try {
-              const count = await safeSql(`SELECT nextval('ticket_seq') as num`);
+              const count = await dbQuery(`SELECT nextval('ticket_seq') as num`);
               const ticketNumber = `DNT-${count[0]?.num || Date.now()}`;
               const slaDue = new Date(Date.now() + (priority === "urgent" ? 3600000 : priority === "high" ? 7200000 : 14400000));
-              await safeSql(
+              await dbQuery(
                 `INSERT INTO tickets (ticket_number, subject, message, status, priority, channel, customer_id, sla_status, sla_due, tags, ai_confidence)
                  VALUES ($1, $2, $3, 'open', $4, 'voice', $5, 'ok', $6, ARRAY['voice-agent','ai-created'], 90)`,
                 [ticketNumber, subject, message, priority, patientId, slaDue.toISOString()]
@@ -300,10 +306,8 @@ Be concise. Be helpful. Be human. Be reassuring.`;
     return Response.json({ reply: text });
   } catch (error: any) {
     console.error("Voice API error:", error?.message, error?.cause);
-    const detail = error?.message || "Unknown error";
     return Response.json({
       reply: "I'm sorry, I encountered an issue. Could you please repeat that?",
-      error: process.env.NODE_ENV === "development" ? detail : undefined,
     });
   }
 }
