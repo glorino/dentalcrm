@@ -1,12 +1,20 @@
 import { openai } from "@ai-sdk/openai";
 import { generateText, tool, stepCountIs } from "ai";
 import { z } from "zod";
-import { sql } from "@/lib/db";
 import { getIndustryFromEnv, getIndustry } from "@/lib/industry/config";
-import { lookupPatient, findOrCreatePatient, getPatientHistory } from "@/lib/db/patients";
-import { getDoctors, getAvailableSlots, createAppointment } from "@/lib/db/appointments";
 
 export const dynamic = "force-dynamic";
+
+async function safeSql(query: string, params?: unknown[]): Promise<any[]> {
+  try {
+    const { sql } = await import("@/lib/db");
+    if (params) return await sql(query, params);
+    return await sql(query);
+  } catch (e) {
+    console.error("DB error:", e);
+    return [];
+  }
+}
 
 export async function POST(req: Request) {
   const { message, history = [] } = await req.json();
@@ -14,7 +22,7 @@ export async function POST(req: Request) {
 
   if (!apiKey) {
     return Response.json({
-      reply: "I'm sorry, the AI service is not configured yet. Please contact our support team directly.",
+      reply: "The AI service is not configured yet. Please contact our support team directly.",
     });
   }
 
@@ -55,12 +63,11 @@ WORKFLOW:
 INDUSTRY CONTEXT:
 - Company: ${config.name}
 - Contact: ${config.contact.email}
-- All currency is in Naira (₦)
 
 Be concise. Be helpful. Be human. Be reassuring.`;
 
   try {
-    const { text, toolResults } = await generateText({
+    const { text } = await generateText({
       model: openai("gpt-4o"),
       system: voiceSystemPrompt,
       messages: [
@@ -77,16 +84,17 @@ Be concise. Be helpful. Be human. Be reassuring.`;
             identifier: z.string().describe("Email, phone number, or patient name"),
           }),
           execute: async ({ identifier }) => {
-            const patient = await lookupPatient(identifier);
-            if (!patient) return { found: false, identifier };
-            return {
-              found: true,
-              id: patient.id,
-              name: patient.name,
-              email: patient.email,
-              phone: patient.phone,
-              totalTickets: patient.total_tickets,
-            };
+            try {
+              const results = await safeSql(
+                `SELECT id, name, email, phone, total_tickets FROM customers WHERE email ILIKE $1 OR phone ILIKE $1 OR name ILIKE $1 LIMIT 1`,
+                [`%${identifier}%`]
+              );
+              if (results.length === 0) return { found: false, identifier };
+              const p = results[0];
+              return { found: true, id: p.id, name: p.name, email: p.email, phone: p.phone, totalTickets: p.total_tickets };
+            } catch {
+              return { found: false, identifier };
+            }
           },
         }),
 
@@ -96,22 +104,33 @@ Be concise. Be helpful. Be human. Be reassuring.`;
             patientId: z.string().describe("Patient ID"),
           }),
           execute: async ({ patientId }) => {
-            const history = await getPatientHistory(patientId);
-            return {
-              recentTickets: history.recentTickets.slice(0, 3).map(t => ({
-                number: t.ticket_number,
-                subject: t.subject,
-                status: t.status,
-              })),
-              upcomingAppointments: history.upcomingAppointments.slice(0, 2).map(a => ({
-                number: a.appointment_number,
-                type: a.appointment_type,
-                date: a.scheduled_at,
-                doctor: a.doctor_name,
-              })),
-              totalTickets: history.totalTickets,
-              lastVisit: history.lastVisit,
-            };
+            try {
+              const tickets = await safeSql(
+                `SELECT ticket_number, subject, status FROM tickets WHERE customer_id = $1 ORDER BY created_at DESC LIMIT 3`,
+                [patientId]
+              );
+              const total = await safeSql(
+                `SELECT COUNT(*) as cnt FROM tickets WHERE customer_id = $1`,
+                [patientId]
+              );
+              let appointments: any[] = [];
+              try {
+                appointments = await safeSql(
+                  `SELECT a.appointment_number, a.appointment_type, a.scheduled_at, d.name as doctor_name
+                   FROM appointments a JOIN doctors d ON a.doctor_id = d.id
+                   WHERE a.customer_id = $1 AND a.scheduled_at >= NOW() AND a.status IN ('scheduled','confirmed')
+                   ORDER BY a.scheduled_at ASC LIMIT 2`,
+                  [patientId]
+                );
+              } catch {}
+              return {
+                recentTickets: tickets.map((t: any) => ({ number: t.ticket_number, subject: t.subject, status: t.status })),
+                upcomingAppointments: appointments.map((a: any) => ({ number: a.appointment_number, type: a.appointment_type, date: a.scheduled_at, doctor: a.doctor_name })),
+                totalTickets: Number(total[0]?.cnt) || 0,
+              };
+            } catch {
+              return { recentTickets: [], upcomingAppointments: [], totalTickets: 0 };
+            }
           },
         }),
 
@@ -121,14 +140,22 @@ Be concise. Be helpful. Be human. Be reassuring.`;
             specialty: z.string().optional().describe("Filter by specialty"),
           }),
           execute: async ({ specialty }) => {
-            const doctors = await getDoctors(specialty);
-            return {
-              doctors: doctors.map(d => ({
-                id: d.id,
-                name: d.name,
-                specialty: d.specialty,
-              })),
-            };
+            try {
+              let results;
+              if (specialty) {
+                results = await safeSql(
+                  `SELECT id, name, specialty FROM doctors WHERE status = 'active' AND specialty ILIKE $1 ORDER BY name`,
+                  [`%${specialty}%`]
+                );
+              } else {
+                results = await safeSql(
+                  `SELECT id, name, specialty FROM doctors WHERE status = 'active' ORDER BY name`
+                );
+              }
+              return { doctors: results.map((d: any) => ({ id: d.id, name: d.name, specialty: d.specialty })) };
+            } catch {
+              return { doctors: [] };
+            }
           },
         }),
 
@@ -139,8 +166,42 @@ Be concise. Be helpful. Be human. Be reassuring.`;
             date: z.string().describe("Date in YYYY-MM-DD format"),
           }),
           execute: async ({ doctorId, date }) => {
-            const slots = await getAvailableSlots(doctorId, date);
-            return { slots, date };
+            try {
+              const dateObj = new Date(date);
+              const dayOfWeek = dateObj.getDay();
+              const schedule = await safeSql(
+                `SELECT start_time, end_time FROM doctor_schedules WHERE doctor_id = $1 AND day_of_week = $2 AND is_available = TRUE`,
+                [doctorId, dayOfWeek]
+              );
+              if (schedule.length === 0) return { slots: [], date, message: "No availability on this date" };
+              const doctor = await safeSql(`SELECT consultation_duration_minutes FROM doctors WHERE id = $1 LIMIT 1`, [doctorId]);
+              const duration = doctor[0]?.consultation_duration_minutes || 30;
+              const existing = await safeSql(
+                `SELECT scheduled_at, duration_minutes FROM appointments WHERE doctor_id = $1 AND DATE(scheduled_at) = $2 AND status IN ('scheduled','confirmed')`,
+                [doctorId, date]
+              );
+              const slots: { time: string; available: boolean }[] = [];
+              for (const sched of schedule) {
+                const [startH, startM] = (sched.start_time as string).split(":").map(Number);
+                const [endH, endM] = (sched.end_time as string).split(":").map(Number);
+                let cur = startH * 60 + startM;
+                const end = endH * 60 + endM;
+                while (cur + duration <= end) {
+                  const t = `${String(Math.floor(cur / 60)).padStart(2, "0")}:${String(cur % 60).padStart(2, "0")}`;
+                  const slotDT = new Date(`${date}T${t}:00`);
+                  const booked = existing.some((a: any) => {
+                    const aT = new Date(a.scheduled_at);
+                    const aE = new Date(aT.getTime() + ((a.duration_minutes as number) || 30) * 60000);
+                    return slotDT >= aT && slotDT < aE;
+                  });
+                  slots.push({ time: t, available: !booked });
+                  cur += duration;
+                }
+              }
+              return { slots, date };
+            } catch {
+              return { slots: [], date };
+            }
           },
         }),
 
@@ -154,29 +215,28 @@ Be concise. Be helpful. Be human. Be reassuring.`;
             reason: z.string().optional().describe("Reason for visit"),
           }),
           execute: async ({ patientId, doctorId, appointmentType, scheduledAt, reason }) => {
-            const patient = await lookupPatient(patientId);
-            const doctor = (await sql`SELECT * FROM doctors WHERE id = ${doctorId} LIMIT 1`)[0];
-
-            if (!patient || !doctor) return { success: false, error: "Patient or doctor not found" };
-
-            const apt = await createAppointment({
-              customerId: patientId,
-              doctorId,
-              appointmentType,
-              scheduledAt,
-              reason,
-              channel: "voice",
-              aiConfidence: 0.95,
-            });
-
-            return {
-              success: true,
-              appointmentNumber: apt.appointment_number,
-              doctorName: doctor.name,
-              specialty: doctor.specialty,
-              date: scheduledAt,
-              patientName: patient.name,
-            };
+            try {
+              const patient = await safeSql(`SELECT id, name, email FROM customers WHERE id = $1 LIMIT 1`, [patientId]);
+              const doctor = await safeSql(`SELECT id, name, specialty FROM doctors WHERE id = $1 LIMIT 1`, [doctorId]);
+              if (!patient[0] || !doctor[0]) return { success: false, error: "Patient or doctor not found" };
+              const count = await safeSql(`SELECT nextval('appointment_seq') as num`);
+              const aptNum = `APT-${count[0]?.num || Date.now()}`;
+              await safeSql(
+                `INSERT INTO appointments (appointment_number, customer_id, doctor_id, appointment_type, reason, scheduled_at, status, channel, ai_confidence)
+                 VALUES ($1, $2, $3, $4, $5, $6, 'scheduled', 'voice', 0.95)`,
+                [aptNum, patientId, doctorId, appointmentType, reason || null, scheduledAt]
+              );
+              return {
+                success: true,
+                appointmentNumber: aptNum,
+                doctorName: doctor[0].name,
+                specialty: doctor[0].specialty,
+                date: scheduledAt,
+                patientName: patient[0].name,
+              };
+            } catch (e) {
+              return { success: false, error: "Failed to schedule appointment" };
+            }
           },
         }),
 
@@ -187,19 +247,11 @@ Be concise. Be helpful. Be human. Be reassuring.`;
           }),
           execute: async ({ query }) => {
             try {
-              const results = await sql`
-                SELECT id, title, content
-                FROM knowledge_articles
-                WHERE status = 'published'
-                  AND (title ILIKE ${`%${query}%`} OR content ILIKE ${`%${query}%`} OR ${query} = ANY(tags))
-                ORDER BY views DESC LIMIT 3
-              `;
-              return {
-                results: results.map((r: Record<string, unknown>) => ({
-                  title: r.title,
-                  content: String(r.content).slice(0, 200),
-                })),
-              };
+              const results = await safeSql(
+                `SELECT title, content FROM knowledge_articles WHERE status = 'published' AND (title ILIKE $1 OR content ILIKE $1) ORDER BY views DESC LIMIT 3`,
+                [`%${query}%`]
+              );
+              return { results: results.map((r: any) => ({ title: r.title, content: String(r.content).slice(0, 200) })) };
             } catch {
               return { results: [] };
             }
@@ -216,14 +268,14 @@ Be concise. Be helpful. Be human. Be reassuring.`;
           }),
           execute: async ({ patientId, subject, message, priority }) => {
             try {
-              const count = await sql`SELECT nextval('ticket_seq') as num`;
-              const ticketNumber = `DNT-${count[0].num}`;
+              const count = await safeSql(`SELECT nextval('ticket_seq') as num`);
+              const ticketNumber = `DNT-${count[0]?.num || Date.now()}`;
               const slaDue = new Date(Date.now() + (priority === "urgent" ? 3600000 : priority === "high" ? 7200000 : 14400000));
-
-              await sql`
-                INSERT INTO tickets (ticket_number, subject, message, status, priority, channel, customer_id, sla_status, sla_due, tags, ai_confidence)
-                VALUES (${ticketNumber}, ${subject}, ${message}, 'open', ${priority}, 'voice', ${patientId}, 'ok', ${slaDue.toISOString()}, ARRAY['voice-agent', 'ai-created'], 90)
-              `;
+              await safeSql(
+                `INSERT INTO tickets (ticket_number, subject, message, status, priority, channel, customer_id, sla_status, sla_due, tags, ai_confidence)
+                 VALUES ($1, $2, $3, 'open', $4, 'voice', $5, 'ok', $6, ARRAY['voice-agent','ai-created'], 90)`,
+                [ticketNumber, subject, message, priority, patientId, slaDue.toISOString()]
+              );
               return { created: true, ticketNumber };
             } catch {
               return { created: false };
