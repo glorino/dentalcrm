@@ -16,16 +16,16 @@ const demoUsers = [
 ];
 
 const demoCustomers = [
-  { email: "info@thesmiledental.com", name: "The Smile Dental", company: "The Smile Dental Lagos", segment: "enterprise", plan: "enterprise", ltv: 45000000, csat: 4.8, total_tickets: 22 },
-  { email: "admin@cdc.com.ng", name: "CDC Dental Centre", company: "CDC Dental", segment: "business", plan: "business", ltv: 28000000, csat: 4.6, total_tickets: 14 },
-  { email: "help@smile360.com", name: "Smile 360 Dental", company: "Smile 360", segment: "pro", plan: "pro", ltv: 18000000, csat: 4.7, total_tickets: 9 },
-  { email: "team@toothcraft.com", name: "ToothCraft Dental", company: "ToothCraft", segment: "enterprise", plan: "enterprise", ltv: 52000000, csat: 4.9, total_tickets: 28 },
-  { email: "support@dentcare.com", name: "DentCare Nigeria", company: "DentCare", segment: "business", plan: "business", ltv: 32000000, csat: 4.5, total_tickets: 16 },
-  { email: "ops@brightsmile.com", name: "BrightSmile Dental", company: "BrightSmile", segment: "pro", plan: "pro", ltv: 15000000, csat: 4.4, total_tickets: 7 },
-  { email: "admin@whitefield.com", name: "Whitefield Dental", company: "Whitefield Dental", segment: "starter", plan: "starter", ltv: 4800000, csat: 4.3, total_tickets: 4 },
-  { email: "team@perfectsmile.com", name: "PerfectSmile Clinic", company: "PerfectSmile", segment: "business", plan: "business", ltv: 22000000, csat: 4.7, total_tickets: 11 },
-  { email: "info@dentalspot.com", name: "DentalSpot Lagos", company: "DentalSpot", segment: "pro", plan: "pro", ltv: 12000000, csat: 4.5, total_tickets: 6 },
-  { email: "support@oralcare.com", name: "OralCare Nigeria", company: "OralCare", segment: "starter", plan: "starter", ltv: 3600000, csat: 4.6, total_tickets: 3 },
+  { email: "sarah@example.com", name: "Sarah Johnson", phone: "+2348012345678", company: null, segment: "pro", plan: "pro", ltv: 850000, csat: 4.7, total_tickets: 3 },
+  { email: "james@example.com", name: "James Okonkwo", phone: "+2348023456789", company: null, segment: "business", plan: "business", ltv: 1200000, csat: 4.5, total_tickets: 5 },
+  { email: "fatima@example.com", name: "Fatima Bello", phone: "+2348034567890", company: null, segment: "starter", plan: "starter", ltv: 350000, csat: 4.8, total_tickets: 2 },
+  { email: "chukwu@example.com", name: "Chukwuemeka Dike", phone: "+2348045678901", company: null, segment: "enterprise", plan: "enterprise", ltv: 2500000, csat: 4.6, total_tickets: 8 },
+  { email: "aisha@example.com", name: "Aisha Mohammed", phone: "+2348056789012", company: null, segment: "pro", plan: "pro", ltv: 950000, csat: 4.9, total_tickets: 4 },
+  { email: "info@thesmiledental.com", name: "The Smile Dental", phone: "+2347082529729", company: "The Smile Dental Lagos", segment: "enterprise", plan: "enterprise", ltv: 45000000, csat: 4.8, total_tickets: 22 },
+  { email: "admin@cdc.com.ng", name: "CDC Dental Centre", phone: "+2347082529730", company: "CDC Dental", segment: "business", plan: "business", ltv: 28000000, csat: 4.6, total_tickets: 14 },
+  { email: "help@smile360.com", name: "Smile 360 Dental", phone: "+2347082529731", company: "Smile 360", segment: "pro", plan: "pro", ltv: 18000000, csat: 4.7, total_tickets: 9 },
+  { email: "team@toothcraft.com", name: "ToothCraft Dental", phone: "+2347082529732", company: "ToothCraft", segment: "enterprise", plan: "enterprise", ltv: 52000000, csat: 4.9, total_tickets: 28 },
+  { email: "support@dentcare.com", name: "DentCare Nigeria", phone: "+2347082529733", company: "DentCare", segment: "business", plan: "business", ltv: 32000000, csat: 4.5, total_tickets: 16 },
 ];
 
 const demoKnowledgeArticles = [
@@ -90,9 +90,9 @@ export async function POST() {
     const customerIds: string[] = [];
     for (const c of demoCustomers) {
       const result = await sql`
-        INSERT INTO customers (email, name, company, segment, plan, ltv, csat, total_tickets)
-        VALUES (${c.email}, ${c.name}, ${c.company}, ${c.segment}, ${c.plan}, ${c.ltv}, ${c.csat}, ${c.total_tickets})
-        ON CONFLICT (email) DO UPDATE SET name = ${c.name}
+        INSERT INTO customers (email, name, phone, company, segment, plan, ltv, csat, total_tickets)
+        VALUES (${c.email}, ${c.name}, ${c.phone || null}, ${c.company}, ${c.segment}, ${c.plan}, ${c.ltv}, ${c.csat}, ${c.total_tickets})
+        ON CONFLICT (email) DO UPDATE SET name = ${c.name}, phone = COALESCE(${c.phone}, customers.phone)
         RETURNING id
       `;
       customerIds.push(result[0].id);

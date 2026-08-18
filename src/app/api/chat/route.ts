@@ -59,15 +59,8 @@ export async function POST(req: Request) {
   if (!apiKey) {
     const lastMessage = messages[messages.length - 1]?.content || "";
     const response = getFallbackResponse(lastMessage);
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      start(controller) {
-        controller.enqueue(encoder.encode(response));
-        controller.close();
-      },
-    });
-    return new Response(stream, {
-      headers: { "Content-Type": "text/plain; charset=utf-8", "Transfer-Encoding": "chunked" },
+    return new Response(JSON.stringify({ role: "assistant", content: response }), {
+      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -500,17 +493,10 @@ Always try to resolve the issue before suggesting escalation. Use multiple tools
   } catch (error) {
     console.error("Chat AI error:", error);
     const fallback = getFallbackResponse(messages[messages.length - 1]?.content || "");
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      start(controller) {
-        controller.enqueue(encoder.encode(fallback));
-        controller.close();
-      },
-    });
-    return new Response(stream, {
-      headers: { "Content-Type": "text/plain; charset=utf-8", "Transfer-Encoding": "chunked" },
+    return new Response(JSON.stringify({ role: "assistant", content: fallback }), {
+      headers: { "Content-Type": "application/json" },
     });
   }
 
-  return result.toTextStreamResponse();
+  return result.toUIMessageStreamResponse();
 }
