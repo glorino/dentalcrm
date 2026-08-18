@@ -2,19 +2,18 @@ import { openai } from "@ai-sdk/openai";
 import { generateText, tool, stepCountIs } from "ai";
 import { z } from "zod";
 import { getIndustryFromEnv, getIndustry } from "@/lib/industry/config";
+import { sql } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 async function dbQuery(query: string, params?: unknown[]): Promise<any[]> {
   try {
-    const neon = (await import("@neondatabase/serverless")).neon;
-    const url = process.env.DATABASE_URL;
-    if (!url) return [];
-    const sql = neon(url);
-    const result = params ? await sql.query(query, params) : await sql.query(query);
+    const result = params ? await sql(query, params) : await sql(query);
     return result as any[];
-  } catch (e) {
-    console.error("DB error:", e);
+  } catch (e: any) {
+    console.error("[DB] Query failed:", e?.message || e);
+    console.error("[DB] Query:", query.slice(0, 200));
+    if (params) console.error("[DB] Params:", JSON.stringify(params));
     return [];
   }
 }

@@ -33,7 +33,7 @@ function ChatWidgetInner() {
   const { config } = useIndustry();
   const colors = useIndustryColors();
   const chatbot = useIndustryChatbot();
-  const { t } = useLang();
+  const { t, tI } = useLang();
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -211,7 +211,7 @@ function ChatWidgetInner() {
             {messages.length === 0 && (
               <div className="text-center py-6">
                 <img src={config.logo} alt={config.name} className="h-16 w-16 mx-auto mb-4" />
-                <h4 className="text-gray-900 font-bold text-lg mb-1">{t("chatWidget.welcomeTitle", `Welcome to ${config.name}`)}</h4>
+                <h4 className="text-gray-900 font-bold text-lg mb-1">{tI("chatWidget.welcomeTitle", { name: config.name })}</h4>
                 <p className="text-sm text-gray-500 mb-6">{t("chatWidget.welcomeDesc")}</p>
                 {voiceSupported && (
                   <div className="flex items-center justify-center gap-2 mb-4 text-xs text-gray-400">
@@ -393,7 +393,7 @@ function ChatWidgetInner() {
               </button>
             </div>
             <p className="text-[10px] text-gray-400 mt-2 text-center">
-              {t("chatWidget.poweredBy", `Powered by ${chatbot.name} · AI-Powered Support`)}
+              {tI("chatWidget.poweredBy", { name: chatbot.name })}
             </p>
           </form>
         </div>

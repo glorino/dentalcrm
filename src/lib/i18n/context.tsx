@@ -1,15 +1,16 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
-import { Locale, t as translate } from "./index";
+import { Locale, t as translate, tInterpolate as translateInterpolate } from "./index";
 
 interface LangCtx {
   locale: Locale;
   setLocale: (l: Locale) => void;
   t: (key: string, fallback?: string) => string;
+  tI: (key: string, vars: Record<string, string>, fallback?: string) => string;
 }
 
-const Ctx = createContext<LangCtx>({ locale: "en", setLocale: () => {}, t: (k) => k });
+const Ctx = createContext<LangCtx>({ locale: "en", setLocale: () => {}, t: (k) => k, tI: (k) => k });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("en");
@@ -29,8 +30,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const t = useCallback((key: string, fallback?: string) => translate(locale, key, fallback), [locale]);
+  const tI = useCallback((key: string, vars: Record<string, string>, fallback?: string) => translateInterpolate(locale, key, vars, fallback), [locale]);
 
-  return <Ctx.Provider value={{ locale, setLocale, t }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ locale, setLocale, t, tI }}>{children}</Ctx.Provider>;
 }
 
 export function useLang() {

@@ -1038,6 +1038,16 @@ export function t(locale: Locale, key: string, fallback?: string): string {
   for (const k of keys) {
     val = val?.[k];
   }
-  if (val && typeof val === "object") return val[locale] || val.en || fallback || key;
-  return fallback || key;
+  let result: string;
+  if (val && typeof val === "object") result = val[locale] || val.en || fallback || key;
+  else result = fallback || key;
+  return result;
+}
+
+export function tInterpolate(locale: Locale, key: string, vars: Record<string, string>, fallback?: string): string {
+  let result = t(locale, key, fallback);
+  for (const [k, v] of Object.entries(vars)) {
+    result = result.replace(new RegExp(`\\{${k}\\}`, "g"), v);
+  }
+  return result;
 }
