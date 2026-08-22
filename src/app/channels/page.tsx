@@ -308,7 +308,7 @@ export default function ChannelsPage() {
             <RevealSection>
               <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
-                  <table className="w-full min-w-[800px]">
+                  <table className="w-full min-w-[600px]">
                     <thead>
                       <tr className="border-b border-gray-100">
                         <th className="text-left px-6 py-4 text-sm font-bold text-gray-500 uppercase tracking-wider">{t("channelsPage.comparison.featureHeader") || "Feature"}</th>

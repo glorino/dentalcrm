@@ -131,6 +131,21 @@ export default function InboxPage() {
   const [messageText, setMessageText] = useState("");
   const realtimeUpdates = useRealtimeInbox();
 
+  const handleSendMessage = async () => {
+    if (!messageText.trim() || !selectedConversation) return;
+    const text = messageText;
+    setMessageText("");
+    try {
+      await fetch(`/api/tickets/${selectedConversation.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, sender: "agent" }),
+      });
+    } catch (err) {
+      console.error("Failed to send message:", err);
+    }
+  };
+
   const fetchInbox = useCallback(async (channel?: string, search?: string) => {
     setLoading(true);
     try {
@@ -200,7 +215,7 @@ export default function InboxPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] -m-8 overflow-hidden animate-fade-in">
+    <div className="flex h-[calc(100vh-4rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden animate-fade-in">
       {/* Left Panel - Channel Sidebar */}
       <div className="w-[72px] flex flex-col items-center py-5 gap-1.5 glassmorphism border-r border-white/30 shrink-0">
         {Object.entries(channelMeta).map(([id, meta]) => {
@@ -233,7 +248,7 @@ export default function InboxPage() {
       </div>
 
       {/* Middle Panel - Conversation List */}
-      <div className="w-[340px] flex flex-col border-r border-white/30 glassmorphism shrink-0">
+      <div className={`${selectedConversation ? 'hidden sm:flex' : 'flex'} w-full sm:w-[340px] flex-col border-r border-white/30 glassmorphism shrink-0`}>
         {/* Header */}
         <div className="p-4 border-b border-white/30">
           <div className="flex items-center justify-between mb-3">
@@ -447,6 +462,7 @@ export default function InboxPage() {
                     placeholder={t("inboxPage.messagePlaceholder")}
                     value={messageText}
                     onChange={(e) => setMessageText(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
                     className="w-full rounded-2xl border border-gray-200/80 bg-white/80 backdrop-blur-sm px-4 py-3 text-sm resize-none focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
                   />
                   <div className="absolute right-2 bottom-2 flex items-center gap-1">
@@ -469,7 +485,7 @@ export default function InboxPage() {
                     </svg>
                     {t("inboxPage.aiAssist")}
                   </button>
-                  <button className="btn-primary text-xs">
+                  <button className="btn-primary text-xs" onClick={handleSendMessage} disabled={!messageText.trim()}>
                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                     </svg>
@@ -505,7 +521,7 @@ export default function InboxPage() {
       </div>
 
       {/* Right Panel - AI Insights & Customer Info */}
-      <div className="w-[300px] flex flex-col overflow-y-auto scrollbar-thin border-l border-white/30 glassmorphism shrink-0">
+      <div className={`${selectedConversation ? 'hidden lg:flex' : 'hidden'} w-[300px] flex-col overflow-y-auto scrollbar-thin border-l border-white/30 glassmorphism shrink-0`}>
         {selectedConversation && (
           <>
             {/* Customer Info */}

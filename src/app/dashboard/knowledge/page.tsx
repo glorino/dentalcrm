@@ -53,6 +53,8 @@ export default function KnowledgePage() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [stats, setStats] = useState({ totalArticles: 0, published: 0, totalViews: 0, totalAiUsed: 0, avgHelpful: 0 });
   const [loading, setLoading] = useState(true);
+  const [showNewArticle, setShowNewArticle] = useState(false);
+  const [newArticle, setNewArticle] = useState({ title: "", content: "", collection: "General", tags: "" });
 
   function formatDate(dateStr: string): string {
     if (!dateStr) return "N/A";
@@ -66,6 +68,30 @@ export default function KnowledgePage() {
     if (days < 7) return `${days}${t("misc.daysAgo")}`;
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   }
+
+  const handleCreateArticle = async () => {
+    if (!newArticle.title.trim() || !newArticle.content.trim()) return;
+    try {
+      const res = await fetch("/api/knowledge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newArticle.title,
+          content: newArticle.content,
+          collection: newArticle.collection,
+          tags: newArticle.tags.split(",").map(t => t.trim()).filter(Boolean),
+        }),
+      });
+      if (res.ok) {
+        const article = await res.json();
+        setArticles(prev => [{ ...article, views: 0, ai_used: 0, helpful: 0 }, ...prev]);
+        setNewArticle({ title: "", content: "", collection: "General", tags: "" });
+        setShowNewArticle(false);
+      }
+    } catch (err) {
+      console.error("Failed to create article:", err);
+    }
+  };
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -108,7 +134,7 @@ export default function KnowledgePage() {
           <p className="text-sm text-gray-500 mt-1.5">{articles.length} {t("knowledgePage.fromDatabase")}</p>
         </div>
         <div className="flex flex-wrap gap-3 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-          <button className="btn-primary hover-lift group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300">
+          <button onClick={() => setShowNewArticle(true)} className="btn-primary hover-lift group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300">
             <svg className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
             {t("knowledgePage.newArticle")}
           </button>
@@ -353,6 +379,74 @@ export default function KnowledgePage() {
           </div>
         )}
       </div>
+
+      {showNewArticle && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <h2 className="text-lg font-bold text-gray-900">New Article</h2>
+              <button onClick={() => setShowNewArticle(false)} className="h-8 w-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Title</label>
+                <input
+                  type="text"
+                  value={newArticle.title}
+                  onChange={(e) => setNewArticle(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Article title"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Content</label>
+                <textarea
+                  rows={6}
+                  value={newArticle.content}
+                  onChange={(e) => setNewArticle(prev => ({ ...prev, content: e.target.value }))}
+                  placeholder="Article content..."
+                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Collection</label>
+                  <select
+                    value={newArticle.collection}
+                    onChange={(e) => setNewArticle(prev => ({ ...prev, collection: e.target.value }))}
+                    className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  >
+                    {collections.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+                    <option value="General">General</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Tags (comma-separated)</label>
+                  <input
+                    type="text"
+                    value={newArticle.tags}
+                    onChange={(e) => setNewArticle(prev => ({ ...prev, tags: e.target.value }))}
+                    placeholder="tag1, tag2"
+                    className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
+              <button onClick={() => setShowNewArticle(false)} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
+              <button
+                onClick={handleCreateArticle}
+                disabled={!newArticle.title.trim() || !newArticle.content.trim()}
+                className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Create Article
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

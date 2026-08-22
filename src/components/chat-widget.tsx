@@ -166,7 +166,7 @@ function ChatWidgetInner() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-[9999] w-[400px] h-[600px] max-h-[calc(100vh-48px)] rounded-2xl bg-white shadow-2xl border border-gray-200 flex flex-col overflow-hidden" style={{ animation: "chatSlideUp 0.3s ease-out" }}>
+        <div className="fixed bottom-6 right-6 z-[9999] w-full max-w-[400px] h-[600px] max-h-[calc(100vh-48px)] rounded-2xl bg-white shadow-2xl border border-gray-200 flex flex-col overflow-hidden sm:right-6 sm:bottom-6 max-sm:left-4 max-sm:right-4 max-sm:bottom-4" style={{ animation: "chatSlideUp 0.3s ease-out" }}>
           {/* Header */}
           <div className={`bg-gradient-to-r ${colors.gradient} px-5 py-4 flex items-center justify-between shrink-0 relative overflow-hidden`}>
             <div className="absolute inset-0 opacity-10">

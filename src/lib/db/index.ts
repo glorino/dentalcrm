@@ -221,6 +221,22 @@ export async function initDB() {
       resolved_at TIMESTAMP
     )
   `;
+
+  // Performance indexes
+  await s`CREATE INDEX IF NOT EXISTS idx_tickets_customer_id ON tickets(customer_id)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_tickets_assignee_id ON tickets(assignee_id)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_tickets_channel ON tickets(channel)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_tickets_created_at ON tickets(created_at)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_tickets_sla_status ON tickets(sla_status)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_messages_ticket_id ON messages(ticket_id)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_knowledge_status ON knowledge_articles(status)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_knowledge_collection ON knowledge_articles(collection)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_appointments_customer_id ON appointments(customer_id)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_appointments_doctor_id ON appointments(doctor_id)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_appointments_scheduled_at ON appointments(scheduled_at)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_doctor_schedules_doctor_id ON doctor_schedules(doctor_id)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_ai_conversations_customer_id ON ai_conversations(customer_id)`;
 }
 
 export async function generateTicketNumber(): Promise<string> {

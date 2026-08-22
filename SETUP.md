@@ -18,9 +18,9 @@
 - **Seed endpoint**: POST https://dentalcrm-beta.vercel.app/api/seed
 
 ## WhatsApp Webhook Setup
-1. Go to https://developers.facebook.com/app/1559122952241901/webhooks
+1. Go to https://developers.facebook.com
 2. Add webhook URL: `https://dentalcrm-beta.vercel.app/api/webhooks/whatsapp`
-3. Verify token: `9a9c8f2f3eeb7150e5fd8bb435fb60a6`
+3. Verify token: Set FB_VERIFY_TOKEN in Vercel env vars
 4. Subscribe to fields: `messages`, `messaging_postbacks`
 
 ## Email Forwarding Setup
@@ -38,12 +38,12 @@ https://dentalcrm-beta.vercel.app/api/webhooks/email
 ```
 DATABASE_URL=postgresql://...
 WHATSAPP_ACCESS_TOKEN=...
-WHATSAPP_PHONE_NUMBER_ID=1110303925507102
-WHATSAPP_BUSINESS_ACCOUNT_ID=1958662971596961
+WHATSAPP_PHONE_NUMBER_ID=...
+WHATSAPP_BUSINESS_ACCOUNT_ID=...
 FACEBOOK_PAGE_ID=...
-FB_VERIFY_TOKEN=9a9c8f2f3eeb7150e5fd8bb435fb60a6
-INSTAGRAM_BUSINESS_ACCOUNT_ID=17841460148538004
-TERMII_API_KEY=TLLmKgKKlrAXpCIRIEjrzKfUoJpfiOhEsCDxNxpgcvdxmUJDweLbdRIiTGUNUK
+FB_VERIFY_TOKEN=...
+INSTAGRAM_BUSINESS_ACCOUNT_ID=...
+TERMII_API_KEY=...
 TERMII_SENDER_ID=SSVCRM
 SMTP_HOST=smtp.hostinger.com
 SMTP_PORT=465
@@ -58,4 +58,3 @@ JWT_SECRET=...
 - **Landing page**: Dental-focused hero, features, and CTAs
 - **Knowledge base**: 30 dental articles
 - **Demo customers**: Nigerian dental clinics
-- **Ticket prefix**: DNT-

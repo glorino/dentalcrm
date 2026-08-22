@@ -324,10 +324,10 @@ export default function EscalationPage() {
 
                 {/* Hover Action Buttons */}
                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
-                  <button className="btn-ghost text-xs hover:bg-white/50 rounded-lg px-3 py-1.5 transition-all duration-200">
+                  <button onClick={async () => { await fetch(`/api/escalation`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: e.id, action: "assign" }) }); setEscalations(prev => prev.filter(x => x.id !== e.id)); }} className="btn-ghost text-xs hover:bg-white/50 rounded-lg px-3 py-1.5 transition-all duration-200">
                     {t("escalationPage.assign")}
                   </button>
-                  <button className="btn-primary text-xs shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg px-3 py-1.5">
+                  <button onClick={async () => { await fetch(`/api/escalation`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: e.id, action: "accept" }) }); setEscalations(prev => prev.filter(x => x.id !== e.id)); }} className="btn-primary text-xs shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg px-3 py-1.5">
                     {t("escalationPage.accept")}
                   </button>
                 </div>
