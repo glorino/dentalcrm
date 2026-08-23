@@ -158,11 +158,19 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice" }: VoiceAgen
       synthRef.current.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
-      utterance.rate = 1.0;
+      utterance.rate = 0.95;
       utterance.pitch = 1.0;
+      utterance.volume = 1.0;
 
       const voices = synthRef.current.getVoices();
-      const preferred = voices.find((v) => v.name.includes("Google") || v.name.includes("Samantha"));
+      const preferred = voices.find((v) => 
+        v.name.includes("Google UK English Female") ||
+        v.name.includes("Google US English") ||
+        v.name.includes("Microsoft Zira") ||
+        v.name.includes("Samantha") ||
+        v.name.includes("Karen") ||
+        v.name.includes("Daniel")
+      );
       if (preferred) utterance.voice = preferred;
 
       utterance.onstart = () => setStatus("speaking");
@@ -198,7 +206,10 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice" }: VoiceAgen
           }),
         });
 
-        if (!res.ok) throw new Error("Voice API request failed");
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error || `API request failed with status ${res.status}`);
+        }
 
         const data = await res.json();
         const reply = data.reply || "I'm sorry, I couldn't process that. Can you try again?";
@@ -207,8 +218,9 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice" }: VoiceAgen
         setMessages((prev) => [...prev, assistantMsg]);
 
         await speak(reply);
-      } catch {
-        const errMsg = "Sorry, I encountered an error. Please try again.";
+      } catch (err: any) {
+        console.error("Voice agent error:", err);
+        const errMsg = err?.message || "Sorry, I encountered an error. Please try again.";
         setMessages((prev) => [...prev, { role: "assistant", content: errMsg, timestamp: new Date() }]);
         await speak(errMsg);
       }
