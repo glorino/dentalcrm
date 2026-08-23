@@ -222,6 +222,88 @@ export async function initDB() {
     )
   `;
 
+  // Predictions table
+  await s`
+    CREATE TABLE IF NOT EXISTS predictions (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      entity_type VARCHAR(50) NOT NULL,
+      entity_id UUID,
+      prediction_type VARCHAR(100) NOT NULL,
+      score DECIMAL(5,2),
+      data JSONB DEFAULT '{}',
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  // Agent tasks queue
+  await s`
+    CREATE TABLE IF NOT EXISTS agent_tasks (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      type VARCHAR(50) NOT NULL,
+      action VARCHAR(200) NOT NULL,
+      data JSONB DEFAULT '{}',
+      priority VARCHAR(20) DEFAULT 'medium',
+      status VARCHAR(20) DEFAULT 'pending',
+      result JSONB,
+      error TEXT,
+      created_at TIMESTAMP DEFAULT NOW(),
+      started_at TIMESTAMP,
+      completed_at TIMESTAMP
+    )
+  `;
+
+  // X-ray analyses
+  await s`
+    CREATE TABLE IF NOT EXISTS xray_analyses (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      customer_id UUID REFERENCES customers(id),
+      image_url TEXT,
+      findings JSONB DEFAULT '[]',
+      overall_score DECIMAL(5,2),
+      recommendations TEXT[],
+      needs_urgent_care BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  // Patient journeys
+  await s`
+    CREATE TABLE IF NOT EXISTS patient_journeys (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      customer_id UUID REFERENCES customers(id),
+      event_type VARCHAR(100) NOT NULL,
+      event_details TEXT,
+      channel VARCHAR(50),
+      sentiment VARCHAR(20),
+      metadata JSONB DEFAULT '{}',
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  // Loyalty program
+  await s`
+    CREATE TABLE IF NOT EXISTS loyalty_points (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      customer_id UUID REFERENCES customers(id),
+      points INT DEFAULT 0,
+      reason VARCHAR(200),
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  // Recall schedules
+  await s`
+    CREATE TABLE IF NOT EXISTS recall_schedules (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      customer_id UUID REFERENCES customers(id),
+      recall_type VARCHAR(100) NOT NULL,
+      due_date TIMESTAMP NOT NULL,
+      last_reminder_at TIMESTAMP,
+      status VARCHAR(20) DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
   // Performance indexes
   await s`CREATE INDEX IF NOT EXISTS idx_tickets_customer_id ON tickets(customer_id)`;
   await s`CREATE INDEX IF NOT EXISTS idx_tickets_assignee_id ON tickets(assignee_id)`;
@@ -237,6 +319,13 @@ export async function initDB() {
   await s`CREATE INDEX IF NOT EXISTS idx_appointments_scheduled_at ON appointments(scheduled_at)`;
   await s`CREATE INDEX IF NOT EXISTS idx_doctor_schedules_doctor_id ON doctor_schedules(doctor_id)`;
   await s`CREATE INDEX IF NOT EXISTS idx_ai_conversations_customer_id ON ai_conversations(customer_id)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_predictions_entity ON predictions(entity_type, entity_id)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_predictions_type ON predictions(prediction_type)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_agent_tasks_status ON agent_tasks(status)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_agent_tasks_type ON agent_tasks(type)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_patient_journeys_customer ON patient_journeys(customer_id)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_loyalty_customer ON loyalty_points(customer_id)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_recall_due ON recall_schedules(due_date, status)`;
 }
 
 export async function generateTicketNumber(): Promise<string> {
