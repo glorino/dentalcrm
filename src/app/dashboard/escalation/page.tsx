@@ -307,7 +307,7 @@ export default function EscalationPage() {
               </div>
 
               {/* Right Side */}
-              <div className="hidden sm:flex items-center gap-4 shrink-0">
+              <div className="flex items-center gap-4 shrink-0">
                 <div className="text-right">
                   <div className="text-xs text-gray-400 mb-1">
                     {timeAgo(e.createdAt, t)}

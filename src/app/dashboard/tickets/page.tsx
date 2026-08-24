@@ -225,7 +225,7 @@ function TicketsContent() {
           value={channelFilter}
           onChange={(e) => handleChannelChange(e.target.value)}
           aria-label="Filter by channel"
-          className="rounded-2xl border-2 border-gray-100 bg-white/80 backdrop-blur-sm px-4 py-3.5 text-sm font-medium text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
+          className="w-full sm:w-auto rounded-2xl border-2 border-gray-100 bg-white/80 backdrop-blur-sm px-4 py-3.5 text-sm font-medium text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
         >
           <option value="all">{t("ticketsPage.allChannels")}</option>
           <option value="whatsapp">{t("dashboardPage.channels.whatsapp")}</option>
@@ -239,7 +239,7 @@ function TicketsContent() {
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           aria-label="Filter by status"
-          className="rounded-2xl border-2 border-gray-100 bg-white/80 backdrop-blur-sm px-4 py-3.5 text-sm font-medium text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
+          className="w-full sm:w-auto rounded-2xl border-2 border-gray-100 bg-white/80 backdrop-blur-sm px-4 py-3.5 text-sm font-medium text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
         >
           <option value="all">{t("ticketsPage.allStatus")}</option>
           <option value="open">{t("dashboardPage.status.open")}</option>
@@ -258,9 +258,9 @@ function TicketsContent() {
             </div>
             <span className="text-sm text-blue-700 font-semibold">{selectedTickets.length} {t("ticketsPage.selected")}</span>
           </div>
-          <button className="btn-ghost text-xs hover:bg-blue-100/80">{t("ticketsPage.assignTo")}</button>
-          <button className="btn-ghost text-xs hover:bg-blue-100/80">{t("ticketsPage.changeStatus")}</button>
-          <button className="btn-ghost text-xs text-red-600 hover:bg-red-50">{t("ticketsPage.closeTickets")}</button>
+          <button className="btn-ghost text-xs hover:bg-blue-100/80" onClick={() => console.log("Assign To clicked")}>{t("ticketsPage.assignTo")}</button>
+          <button className="btn-ghost text-xs hover:bg-blue-100/80" onClick={() => console.log("Change Status clicked")}>{t("ticketsPage.changeStatus")}</button>
+          <button className="btn-ghost text-xs text-red-600 hover:bg-red-50" onClick={() => console.log("Close Tickets clicked")}>{t("ticketsPage.closeTickets")}</button>
         </div>
       )}
 
@@ -340,7 +340,7 @@ function TicketsContent() {
                     </div>
                   </td>
                   <td className="px-5 py-4 text-right">
-                    <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-all duration-200">
+                    <div className="flex items-center gap-1 justify-end opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
                       <button aria-label="Start chat" className="h-8 w-8 rounded-xl hover:bg-blue-50 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                       </button>

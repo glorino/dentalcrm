@@ -13,8 +13,29 @@ const DEMO_ACCOUNTS: Record<string, string> = {
   "dayo@dentalcrm.com": "demo123",
 };
 
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT_MAX) return false;
+  entry.count++;
+  return true;
+}
+
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json({ error: "Too many attempts. Please try again later." }, { status: 429 });
+    }
+
     const body = await req.json();
     const parsed = demoSchema.safeParse(body);
     if (!parsed.success) {

@@ -19,8 +19,7 @@ interface ChurnRisk {
 interface RevenueForecast {
   date: string;
   predicted: number;
-  lower: number;
-  upper: number;
+  confidence: number;
 }
 
 interface SentimentTrajectory {
@@ -37,7 +36,7 @@ interface PredictiveAlert {
 interface PredictionsData {
   noShowRisks: NoShowRisk[];
   churnRisks: ChurnRisk[];
-  revenueForecast: number[];
+  revenueForecast: RevenueForecast[];
   sentimentTrajectories: SentimentTrajectory[];
   predictiveAlerts: PredictiveAlert[];
   ltvPredictions: { patient: string; currentLTV: number; predictedLTV: number; growthRate: number }[];
@@ -266,12 +265,12 @@ export default function PredictionsPage() {
             <button onClick={() => fetchData(true)} className="text-xs text-blue-600 hover:text-blue-700 font-semibold">Refresh</button>
           </div>
           <div className="flex items-end gap-1 h-48">
-            {data.revenueForecast.slice(0, 30).map((val, idx) => {
-              const maxVal = Math.max(...data.revenueForecast.slice(0, 30), 1);
-              const height = (val / maxVal) * 100;
+            {data.revenueForecast.slice(0, 30).map((item, idx) => {
+              const maxVal = Math.max(...data.revenueForecast.slice(0, 30).map(f => f.predicted), 1);
+              const height = (item.predicted / maxVal) * 100;
               return (
-                <div key={idx} className="flex-1 flex flex-col items-center gap-1 group cursor-default" title={`Day ${idx + 1}: ₦${val.toLocaleString()}`}>
-                  <div className="text-[9px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">₦{(val / 1000).toFixed(0)}k</div>
+                <div key={idx} className="flex-1 flex flex-col items-center gap-1 group cursor-default" title={`${item.date}: ₦${item.predicted.toLocaleString()} (${item.confidence}% confidence)`}>
+                  <div className="text-[9px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">₦{(item.predicted / 1000).toFixed(0)}k</div>
                   <div
                     className="w-full rounded-t-sm bg-gradient-to-t from-blue-600 to-cyan-400 hover:from-blue-700 hover:to-cyan-500 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-blue-500/20"
                     style={{ height: `${Math.max(height, 2)}%` }}
@@ -283,13 +282,13 @@ export default function PredictionsPage() {
               );
             })}
           </div>
-          <div className="mt-6 pt-4 border-t border-gray-100 grid grid-cols-3 gap-4 text-center">
+          <div className="mt-6 pt-4 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-xl font-bold text-gray-900">₦{data.revenueForecast.reduce((a, b) => a + b, 0).toLocaleString()}</div>
+              <div className="text-xl font-bold text-gray-900">₦{data.revenueForecast.reduce((a, b) => a + b.predicted, 0).toLocaleString()}</div>
               <div className="text-xs text-gray-500">Total Forecast</div>
             </div>
             <div>
-              <div className="text-xl font-bold text-gray-900">₦{Math.round(data.revenueForecast.reduce((a, b) => a + b, 0) / Math.max(data.revenueForecast.length, 1)).toLocaleString()}</div>
+              <div className="text-xl font-bold text-gray-900">₦{Math.round(data.revenueForecast.reduce((a, b) => a + b.predicted, 0) / Math.max(data.revenueForecast.length, 1)).toLocaleString()}</div>
               <div className="text-xs text-gray-500">Daily Average</div>
             </div>
             <div>

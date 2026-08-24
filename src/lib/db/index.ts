@@ -304,6 +304,46 @@ export async function initDB() {
     )
   `;
 
+  // Insurance claims
+  await s`
+    CREATE TABLE IF NOT EXISTS insurance_claims (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      claim_number VARCHAR(50) UNIQUE NOT NULL,
+      customer_id UUID REFERENCES customers(id),
+      treatment_code VARCHAR(50),
+      treatment_description TEXT,
+      amount DECIMAL(12,2) NOT NULL,
+      status VARCHAR(30) DEFAULT 'pending',
+      submitted_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW(),
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  // Payments
+  await s`
+    CREATE TABLE IF NOT EXISTS payments (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      transaction_id VARCHAR(100) UNIQUE NOT NULL,
+      reference VARCHAR(100) UNIQUE NOT NULL,
+      customer_id UUID REFERENCES customers(id),
+      appointment_id UUID REFERENCES appointments(id),
+      amount DECIMAL(12,2) NOT NULL,
+      currency VARCHAR(10) DEFAULT 'NGN',
+      email VARCHAR(255) NOT NULL,
+      name VARCHAR(255) NOT NULL,
+      phone VARCHAR(50),
+      description TEXT,
+      status VARCHAR(30) DEFAULT 'pending',
+      due_date TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  // Add missing columns to existing tables
+  await s`ALTER TABLE ai_conversations ADD COLUMN IF NOT EXISTS intent VARCHAR(100)`;
+  await s`ALTER TABLE tickets ADD COLUMN IF NOT EXISTS first_response_at TIMESTAMP`;
+
   // Performance indexes
   await s`CREATE INDEX IF NOT EXISTS idx_tickets_customer_id ON tickets(customer_id)`;
   await s`CREATE INDEX IF NOT EXISTS idx_tickets_assignee_id ON tickets(assignee_id)`;
@@ -326,6 +366,15 @@ export async function initDB() {
   await s`CREATE INDEX IF NOT EXISTS idx_patient_journeys_customer ON patient_journeys(customer_id)`;
   await s`CREATE INDEX IF NOT EXISTS idx_loyalty_customer ON loyalty_points(customer_id)`;
   await s`CREATE INDEX IF NOT EXISTS idx_recall_due ON recall_schedules(due_date, status)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_appointments_status ON appointments(status)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_tickets_priority ON tickets(priority)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_customers_name ON customers(name)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_appointments_customer_status ON appointments(customer_id, status)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_tickets_customer_status ON tickets(customer_id, status)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_insurance_claims_status ON insurance_claims(status)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_insurance_claims_customer ON insurance_claims(customer_id)`;
+  await s`CREATE INDEX IF NOT EXISTS idx_payments_customer ON payments(customer_id)`;
 }
 
 export async function generateTicketNumber(): Promise<string> {

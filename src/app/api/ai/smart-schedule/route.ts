@@ -173,9 +173,12 @@ Current date: ${new Date().toISOString()}`,
       : null;
 
     if (confirm && suggestedSlot && patientId) {
+      const aptCount = await sql`SELECT nextval('appointment_seq') as num`;
+      const aptNum = `APT-${aptCount[0]?.num || Date.now()}`;
       const appointment = await sql`
-        INSERT INTO appointments (customer_id, doctor_id, scheduled_at, appointment_type, status, channel, ai_confidence)
+        INSERT INTO appointments (appointment_number, customer_id, doctor_id, scheduled_at, appointment_type, status, channel, ai_confidence)
         VALUES (
+          ${aptNum},
           ${patientId},
           ${suggestedSlot.doctorId},
           ${suggestedSlot.time},

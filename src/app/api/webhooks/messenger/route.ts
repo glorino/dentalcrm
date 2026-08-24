@@ -5,10 +5,22 @@ import { initDB, sql, generateTicketNumber } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.text();
+    const signature = req.headers.get("x-hub-signature-256");
+    const appSecret = process.env.FB_APP_SECRET;
 
-    if (body.object === "page") {
-      for (const entry of body.entry || []) {
+    if (appSecret && signature) {
+      const isValid = verifyMessengerSignature(body, signature);
+      if (!isValid) {
+        console.error("Invalid Messenger webhook signature");
+        return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
+      }
+    }
+
+    const jsonBody = JSON.parse(body);
+
+    if (jsonBody.object === "page") {
+      for (const entry of jsonBody.entry || []) {
         for (const event of entry.messaging || []) {
           const senderId = event.sender?.id;
           const text = event.message?.text;

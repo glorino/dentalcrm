@@ -71,7 +71,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t("settingsPage.title")}</h1>
           <p className="text-sm text-gray-500 mt-1">{t("settingsPage.subtitle")}</p>
@@ -124,7 +124,7 @@ export default function SettingsPage() {
                           autoFocus
                           onKeyDown={(e) => { if (e.key === "Enter") handleSave(item.key, (e.target as HTMLInputElement).value); if (e.key === "Escape") setEditing(null); }}
                           onBlur={(e) => handleSave(item.key, e.target.value)}
-                          className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 w-48 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                          className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 w-full sm:w-48 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                         />
                       )}
                       <button onClick={() => setEditing(null)} className="text-xs text-gray-400 hover:text-gray-600">Cancel</button>
