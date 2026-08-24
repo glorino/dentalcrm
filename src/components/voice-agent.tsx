@@ -13,9 +13,10 @@ interface VoiceAgentProps {
   isOpen: boolean;
   onClose: () => void;
   apiUrl?: string;
+  voice?: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer";
 }
 
-export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice" }: VoiceAgentProps) {
+export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice", voice = "nova" }: VoiceAgentProps) {
   const [status, setStatus] = useState<"idle" | "listening" | "processing" | "speaking">("idle");
   const [transcript, setTranscript] = useState("");
   const [interimTranscript, setInterimTranscript] = useState("");
@@ -25,12 +26,12 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice" }: VoiceAgen
   const [volume, setVolume] = useState(0);
 
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
-  const synthRef = useRef<SpeechSynthesis | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animationRef = useRef<number>(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -39,7 +40,6 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice" }: VoiceAgen
       setIsSupported(false);
       return;
     }
-    synthRef.current = window.speechSynthesis;
 
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
@@ -78,7 +78,10 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice" }: VoiceAgen
 
     return () => {
       recognition.abort();
-      synthRef.current?.cancel();
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current = null;
+      }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((t) => t.stop());
       }
@@ -149,42 +152,42 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice" }: VoiceAgen
     setVolume(0);
   }, []);
 
-  const speak = useCallback((text: string) => {
-    return new Promise<void>((resolve) => {
-      if (!synthRef.current) {
-        resolve();
-        return;
+  const speak = useCallback(async (text: string) => {
+    try {
+      setStatus("speaking");
+
+      const res = await fetch("/api/voice/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, voice }),
+      });
+
+      if (!res.ok) {
+        throw new Error("TTS request failed");
       }
-      synthRef.current.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.95;
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
 
-      const voices = synthRef.current.getVoices();
-      const preferred = voices.find((v) => 
-        v.name.includes("Google UK English Female") ||
-        v.name.includes("Google US English") ||
-        v.name.includes("Microsoft Zira") ||
-        v.name.includes("Samantha") ||
-        v.name.includes("Karen") ||
-        v.name.includes("Daniel")
-      );
-      if (preferred) utterance.voice = preferred;
+      const audioBlob = await res.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      currentAudioRef.current = audio;
 
-      utterance.onstart = () => setStatus("speaking");
-      utterance.onend = () => {
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        currentAudioRef.current = null;
         setStatus("idle");
-        resolve();
       };
-      utterance.onerror = () => {
+
+      audio.onerror = () => {
+        URL.revokeObjectURL(audioUrl);
+        currentAudioRef.current = null;
         setStatus("idle");
-        resolve();
       };
-      synthRef.current.speak(utterance);
-    });
-  }, []);
+
+      await audio.play();
+    } catch {
+      setStatus("idle");
+    }
+  }, [voice]);
 
   const handleUserSpeech = useCallback(
     async (text: string) => {
@@ -235,7 +238,10 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice" }: VoiceAgen
     } else if (status === "idle") {
       startListening();
     } else if (status === "speaking") {
-      synthRef.current?.cancel();
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current = null;
+      }
       setStatus("idle");
       startListening();
     }
