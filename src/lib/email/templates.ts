@@ -231,6 +231,134 @@ export function escalationNotification(params: {
   };
 }
 
+// ─── WELCOME EMAIL ──────────────────────────────────────────────────────────────
+
+export function welcomeEmail(params: {
+  patientName: string;
+}): EmailTemplate {
+  const content = `
+    <h2 style="color:#1e293b;margin:0 0 8px;font-size:20px;">Welcome to DentalCRM!</h2>
+    <p style="color:#64748b;margin:0 0 24px;font-size:14px;">We're thrilled to have you as part of our dental family.</p>
+
+    <p style="color:#475569;font-size:14px;line-height:1.6;">
+      Hi ${params.patientName},<br><br>
+      Thank you for choosing DentalCRM for your dental care needs. We are committed to providing you with
+      exceptional dental services and a comfortable experience.
+    </p>
+
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:20px;margin:20px 0;">
+      <h3 style="color:#166534;margin:0 0 12px;font-size:15px;">Getting Started</h3>
+      <p style="margin:4px 0;font-size:13px;color:#475569;">✓ Book your first appointment through our portal</p>
+      <p style="margin:4px 0;font-size:13px;color:#475569;">✓ Complete your patient intake forms online</p>
+      <p style="margin:4px 0;font-size:13px;color:#475569;">✓ Set up your insurance information</p>
+      <p style="margin:4px 0;font-size:13px;color:#475569;">✓ Save our contact number for quick access</p>
+    </div>
+
+    <div style="text-align:center;margin:24px 0;">
+      <a href="#" style="display:inline-block;padding:12px 24px;background:#2563eb;color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
+        Book Your First Appointment
+      </a>
+    </div>
+
+    <p style="color:#64748b;font-size:13px;">
+      If you have any questions, reply to this email or contact us anytime. We're here to help!
+    </p>
+  `;
+
+  return {
+    subject: "Welcome to DentalCRM",
+    html: baseLayout("Welcome", content),
+    text: `Welcome to DentalCRM!\n\nHi ${params.patientName},\n\nThank you for choosing DentalCRM for your dental care needs.\nWe look forward to seeing you soon!\n\nIf you have any questions, reply to this email.`,
+  };
+}
+
+// ─── POST-TREATMENT CARE EMAIL ──────────────────────────────────────────────────
+
+export function postTreatmentCareEmail(params: {
+  patientName: string;
+  treatmentType: string;
+  instructions: string;
+}): EmailTemplate {
+  const content = `
+    <h2 style="color:#1e293b;margin:0 0 8px;font-size:20px;">Post-Treatment Care Instructions</h2>
+    <p style="color:#64748b;margin:0 0 24px;font-size:14px;">Important instructions for your ${params.treatmentType} treatment.</p>
+
+    <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:20px;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:20px;">🩺</span>
+        <span style="font-size:14px;font-weight:600;color:#9a3412;">${params.treatmentType}</span>
+      </div>
+      <p style="color:#475569;font-size:14px;line-height:1.6;">${params.instructions}</p>
+    </div>
+
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:20px;margin-bottom:24px;">
+      <h3 style="color:#991b1b;margin:0 0 8px;font-size:15px;">When to Contact Us</h3>
+      <p style="color:#475569;font-size:13px;line-height:1.6;">
+        Contact us immediately if you experience severe pain, excessive swelling, bleeding that doesn't stop,
+        or any reaction to medication.
+      </p>
+    </div>
+
+    <p style="color:#64748b;font-size:13px;">
+      If you have any concerns about your recovery, please don't hesitate to reach out to our team.
+    </p>
+  `;
+
+  return {
+    subject: `Post-Treatment Care Instructions — ${params.treatmentType}`,
+    html: baseLayout("Post-Treatment Care", content),
+    text: `Post-Treatment Care Instructions\n\nTreatment: ${params.treatmentType}\n\n${params.instructions}\n\nContact us if you have any concerns.`,
+  };
+}
+
+// ─── RECALL REMINDER EMAIL ──────────────────────────────────────────────────────
+
+export function recallReminderEmail(params: {
+  patientName: string;
+  daysSinceVisit: number;
+}): EmailTemplate {
+  const content = `
+    <h2 style="color:#1e293b;margin:0 0 8px;font-size:20px;">Time for Your Dental Checkup</h2>
+    <p style="color:#64748b;margin:0 0 24px;font-size:14px;">We miss you and want to make sure your smile stays healthy!</p>
+
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:20px;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:20px;">📅</span>
+        <span style="font-size:14px;font-weight:600;color:#1e40af;">Checkup Reminder</span>
+      </div>
+      <p style="color:#475569;font-size:14px;line-height:1.6;">
+        Hi ${params.patientName},<br><br>
+        It's been ${params.daysSinceVisit} days since your last visit with us.
+        Regular dental checkups help catch issues early and keep your smile bright.
+      </p>
+    </div>
+
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:20px;margin-bottom:24px;">
+      <h3 style="color:#166534;margin:0 0 12px;font-size:15px;">Why Regular Checkups Matter</h3>
+      <p style="margin:4px 0;font-size:13px;color:#475569;">✓ Early detection of cavities and gum disease</p>
+      <p style="margin:4px 0;font-size:13px;color:#475569;">✓ Professional cleaning removes plaque buildup</p>
+      <p style="margin:4px 0;font-size:13px;color:#475569;">✓ Oral cancer screening</p>
+      <p style="margin:4px 0;font-size:13px;color:#475569;">✓ Maintain your healthy smile</p>
+    </div>
+
+    <div style="text-align:center;margin:24px 0;">
+      <a href="#" style="display:inline-block;padding:12px 24px;background:#2563eb;color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
+        Schedule Your Checkup
+      </a>
+    </div>
+
+    <p style="color:#64748b;font-size:13px;">
+      You can book your appointment by replying to this email, calling us, or using our online scheduling portal.
+    </p>
+  `;
+
+  return {
+    subject: "Time for Your Dental Checkup",
+    html: baseLayout("Checkup Reminder", content),
+    text: `Time for Your Dental Checkup\n\nHi ${params.patientName},\n\nIt's been ${params.daysSinceVisit} days since your last visit.\nPlease schedule your next checkup to keep your smile healthy.\n\nCall us or reply to this email to book.`,
+  };
+}
+
 // ─── FOLLOW-UP REMINDER ────────────────────────────────────────────────────────
 
 export function followUpReminder(params: {

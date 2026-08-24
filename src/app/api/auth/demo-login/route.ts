@@ -30,6 +30,10 @@ function checkRateLimit(ip: string): boolean {
 }
 
 export async function POST(req: Request) {
+  if (process.env.ALLOW_DEMO_LOGIN !== "true") {
+    return NextResponse.json({ error: "Demo login is disabled in production" }, { status: 403 });
+  }
+
   try {
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
     if (!checkRateLimit(ip)) {

@@ -40,6 +40,7 @@ const PUBLIC_API_ROUTES = [
   "/api/voice",
   "/api/chat",
   "/api/webhooks",
+  "/api/webhooks/flutterwave",
   "/api/auth/login",
   "/api/auth/demo-login",
   "/api/auth/forgot-password",

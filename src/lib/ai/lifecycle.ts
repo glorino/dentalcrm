@@ -1,9 +1,12 @@
 import { sql } from "@/lib/db";
+import { sendEmail } from "@/lib/email/sender";
+import { sendSMS } from "@/lib/channels/sms";
+import { welcomeEmail, postTreatmentCareEmail, recallReminderEmail } from "@/lib/email/templates";
 
 // Onboard a new patient - sends welcome sequence
 export async function onboardPatient(customerId: string): Promise<{steps: string[], status: string}> {
   const customer = await sql`
-    SELECT name, email FROM customers WHERE id = ${customerId} LIMIT 1
+    SELECT name, email, phone FROM customers WHERE id = ${customerId} LIMIT 1
   `;
   if (customer.length === 0) return { steps: [], status: "patient_not_found" };
 
@@ -15,6 +18,29 @@ export async function onboardPatient(customerId: string): Promise<{steps: string
   ];
 
   await recordTouchpoint(customerId, "onboarding", "email", "Patient onboarding sequence started");
+
+  try {
+    const template = welcomeEmail({ patientName: customer[0].name });
+    await sendEmail({
+      to: customer[0].email,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+    });
+  } catch (err) {
+    console.error("Failed to send welcome email:", err);
+  }
+
+  if (customer[0].phone) {
+    try {
+      await sendSMS(
+        customer[0].phone,
+        "Welcome to DentalCRM! We're excited to have you. Reply to this message if you need anything."
+      );
+    } catch (err) {
+      console.error("Failed to send welcome SMS:", err);
+    }
+  }
 
   return { steps, status: "in_progress" };
 }
@@ -44,6 +70,39 @@ export async function sendPostTreatmentCare(
   `;
 
   await recordTouchpoint(customerId, "post_treatment_care", "email", `Care instructions sent for ${treatmentType}`);
+
+  const customer = await sql`
+    SELECT name, email, phone FROM customers WHERE id = ${customerId} LIMIT 1
+  `;
+
+  if (customer.length > 0) {
+    try {
+      const template = postTreatmentCareEmail({
+        patientName: customer[0].name,
+        treatmentType,
+        instructions,
+      });
+      await sendEmail({
+        to: customer[0].email,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+      });
+    } catch (err) {
+      console.error("Failed to send post-treatment care email:", err);
+    }
+
+    if (customer[0].phone) {
+      try {
+        await sendSMS(
+          customer[0].phone,
+          `Post-Treatment Care (${treatmentType}): ${instructions.slice(0, 160)}... Contact us if you have concerns.`
+        );
+      } catch (err) {
+        console.error("Failed to send post-treatment care SMS:", err);
+      }
+    }
+  }
 
   return { sent: true, instructions };
 }
@@ -92,7 +151,7 @@ export async function checkRecallDue(customerId: string): Promise<{
 // Process recall - send reminders to due patients
 export async function processRecallQueue(): Promise<{remindersSent: number; patientsContacted: string[]}> {
   const duePatients = await sql`
-    SELECT rs.customer_id, c.name, c.email, rs.due_date, rs.recall_type
+    SELECT rs.customer_id, c.name, c.email, c.phone, rs.due_date, rs.recall_type
     FROM recall_schedules rs
     JOIN customers c ON c.id = rs.customer_id
     WHERE rs.status = 'pending'
@@ -117,6 +176,35 @@ export async function processRecallQueue(): Promise<{remindersSent: number; pati
       "email",
       `Recall reminder sent for ${patient.recall_type}`
     );
+
+    try {
+      const daysSinceVisit = Math.floor(
+        (Date.now() - new Date(patient.due_date).getTime()) / (1000 * 60 * 60 * 24)
+      );
+      const template = recallReminderEmail({
+        patientName: patient.name,
+        daysSinceVisit,
+      });
+      await sendEmail({
+        to: patient.email,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+      });
+    } catch (err) {
+      console.error("Failed to send recall email:", err);
+    }
+
+    if (patient.phone) {
+      try {
+        await sendSMS(
+          patient.phone,
+          `Time for your dental checkup! It's been a while since your last visit. Please call us to schedule an appointment.`
+        );
+      } catch (err) {
+        console.error("Failed to send recall SMS:", err);
+      }
+    }
 
     patientsContacted.push(patient.customer_id);
   }

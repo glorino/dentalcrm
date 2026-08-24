@@ -1,36 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSql, initDB } from "@/lib/db";
-
-let dbReady = false;
-
-async function ensureDB() {
-  if (!dbReady) {
-    await initDB();
-    const sql = getSql();
-    await sql`
-      CREATE TABLE IF NOT EXISTS payments (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        transaction_id VARCHAR(100) UNIQUE NOT NULL,
-        reference VARCHAR(100) UNIQUE NOT NULL,
-        amount DECIMAL(12,2) NOT NULL,
-        currency VARCHAR(10) DEFAULT 'NGN',
-        email VARCHAR(255) NOT NULL,
-        name VARCHAR(255) NOT NULL,
-        phone VARCHAR(50),
-        description TEXT,
-        status VARCHAR(30) DEFAULT 'pending',
-        created_at TIMESTAMP DEFAULT NOW()
-      )
-    `;
-    dbReady = true;
-  }
-}
+import { sql } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
   try {
-    await ensureDB();
     const body = await request.json();
-    const { transactionId, reference, amount, currency, email, name, phone, description, status } = body;
+    const { transactionId, reference, amount, currency, email, name, phone, description, status, customerId, appointmentId } = body;
 
     if (!transactionId || !reference || !amount || !email || !name) {
       return NextResponse.json(
@@ -39,14 +13,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const sql = getSql();
     const result = await sql`
-      INSERT INTO payments (transaction_id, reference, amount, currency, email, name, phone, description, status)
-      VALUES (${transactionId}, ${reference}, ${amount}, ${currency || "NGN"}, ${email}, ${name}, ${phone || ""}, ${description || ""}, ${status || "successful"})
+      INSERT INTO payments (transaction_id, reference, amount, currency, email, name, phone, description, status, customer_id, appointment_id)
+      VALUES (${transactionId}, ${reference}, ${amount}, ${currency || "NGN"}, ${email}, ${name}, ${phone || ""}, ${description || ""}, ${status || "pending"}, ${customerId || null}, ${appointmentId || null})
       RETURNING *
     `;
 
-    return NextResponse.json({ success: true, payment: result[0] }, { status: 201 });
+    const payment = result[0];
+
+    if (process.env.FLUTTERWAVE_SECRET_KEY) {
+      try {
+        const verifyRes = await fetch(`https://api.flutterwave.com/v3/transactions/${transactionId}/verify`, {
+          headers: {
+            Authorization: `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const verifyData = await verifyRes.json();
+        if (verifyData.status === "success" && verifyData.data?.status === "successful") {
+          await sql`UPDATE payments SET status = 'completed' WHERE id = ${payment.id}`;
+          payment.status = "completed";
+        } else {
+          await sql`UPDATE payments SET status = 'failed' WHERE id = ${payment.id}`;
+          payment.status = "failed";
+        }
+      } catch (err) {
+        console.error("Flutterwave verification error:", err);
+      }
+    }
+
+    return NextResponse.json({ success: true, payment }, { status: 201 });
   } catch (error: any) {
     console.error("Payments POST error:", error);
     if (error.message?.includes("duplicate key")) {
@@ -58,8 +54,6 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    await ensureDB();
-    const sql = getSql();
     const payments = await sql`
       SELECT * FROM payments ORDER BY created_at DESC LIMIT 50
     `;
@@ -76,6 +70,8 @@ export async function GET() {
         phone: p.phone,
         description: p.description,
         status: p.status,
+        customerId: p.customer_id,
+        appointmentId: p.appointment_id,
         createdAt: p.created_at,
       })),
       total: payments.length,
