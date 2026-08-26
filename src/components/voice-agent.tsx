@@ -16,7 +16,7 @@ interface VoiceAgentProps {
   voice?: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer";
 }
 
-export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice", voice = "nova" }: VoiceAgentProps) {
+export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice", voice = "shimmer" }: VoiceAgentProps) {
   const [status, setStatus] = useState<"idle" | "listening" | "processing" | "speaking">("idle");
   const [transcript, setTranscript] = useState("");
   const [interimTranscript, setInterimTranscript] = useState("");
