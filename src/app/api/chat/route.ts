@@ -53,7 +53,28 @@ function getFallbackResponse(message: string): string {
 }
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  const body = await req.json();
+  const messages = body?.messages;
+
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return new Response(JSON.stringify({ error: "Invalid request" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const lastMessage = messages[messages.length - 1];
+  if (!lastMessage?.content || typeof lastMessage.content !== "string" || lastMessage.content.length > 4000) {
+    return new Response(JSON.stringify({ error: "Invalid message" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  if (messages.length > 50) {
+    messages.splice(0, messages.length - 50);
+  }
+
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {

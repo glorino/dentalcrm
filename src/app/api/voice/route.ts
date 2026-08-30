@@ -20,7 +20,18 @@ async function dbQuery(query: string, params?: unknown[]): Promise<any[]> {
 }
 
 export async function POST(req: Request) {
-  const { message, history = [] } = await req.json();
+  const body = await req.json();
+  const message = body?.message;
+  const history = Array.isArray(body?.history) ? body.history.slice(-10) : [];
+
+  if (!message || typeof message !== "string" || message.trim().length === 0) {
+    return Response.json({ reply: "Please say something and I'll be happy to help." });
+  }
+
+  if (message.length > 2000) {
+    return Response.json({ reply: "Your message is too long. Please keep it under 2000 characters." });
+  }
+
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {

@@ -32,6 +32,11 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice", voice = "sh
   const animationRef = useRef<number>(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const statusRef = useRef<"idle" | "listening" | "processing" | "speaking">("idle");
+
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -69,7 +74,7 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice", voice = "sh
     };
 
     recognition.onend = () => {
-      if (status === "listening") {
+      if (statusRef.current === "listening") {
         setStatus("idle");
       }
     };
@@ -80,6 +85,9 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice", voice = "sh
       recognition.abort();
       if (currentAudioRef.current) {
         currentAudioRef.current.pause();
+        if (currentAudioRef.current.src) {
+          URL.revokeObjectURL(currentAudioRef.current.src);
+        }
         currentAudioRef.current = null;
       }
       if (streamRef.current) {
@@ -103,6 +111,34 @@ export function VoiceAgent({ isOpen, onClose, apiUrl = "/api/voice", voice = "sh
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        if (currentAudioRef.current.src) {
+          URL.revokeObjectURL(currentAudioRef.current.src);
+        }
+        currentAudioRef.current = null;
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+      cancelAnimationFrame(animationRef.current);
+      setStatus("idle");
+      setVolume(0);
+      setTranscript("");
+      setInterimTranscript("");
+    }
+  }, [isOpen]);
 
   const startListening = useCallback(async () => {
     setError(null);

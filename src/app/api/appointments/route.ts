@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error: any) {
     console.error("Appointments GET error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch appointments" }, { status: 500 });
   }
 }
 
@@ -85,13 +85,9 @@ export async function POST(req: NextRequest) {
       aiConfidence: 0.95,
     });
 
-    // TODO: Send confirmation emails to patient and doctor
-    // await sendAppointmentConfirmationPatient({ ... });
-    // await sendAppointmentConfirmationDoctor({ ... });
-
     return NextResponse.json({ success: true, appointment });
   } catch (error: any) {
     console.error("Appointments POST error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create appointment" }, { status: 500 });
   }
 }

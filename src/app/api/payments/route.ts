@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     if (error.message?.includes("duplicate key")) {
       return NextResponse.json({ error: "Transaction already recorded" }, { status: 409 });
     }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to process payment" }, { status: 500 });
   }
 }
 
@@ -78,6 +78,6 @@ export async function GET() {
     });
   } catch (error: any) {
     console.error("Payments GET error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch payments" }, { status: 500 });
   }
 }

@@ -10,8 +10,9 @@ export async function POST(request: NextRequest) {
     const secretKey = process.env.FLUTTERWAVE_ENCRYPTION_KEY || process.env.FLUTTERWAVE_SECRET_KEY;
     if (secretKey) {
       const expectedHash = crypto.createHmac("sha256", secretKey).update(body).digest("hex");
-      if (signature && signature !== expectedHash) {
+      if (!signature || signature !== expectedHash) {
         console.error("Flutterwave webhook signature mismatch");
+        return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
       }
     }
 

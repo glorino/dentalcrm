@@ -3,62 +3,61 @@ import { sql } from "@/lib/db";
 
 export async function GET() {
   try {
-    const totalTickets = await sql`SELECT COUNT(*) as count FROM tickets`;
-    const openTickets = await sql`SELECT COUNT(*) as count FROM tickets WHERE status = 'open'`;
-    const pendingTickets = await sql`SELECT COUNT(*) as count FROM tickets WHERE status = 'pending'`;
-    const escalatedTickets = await sql`SELECT COUNT(*) as count FROM tickets WHERE status = 'escalated'`;
-    const resolvedTickets = await sql`SELECT COUNT(*) as count FROM tickets WHERE status = 'resolved'`;
+    const [stats, channelCounts, sentimentCounts, avgConfidence, avgCsat, recentTickets, slaBreached] = await Promise.all([
+      sql`
+        SELECT
+          COUNT(*) as total,
+          COUNT(*) FILTER (WHERE status = 'open') as open,
+          COUNT(*) FILTER (WHERE status = 'pending') as pending,
+          COUNT(*) FILTER (WHERE status = 'escalated') as escalated,
+          COUNT(*) FILTER (WHERE status = 'resolved') as resolved
+        FROM tickets
+      `,
+      sql`
+        SELECT channel, COUNT(*) as count 
+        FROM tickets 
+        GROUP BY channel 
+        ORDER BY count DESC
+      `,
+      sql`
+        SELECT sentiment, COUNT(*) as count 
+        FROM tickets 
+        GROUP BY sentiment
+      `,
+      sql`SELECT AVG(ai_confidence) as avg FROM tickets`,
+      sql`SELECT AVG(csat) as avg FROM customers WHERE csat > 0`,
+      sql`
+        SELECT 
+          t.ticket_number,
+          t.subject,
+          t.status,
+          t.priority,
+          t.channel,
+          t.ai_confidence,
+          t.sla_status,
+          t.sla_due,
+          t.sentiment,
+          t.created_at,
+          c.name as customer_name
+        FROM tickets t
+        LEFT JOIN customers c ON t.customer_id = c.id
+        ORDER BY t.created_at DESC
+        LIMIT 10
+      `,
+      sql`SELECT COUNT(*) as count FROM tickets WHERE sla_status = 'breached'`,
+    ]);
+
+    const ticketStats = stats[0];
     const totalCustomers = await sql`SELECT COUNT(*) as count FROM customers`;
     const totalUsers = await sql`SELECT COUNT(*) as count FROM users`;
 
-    const channelCounts = await sql`
-      SELECT channel, COUNT(*) as count 
-      FROM tickets 
-      GROUP BY channel 
-      ORDER BY count DESC
-    `;
-
-    const sentimentCounts = await sql`
-      SELECT sentiment, COUNT(*) as count 
-      FROM tickets 
-      GROUP BY sentiment
-    `;
-
-    const avgConfidence = await sql`SELECT AVG(ai_confidence) as avg FROM tickets`;
-    const avgCsat = await sql`SELECT AVG(csat) as avg FROM customers WHERE csat > 0`;
-
-    const recentTickets = await sql`
-      SELECT 
-        t.ticket_number,
-        t.subject,
-        t.status,
-        t.priority,
-        t.channel,
-        t.ai_confidence,
-        t.sla_status,
-        t.sla_due,
-        t.sentiment,
-        t.created_at,
-        c.name as customer_name
-      FROM tickets t
-      LEFT JOIN customers c ON t.customer_id = c.id
-      ORDER BY t.created_at DESC
-      LIMIT 10
-    `;
-
-    const slaBreached = await sql`
-      SELECT COUNT(*) as count 
-      FROM tickets 
-      WHERE sla_status = 'breached'
-    `;
-
     return NextResponse.json({
       stats: {
-        totalTickets: Number(totalTickets[0].count),
-        openTickets: Number(openTickets[0].count),
-        pendingTickets: Number(pendingTickets[0].count),
-        escalatedTickets: Number(escalatedTickets[0].count),
-        resolvedTickets: Number(resolvedTickets[0].count),
+        totalTickets: Number(ticketStats.total),
+        openTickets: Number(ticketStats.open),
+        pendingTickets: Number(ticketStats.pending),
+        escalatedTickets: Number(ticketStats.escalated),
+        resolvedTickets: Number(ticketStats.resolved),
         totalCustomers: Number(totalCustomers[0].count),
         totalUsers: Number(totalUsers[0].count),
         slaBreached: Number(slaBreached[0].count),

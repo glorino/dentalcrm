@@ -2,13 +2,31 @@ import { NextRequest, NextResponse } from "next/server";
 import { sendInstagramDM } from "@/lib/channels/instagram";
 import { broadcastInboxUpdate } from "@/lib/events";
 import { initDB, sql, generateTicketNumber } from "@/lib/db";
+import crypto from "crypto";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.text();
+    const signature = req.headers.get("x-hub-signature-256");
+    const appSecret = process.env.FB_APP_SECRET;
 
-    if (body.object === "instagram") {
-      for (const entry of body.entry || []) {
+    if (!appSecret) {
+      console.error("FB_APP_SECRET not configured");
+      return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
+    }
+    if (!signature) {
+      return NextResponse.json({ error: "Missing signature" }, { status: 403 });
+    }
+    const expectedHash = "sha256=" + crypto.createHmac("sha256", appSecret).update(body).digest("hex");
+    if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedHash))) {
+      console.error("Invalid Instagram webhook signature");
+      return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
+    }
+
+    const payload = JSON.parse(body);
+
+    if (payload.object === "instagram") {
+      for (const entry of payload.entry || []) {
         for (const event of entry.messaging || []) {
           const senderId = event.sender?.id;
           const text = event.message?.text;

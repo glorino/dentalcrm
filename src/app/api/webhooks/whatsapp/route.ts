@@ -12,12 +12,17 @@ export async function POST(req: NextRequest) {
     const signature = req.headers.get("x-hub-signature-256");
     const appSecret = process.env.FB_APP_SECRET;
 
-    if (appSecret && signature) {
-      const isValid = verifyWhatsAppSignature(body, signature, appSecret);
-      if (!isValid) {
-        console.error("Invalid WhatsApp webhook signature");
-        return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
-      }
+    if (!appSecret) {
+      console.error("FB_APP_SECRET not configured");
+      return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
+    }
+    if (!signature) {
+      return NextResponse.json({ error: "Missing signature" }, { status: 403 });
+    }
+    const isValid = verifyWhatsAppSignature(body, signature, appSecret);
+    if (!isValid) {
+      console.error("Invalid WhatsApp webhook signature");
+      return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
     }
 
     const jsonBody = JSON.parse(body);
