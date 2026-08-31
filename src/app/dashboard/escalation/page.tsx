@@ -64,14 +64,21 @@ export default function EscalationPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/escalation")
-      .then((res) => res.json())
+    const controller = new AbortController();
+    fetch("/api/escalation", { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed");
+        return res.json();
+      })
       .then((data) => {
         setEscalations(data.escalations || []);
         setStats(data.stats || { totalEscalated: 0, pending: 0, slaBreached: 0 });
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        if (err.name !== "AbortError") setLoading(false);
+      });
+    return () => controller.abort();
   }, []);
 
   if (loading) {

@@ -1,13 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
+const VALID_VOICES = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
+
 export async function POST(req: NextRequest) {
   try {
-    const { text, voice = "nova" } = await req.json();
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+    const rateLimit = await checkRateLimit(`tts:${ip}`, 20, "60 s");
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
 
-    if (!text) {
+    const { text, voice = "shimmer" } = await req.json();
+
+    if (!text || typeof text !== "string" || text.trim().length === 0) {
       return NextResponse.json({ error: "Text is required" }, { status: 400 });
+    }
+
+    const truncatedText = text.slice(0, 4000);
+
+    if (!VALID_VOICES.includes(voice)) {
+      return NextResponse.json({ error: "Invalid voice" }, { status: 400 });
     }
 
     const apiKey = process.env.OPENAI_API_KEY;
@@ -23,7 +38,7 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: "tts-1",
-        input: text,
+        input: truncatedText,
         voice,
         response_format: "mp3",
         speed: 1.0,

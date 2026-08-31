@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUserByEmail, verifyPassword, generateToken } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const demoSchema = z.object({
@@ -13,22 +14,6 @@ const DEMO_ACCOUNTS: Record<string, string> = {
   "dayo@dentalcrm.com": "demo123",
 };
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_MAX = 5;
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000;
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
-    return true;
-  }
-  if (entry.count >= RATE_LIMIT_MAX) return false;
-  entry.count++;
-  return true;
-}
-
 export async function POST(req: Request) {
   if (process.env.ALLOW_DEMO_LOGIN !== "true") {
     return NextResponse.json({ error: "Demo login is disabled in production" }, { status: 403 });
@@ -36,7 +21,8 @@ export async function POST(req: Request) {
 
   try {
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
-    if (!checkRateLimit(ip)) {
+    const rateLimit = await checkRateLimit(`demo-login:${ip}`, 5, "60 s");
+    if (!rateLimit.allowed) {
       return NextResponse.json({ error: "Too many attempts. Please try again later." }, { status: 429 });
     }
 
@@ -78,7 +64,7 @@ export async function POST(req: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: 60 * 60 * 24,
       path: "/",
     });
 

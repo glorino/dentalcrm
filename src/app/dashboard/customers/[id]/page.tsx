@@ -83,14 +83,21 @@ export default function CustomerDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/customers/${id}`)
-      .then((res) => res.json())
+    const controller = new AbortController();
+    fetch(`/api/customers/${id}`, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed");
+        return res.json();
+      })
       .then((data) => {
         setCustomer(data.customer || null);
         setRecentTickets(data.recentTickets || []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        if (err.name !== "AbortError") setLoading(false);
+      });
+    return () => controller.abort();
   }, [id]);
 
   if (loading) {

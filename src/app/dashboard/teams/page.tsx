@@ -64,14 +64,21 @@ export default function TeamsPage() {
   const teamCardClasses = getTeamCardClasses(t);
 
   useEffect(() => {
-    fetch("/api/teams")
-      .then((res) => res.json())
+    const controller = new AbortController();
+    fetch("/api/teams", { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed");
+        return res.json();
+      })
       .then((data) => {
         setUsers(data.users || []);
         setTeams(data.teams || []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        if (err.name !== "AbortError") setLoading(false);
+      });
+    return () => controller.abort();
   }, []);
 
   if (loading) {

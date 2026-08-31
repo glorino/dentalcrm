@@ -79,23 +79,26 @@ export default function AgentsPage() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const fetchTasks = useCallback(async () => {
+  const fetchTasks = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (typeFilter !== "all") params.set("type", typeFilter);
       if (statusFilter !== "all") params.set("status", statusFilter);
-      const res = await fetch(`/api/ai/agents?${params.toString()}`);
+      const res = await fetch(`/api/ai/agents?${params.toString()}`, { signal });
+      if (!res.ok) throw new Error("Failed");
       const data = await res.json();
       setTasks(data.tasks || []);
-    } catch {
-      setTasks([]);
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name !== "AbortError") setTasks([]);
     }
     setLoading(false);
   }, [typeFilter, statusFilter]);
 
   useEffect(() => {
-    fetchTasks();
+    const controller = new AbortController();
+    fetchTasks(controller.signal);
+    return () => controller.abort();
   }, [fetchTasks]);
 
   const stats: AgentStats = {

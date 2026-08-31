@@ -63,17 +63,24 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
     const params = new URLSearchParams();
     if (searchQuery) params.set("search", searchQuery);
     if (segmentFilter !== "all") params.set("segment", segmentFilter);
 
-    fetch(`/api/customers?${params.toString()}`)
-      .then((res) => res.json())
+    fetch(`/api/customers?${params.toString()}`, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed");
+        return res.json();
+      })
       .then((data) => {
         setCustomers(data.customers || []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        if (err.name !== "AbortError") setLoading(false);
+      });
+    return () => controller.abort();
   }, [searchQuery, segmentFilter]);
 
   const enterpriseCount = customers.filter((c) => c.segment === "enterprise").length;

@@ -134,17 +134,24 @@ export default function IntelligencePage() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch("/api/ai/intelligence")
-      .then((res) => res.json())
+    const controller = new AbortController();
+    fetch("/api/ai/intelligence", { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed");
+        return res.json();
+      })
       .then((d) => {
         if (d.error) throw new Error(d.error);
         setData(d);
         setLoading(false);
       })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          setError(true);
+          setLoading(false);
+        }
       });
+    return () => controller.abort();
   }, []);
 
   if (loading) {

@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSql } from "@/lib/db";
+import { requireAuth } from "@/lib/auth/api-auth";
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await requireAuth(request);
+    if (auth.error) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get("search");
     const segment = searchParams.get("segment");

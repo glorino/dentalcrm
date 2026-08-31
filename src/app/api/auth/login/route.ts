@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUserByEmail, verifyPassword, generateToken } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -7,26 +8,11 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_MAX = 5;
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
-    return true;
-  }
-  if (entry.count >= RATE_LIMIT_MAX) return false;
-  entry.count++;
-  return true;
-}
-
 export async function POST(req: Request) {
   try {
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
-    if (!checkRateLimit(ip)) {
+    const rateLimit = await checkRateLimit(`login:${ip}`, 5, "60 s");
+    if (!rateLimit.allowed) {
       return NextResponse.json({ error: "Too many login attempts. Please try again later." }, { status: 429 });
     }
 
@@ -64,7 +50,7 @@ export async function POST(req: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: 60 * 60 * 24,
       path: "/",
     });
 

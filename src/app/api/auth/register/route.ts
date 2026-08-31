@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createUser, getUserByEmail } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const registerSchema = z.object({
@@ -8,26 +9,11 @@ const registerSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
 });
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_MAX = 3;
-const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
-    return true;
-  }
-  if (entry.count >= RATE_LIMIT_MAX) return false;
-  entry.count++;
-  return true;
-}
-
 export async function POST(req: Request) {
   try {
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
-    if (!checkRateLimit(ip)) {
+    const rateLimit = await checkRateLimit(`register:${ip}`, 3, "60 s");
+    if (!rateLimit.allowed) {
       return NextResponse.json({ error: "Too many registration attempts. Please try again later." }, { status: 429 });
     }
 

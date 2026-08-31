@@ -83,17 +83,64 @@ export default function TicketDetailPage() {
   const [ticket, setTicket] = useState<TicketData | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newMessage, setNewMessage] = useState("");
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/tickets/${id}`)
-      .then((res) => res.json())
+    const controller = new AbortController();
+    fetch(`/api/tickets/${id}`, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed");
+        return res.json();
+      })
       .then((data) => {
         setTicket(data.ticket || null);
         setMessages(data.messages || []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        if (err.name !== "AbortError") setLoading(false);
+      });
+    return () => controller.abort();
   }, [id]);
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || sending) return;
+    setSending(true);
+    const msg = newMessage.trim();
+    setNewMessage("");
+
+    const optimisticMsg: Message = {
+      id: `temp-${Date.now()}`,
+      senderType: "agent",
+      senderName: "You",
+      content: msg,
+      channel: "web",
+      metadata: {},
+      createdAt: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, optimisticMsg]);
+
+    try {
+      const res = await fetch(`/api/tickets/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: msg }),
+      });
+      if (!res.ok) throw new Error("Failed to send");
+      const data = await res.json();
+      if (data.message) {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === optimisticMsg.id ? { ...data.message, id: data.message.id } : m))
+        );
+      }
+    } catch {
+      setMessages((prev) => prev.filter((m) => m.id !== optimisticMsg.id));
+      setNewMessage(msg);
+    } finally {
+      setSending(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -237,10 +284,18 @@ export default function TicketDetailPage() {
               <div className="flex gap-3">
                 <input
                   type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
                   placeholder={t("ticketDetailPage.typeMessage")}
-                  className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:shadow-lg focus:shadow-blue-500/10 transition-all duration-200 placeholder:text-gray-400"
+                  disabled={sending}
+                  className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:shadow-lg focus:shadow-blue-500/10 transition-all duration-200 placeholder:text-gray-400 disabled:opacity-50"
                 />
-                <button className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover-lift transition-all duration-200">
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!newMessage.trim() || sending}
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover-lift transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                   </svg>

@@ -94,19 +94,26 @@ export default function KnowledgePage() {
   };
 
   useEffect(() => {
+    const controller = new AbortController();
     const params = new URLSearchParams();
     if (searchQuery) params.set("search", searchQuery);
     if (selectedCollection) params.set("collection", selectedCollection);
 
-    fetch(`/api/knowledge?${params.toString()}`)
-      .then((res) => res.json())
+    fetch(`/api/knowledge?${params.toString()}`, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed");
+        return res.json();
+      })
       .then((data) => {
         setArticles(data.articles || []);
         setCollections(data.collections || []);
         setStats(data.stats || { totalArticles: 0, published: 0, totalViews: 0, totalAiUsed: 0, avgHelpful: 0 });
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        if (err.name !== "AbortError") setLoading(false);
+      });
+    return () => controller.abort();
   }, [searchQuery, selectedCollection]);
 
   if (loading) {

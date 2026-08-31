@@ -86,18 +86,25 @@ function TicketsContent() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
+    const controller = new AbortController();
     const params = new URLSearchParams();
     if (channelFilter !== "all") params.set("channel", channelFilter);
     if (statusFilter !== "all") params.set("status", statusFilter);
     if (search) params.set("search", search);
 
-    fetch(`/api/tickets?${params.toString()}`)
-      .then((res) => res.json())
+    fetch(`/api/tickets?${params.toString()}`, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed");
+        return res.json();
+      })
       .then((data) => {
         setTickets(data.tickets || []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        if (err.name !== "AbortError") setLoading(false);
+      });
+    return () => controller.abort();
   }, [channelFilter, statusFilter, search]);
 
   useEffect(() => {

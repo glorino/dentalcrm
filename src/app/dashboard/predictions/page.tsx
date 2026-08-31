@@ -62,22 +62,27 @@ export default function PredictionsPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [activeSection, setActiveSection] = useState("all");
 
-  const fetchData = useCallback(async (showRefreshing = false) => {
+  const fetchData = useCallback(async (showRefreshing = false, signal?: AbortSignal) => {
     if (showRefreshing) setRefreshing(true);
     setLoading(!data);
     try {
-      const res = await fetch("/api/ai/predictions");
+      const res = await fetch("/api/ai/predictions", { signal });
+      if (!res.ok) throw new Error("Failed");
       const d = await res.json();
       setData(d);
-    } catch {
-      console.error("Failed to fetch predictions");
+    } catch (err) {
+      if (err instanceof Error && err.name !== "AbortError") {
+        console.error("Failed to fetch predictions");
+      }
     }
     setLoading(false);
     setRefreshing(false);
   }, [data]);
 
   useEffect(() => {
-    fetchData();
+    const controller = new AbortController();
+    fetchData(false, controller.signal);
+    return () => controller.abort();
   }, []);
 
   const riskColor = (risk: number) => {

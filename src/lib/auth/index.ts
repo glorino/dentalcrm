@@ -9,7 +9,7 @@ function getJwtSecret(): string {
   return process.env.JWT_SECRET;
 }
 
-const TOKEN_EXPIRY = "7d";
+const TOKEN_EXPIRY = "24h";
 
 export interface User {
   id: string;

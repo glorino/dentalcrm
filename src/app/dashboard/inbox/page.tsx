@@ -146,34 +146,43 @@ export default function InboxPage() {
     }
   };
 
-  const fetchInbox = useCallback(async (channel?: string, search?: string) => {
+  const fetchInbox = useCallback(async (channel?: string, search?: string, signal?: AbortSignal) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (channel && channel !== "all") params.set("channel", channel);
       if (search) params.set("search", search);
-      const res = await fetch(`/api/inbox${params.toString() ? `?${params}` : ""}`);
+      const res = await fetch(`/api/inbox${params.toString() ? `?${params}` : ""}`, { signal });
+      if (!res.ok) throw new Error("Failed");
       const data: InboxData = await res.json();
       setInboxData(data);
       if (data.conversations.length > 0) {
         setSelectedConversation(prev => prev ?? data.conversations[0]);
       }
-    } catch {
-      setInboxData({ conversations: [], channelCounts: [], total: 0 });
+    } catch (err) {
+      if (err instanceof Error && err.name !== "AbortError") {
+        setInboxData({ conversations: [], channelCounts: [], total: 0 });
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchInbox(selectedChannel, searchQuery);
-  }, []);
+    const controller = new AbortController();
+    fetchInbox(selectedChannel, searchQuery, controller.signal);
+    return () => controller.abort();
+  }, [fetchInbox, selectedChannel, searchQuery]);
 
   useEffect(() => {
+    const controller = new AbortController();
     const timer = setTimeout(() => {
-      fetchInbox(selectedChannel, searchQuery);
+      fetchInbox(selectedChannel, searchQuery, controller.signal);
     }, 300);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [selectedChannel, searchQuery]);
 
   const handleRealtimeMessage = useCallback(
