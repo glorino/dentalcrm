@@ -2,13 +2,12 @@ import { openai } from "@ai-sdk/openai";
 import { generateText, tool, stepCountIs } from "ai";
 import { z } from "zod";
 import { getIndustryFromEnv, getIndustry } from "@/lib/industry/config";
-import { getSql } from "@/lib/db";
+import { sql } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 async function dbQuery(query: string, params?: unknown[]): Promise<any[]> {
   try {
-    const sql = getSql();
     const result = params ? await sql(query, params) : await sql(query);
     return result as any[];
   } catch (e: any) {

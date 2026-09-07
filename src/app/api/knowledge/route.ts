@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSql } from "@/lib/db";
+import { sql } from "@/lib/db";
 import { requireAuth } from "@/lib/auth/api-auth";
 
 export async function GET(request: NextRequest) {
@@ -48,7 +48,6 @@ export async function GET(request: NextRequest) {
       ORDER BY ka.updated_at DESC
     `;
 
-    const sql = getSql();
     const articles = await sql(query, values);
 
     const collectionCounts = await sql`

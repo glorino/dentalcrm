@@ -20,7 +20,7 @@ export function getSql(): SqlFn {
 export function sql(stringsOrQuery: TemplateStringsArray | string, ...values: unknown[]) {
   const s = getSql();
   if (typeof stringsOrQuery === "string") {
-    return s(stringsOrQuery, values);
+    return (s as any).query(stringsOrQuery, values);
   }
   return s(stringsOrQuery, ...values);
 }

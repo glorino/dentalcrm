@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSql } from "@/lib/db";
+import { sql } from "@/lib/db";
 import { requireAuth } from "@/lib/auth/api-auth";
 
 export async function GET(request: NextRequest) {
@@ -43,7 +43,6 @@ export async function GET(request: NextRequest) {
       ORDER BY c.created_at DESC
     `;
 
-    const sql = getSql();
     const customers = await sql(query, values);
 
     return NextResponse.json({

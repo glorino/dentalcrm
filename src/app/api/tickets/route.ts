@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSql } from "@/lib/db";
+import { sql, getSql } from "@/lib/db";
 import { requireAuth } from "@/lib/auth/api-auth";
 
 export async function GET(request: NextRequest) {
@@ -14,66 +14,42 @@ export async function GET(request: NextRequest) {
     const priority = searchParams.get("priority");
     const search = searchParams.get("search");
 
-    const conditions: string[] = ["1=1"];
-    const values: unknown[] = [];
-    let paramIndex = 1;
+    let tickets: any[];
 
-    if (channel) {
-      conditions.push(`LOWER(t.channel) = LOWER($${paramIndex})`);
-      values.push(channel);
-      paramIndex++;
+    if (channel || status || priority || search) {
+      let baseQuery = `
+        SELECT 
+          t.id, t.ticket_number, t.subject, t.message, t.status, t.priority,
+          t.channel, t.ai_confidence, t.sla_status, t.sla_due, t.sentiment,
+          t.sentiment_score, t.tags, t.created_at, t.updated_at,
+          c.name as customer_name, c.email as customer_email, c.company as customer_company
+        FROM tickets t
+        LEFT JOIN customers c ON t.customer_id = c.id
+        WHERE 1=1
+      `;
+      const params: any[] = [];
+      let idx = 1;
+
+      if (channel) { baseQuery += ` AND LOWER(t.channel) = LOWER($${idx})`; params.push(channel); idx++; }
+      if (status) { baseQuery += ` AND LOWER(t.status) = LOWER($${idx})`; params.push(status); idx++; }
+      if (priority) { baseQuery += ` AND LOWER(t.priority) = LOWER($${idx})`; params.push(priority); idx++; }
+      if (search) { baseQuery += ` AND (t.ticket_number ILIKE $${idx} OR t.subject ILIKE $${idx} OR c.name ILIKE $${idx})`; params.push(`%${search}%`); idx++; }
+
+      baseQuery += ` ORDER BY t.created_at DESC`;
+
+      tickets = await (getSql() as any).query(baseQuery, params);
+    } else {
+      tickets = await sql`
+        SELECT 
+          t.id, t.ticket_number, t.subject, t.message, t.status, t.priority,
+          t.channel, t.ai_confidence, t.sla_status, t.sla_due, t.sentiment,
+          t.sentiment_score, t.tags, t.created_at, t.updated_at,
+          c.name as customer_name, c.email as customer_email, c.company as customer_company
+        FROM tickets t
+        LEFT JOIN customers c ON t.customer_id = c.id
+        ORDER BY t.created_at DESC
+      `;
     }
-
-    if (status) {
-      conditions.push(`LOWER(t.status) = LOWER($${paramIndex})`);
-      values.push(status);
-      paramIndex++;
-    }
-
-    if (priority) {
-      conditions.push(`LOWER(t.priority) = LOWER($${paramIndex})`);
-      values.push(priority);
-      paramIndex++;
-    }
-
-    if (search) {
-      conditions.push(`(
-        t.ticket_number ILIKE $${paramIndex}
-        OR t.subject ILIKE $${paramIndex}
-        OR c.name ILIKE $${paramIndex}
-      )`);
-      values.push(`%${search}%`);
-      paramIndex++;
-    }
-
-    const query = `
-      SELECT 
-        t.id,
-        t.ticket_number,
-        t.subject,
-        t.message,
-        t.status,
-        t.priority,
-        t.channel,
-        t.ai_confidence,
-        t.sla_status,
-        t.sla_due,
-        t.sentiment,
-        t.sentiment_score,
-        t.tags,
-        t.created_at,
-        t.updated_at,
-        c.name as customer_name,
-        c.email as customer_email,
-        c.company as customer_company
-      FROM tickets t
-      LEFT JOIN customers c ON t.customer_id = c.id
-      WHERE ${conditions.join(" AND ")}
-      ORDER BY t.created_at DESC
-    `;
-
-    const sql = getSql();
-    const tickets = await sql(query, values);
 
     return NextResponse.json({
       tickets: tickets.map((t: Record<string, unknown>) => ({
@@ -98,8 +74,8 @@ export async function GET(request: NextRequest) {
       })),
       total: tickets.length,
     });
-  } catch (error) {
-    console.error("Tickets API error:", error);
+  } catch (error: any) {
+    console.error("Tickets API error:", error?.message || error);
     return NextResponse.json({ error: "Failed to fetch tickets" }, { status: 500 });
   }
 }

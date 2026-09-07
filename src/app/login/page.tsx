@@ -10,10 +10,10 @@ export default function LoginPage() {
   const { t } = useLang();
 
   const demoLogins = [
-    { email: "emeka@dentalcrm.com", role: t("roles.superAdmin"), name: "Dr. Chukwuemeka Obi", avatar: "CO", gradient: "from-violet-500 to-indigo-600" },
-    { email: "folake@dentalcrm.com", role: t("roles.manager"), name: "Folake Ogundipe", avatar: "FO", gradient: "from-emerald-500 to-teal-600" },
-    { email: "ngozi@dentalcrm.com", role: t("roles.agent"), name: "Ngozi Okolo", avatar: "NO", gradient: "from-blue-500 to-cyan-600" },
-    { email: "dayo@dentalcrm.com", role: t("roles.viewer"), name: "Dayo Fadugba", avatar: "DF", gradient: "from-gray-500 to-slate-600" },
+    { email: "admin@dentalcrm.com", role: t("roles.superAdmin"), name: "Alex Johnson", avatar: "AJ", gradient: "from-violet-500 to-indigo-600" },
+    { email: "sarah@dentalcrm.com", role: t("roles.manager"), name: "Sarah Kim", avatar: "SK", gradient: "from-emerald-500 to-teal-600" },
+    { email: "tom@dentalcrm.com", role: t("roles.agent"), name: "Tom Chen", avatar: "TC", gradient: "from-blue-500 to-cyan-600" },
+    { email: "viewer@dentalcrm.com", role: t("roles.viewer"), name: "Jordan Lee", avatar: "JL", gradient: "from-gray-500 to-slate-600" },
   ];
 
   const [email, setEmail] = useState("");

@@ -43,6 +43,7 @@ const PUBLIC_API_ROUTES = [
   "/api/webhooks/flutterwave",
   "/api/auth/login",
   "/api/auth/demo-login",
+  "/api/auth/register",
   "/api/auth/forgot-password",
   "/api/auth/reset-password",
 ];
