@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n/context";
 
 interface SettingItem {
@@ -19,8 +19,8 @@ export default function SettingsPage() {
     companyName: "DentalCRM",
     workingHours: "Mon-Fri 8am-6pm",
     timezone: "Africa/Lagos",
-    contactEmail: "info@glopresc.com",
-    contactPhone: "+2347082529729",
+    contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "info@glopresc.com",
+    contactPhone: process.env.NEXT_PUBLIC_CONTACT_PHONE || "+2347082529729",
     aiConfidence: "85",
     escalationThreshold: "70",
     autoResolution: "enabled",
@@ -28,11 +28,33 @@ export default function SettingsPage() {
   });
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && Object.keys(data).length > 0) {
+          setSettings((prev) => ({ ...prev, ...data }));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const handleSave = async (key: string, value: string) => {
     setSaving(true);
-    setSettings(prev => ({ ...prev, [key]: value }));
+    const newSettings = { ...settings, [key]: value };
+    setSettings(newSettings);
     setEditing(null);
-    setTimeout(() => setSaving(false), 500);
+    try {
+      await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSettings),
+      });
+    } catch (e) {
+      console.error("Failed to save settings:", e);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const sections = [

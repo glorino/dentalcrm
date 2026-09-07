@@ -116,14 +116,15 @@ export default function CustomersPage() {
       {/* Segment Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {[
-          { label: t("customersPage.enterprise"), count: enterpriseCount, revenue: formatNaira(enterpriseRevenue), icon: "🏢", gradient: "from-purple-500 via-violet-500 to-indigo-600", cardClass: "card-premium-purple" },
-          { label: t("customersPage.business"), count: businessCount, revenue: formatNaira(businessRevenue), icon: "📈", gradient: "from-blue-500 via-blue-600 to-cyan-600", cardClass: "card-premium-blue" },
-          { label: t("customersPage.pro"), count: proCount, revenue: formatNaira(proRevenue), icon: "⭐", gradient: "from-green-500 via-emerald-500 to-teal-600", cardClass: "card-premium-green" },
-          { label: t("customersPage.starter"), count: starterCount, revenue: formatNaira(starterRevenue), icon: "🚀", gradient: "from-amber-400 via-orange-500 to-red-500", cardClass: "card-premium-amber" },
+          { segment: "enterprise", label: t("customersPage.enterprise"), count: enterpriseCount, revenue: formatNaira(enterpriseRevenue), icon: "🏢", gradient: "from-purple-500 via-violet-500 to-indigo-600", cardClass: "card-premium-purple" },
+          { segment: "business", label: t("customersPage.business"), count: businessCount, revenue: formatNaira(businessRevenue), icon: "📈", gradient: "from-blue-500 via-blue-600 to-cyan-600", cardClass: "card-premium-blue" },
+          { segment: "pro", label: t("customersPage.pro"), count: proCount, revenue: formatNaira(proRevenue), icon: "⭐", gradient: "from-green-500 via-emerald-500 to-teal-600", cardClass: "card-premium-green" },
+          { segment: "starter", label: t("customersPage.starter"), count: starterCount, revenue: formatNaira(starterRevenue), icon: "🚀", gradient: "from-amber-400 via-orange-500 to-red-500", cardClass: "card-premium-amber" },
         ].map((s, i) => (
           <div
             key={s.label}
-            className={`rounded-3xl p-5 hover-lift cursor-pointer group animate-slide-up animate-delay-${(i + 1) * 100} ${s.cardClass}`}
+            onClick={() => setSegmentFilter(segmentFilter === s.segment ? "all" : s.segment)}
+            className={`rounded-3xl p-5 hover-lift cursor-pointer group animate-slide-up animate-delay-${(i + 1) * 100} ${s.cardClass} ${segmentFilter === s.segment ? "ring-2 ring-blue-500 ring-offset-2" : ""}`}
           >
             <div className="flex items-center gap-3 mb-4">
               <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${s.gradient} flex items-center justify-center text-white text-xl shadow-lg group-hover:scale-110 transition-transform duration-300`}>
@@ -198,7 +199,7 @@ export default function CustomersPage() {
                       </div>
                       <div>
                         <div className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{c.name}</div>
-                        <div className="text-xs text-gray-500">{c.email}</div>
+                        <div className="text-xs text-gray-500 truncate max-w-[150px]">{c.email}</div>
                       </div>
                     </Link>
                   </td>

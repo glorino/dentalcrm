@@ -194,7 +194,7 @@ export default function AgentsPage() {
             <button
               key={f}
               onClick={() => setTypeFilter(f)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all duration-200 ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all duration-200 min-h-[44px] ${
                 typeFilter === f
                   ? "bg-gray-900 text-white border-gray-900"
                   : "bg-white/80 text-gray-600 border-gray-200/60 hover:bg-gray-50"
@@ -211,7 +211,7 @@ export default function AgentsPage() {
             <button
               key={f}
               onClick={() => setStatusFilter(f)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all duration-200 ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all duration-200 min-h-[44px] ${
                 statusFilter === f
                   ? "bg-gray-900 text-white border-gray-900"
                   : "bg-white/80 text-gray-600 border-gray-200/60 hover:bg-gray-50"

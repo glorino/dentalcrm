@@ -1,6 +1,9 @@
 import nodemailer from "nodemailer";
 import { sql, generateTicketNumber } from "@/lib/db";
 
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "info@glopresc.com";
+const CONTACT_PHONE = process.env.CONTACT_PHONE || "+2347082529729";
+
 export interface EmailMessage {
   from: string;
   to: string;
@@ -84,8 +87,8 @@ export async function sendTicketCreatedEmail(to: string, ticketNumber: string, s
         </p>
         <p style="color: #475569; line-height: 1.6;">
           <strong>Need immediate help?</strong><br>
-          Email: info@glopresc.com<br>
-          WhatsApp: +2347082529729
+          Email: ${CONTACT_EMAIL}<br>
+          WhatsApp: ${CONTACT_PHONE}
         </p>
       </div>
       <div style="background: #1e293b; color: #94a3b8; padding: 15px; border-radius: 0 0 10px 10px; text-align: center; font-size: 12px;">

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-const ADMIN_EMAIL = "info@glopresc.com";
+const ADMIN_EMAIL = process.env.CONTACT_EMAIL || "info@glopresc.com";
 
 function buildCustomerEmail(data: {
   name: string;

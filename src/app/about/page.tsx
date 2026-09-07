@@ -331,7 +331,7 @@ export default function AboutPage() {
               <Link href="/support" className="inline-flex items-center gap-2 px-10 py-4 bg-white text-gray-900 rounded-full text-[15px] font-semibold hover:bg-gray-100 transition-all shadow-lg">
                 {t("aboutPage.cta.getStarted") || "Get Started"}
               </Link>
-              <a href="mailto:careers@dentalcrm.com" className="inline-flex items-center gap-2 px-10 py-4 bg-transparent border-2 border-blue-400/40 text-blue-300 rounded-full text-[15px] font-semibold hover:bg-blue-400/10 transition-all">
+              <a href={`mailto:${process.env.NEXT_PUBLIC_CAREERS_EMAIL || "careers@dentalcrm.com"}`} className="inline-flex items-center gap-2 px-10 py-4 bg-transparent border-2 border-blue-400/40 text-blue-300 rounded-full text-[15px] font-semibold hover:bg-blue-400/10 transition-all">
                 {t("aboutPage.cta.careers") || "View Careers"}
               </a>
             </div>

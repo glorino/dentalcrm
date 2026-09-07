@@ -330,7 +330,7 @@ export default function EscalationPage() {
                 </div>
 
                 {/* Hover Action Buttons */}
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+                <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 opacity-100 transition-all duration-300 sm:translate-x-2 sm:group-hover:translate-x-0">
                   <button onClick={async () => { await fetch(`/api/escalation`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: e.id, action: "assign" }) }); setEscalations(prev => prev.filter(x => x.id !== e.id)); }} className="btn-ghost text-xs hover:bg-white/50 rounded-lg px-3 py-1.5 transition-all duration-200">
                     {t("escalationPage.assign")}
                   </button>

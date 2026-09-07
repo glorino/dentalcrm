@@ -514,7 +514,7 @@ export default function IntelligencePage() {
                 <div className="text-xs text-gray-500">Action needed</div>
               </div>
             </div>
-            <button className="px-4 py-2 bg-amber-600 text-white text-sm font-semibold rounded-xl hover:bg-amber-700 transition-colors">
+            <button onClick={() => { const count = data?.patientLifecycle?.recallDue || 0; alert(`Recall patients list:\n\n${count} patients are due for recall. Full list coming soon.`); }} className="px-4 py-2 bg-amber-600 text-white text-sm font-semibold rounded-xl hover:bg-amber-700 transition-colors">
               View List
             </button>
           </div>

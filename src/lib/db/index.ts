@@ -199,6 +199,15 @@ export async function initDB() {
     )
   `;
 
+  // System settings
+  await s`
+    CREATE TABLE IF NOT EXISTS system_settings (
+      key VARCHAR(100) PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TIMESTAMP DEFAULT NOW()
+    );
+  `;
+
   // Appointment sequence
   await s`
     CREATE SEQUENCE IF NOT EXISTS appointment_seq START WITH 1001 INCREMENT BY 1

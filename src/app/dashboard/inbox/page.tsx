@@ -129,6 +129,9 @@ export default function InboxPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [messageText, setMessageText] = useState("");
+  const [bookmarked, setBookmarked] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const fileInputRef = useState<HTMLInputElement | null>(null);
   const realtimeUpdates = useRealtimeInbox();
 
   const handleSendMessage = async () => {
@@ -144,6 +147,55 @@ export default function InboxPage() {
     } catch (err) {
       console.error("Failed to send message:", err);
     }
+  };
+
+  const handleAiAssist = async () => {
+    if (!selectedConversation) return;
+    setAiLoading(true);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          conversationId: selectedConversation.id,
+          lastMessage: selectedConversation.lastMessage,
+          context: `Customer: ${selectedConversation.customerName}, Issue: ${selectedConversation.subject}`,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setMessageText(data.reply || "AI suggestion: I'd be happy to help you resolve this issue.");
+      }
+    } catch (err) {
+      setMessageText("AI suggestion: Thank you for contacting us. How can I assist you today?");
+    }
+    setAiLoading(false);
+  };
+
+  const handleAssign = () => {
+    alert("Coming soon - Agent assignment feature");
+  };
+
+  const handleAttachFile = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) alert(`File selected: ${file.name}`);
+    };
+    input.click();
+  };
+
+  const handleAddEmoji = () => {
+    setMessageText((prev) => prev + "😊");
+  };
+
+  const handleSuggestedAction = (action: string) => {
+    setMessageText((prev) => prev + (prev ? " " : "") + action);
+  };
+
+  const handleToggleBookmark = () => {
+    setBookmarked((prev) => !prev);
   };
 
   const fetchInbox = useCallback(async (channel?: string, search?: string, signal?: AbortSignal) => {
@@ -226,7 +278,7 @@ export default function InboxPage() {
   return (
     <div className="flex h-[calc(100vh-68px)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden animate-fade-in">
       {/* Left Panel - Channel Sidebar */}
-      <div className="w-[72px] flex flex-col items-center py-5 gap-1.5 glassmorphism border-r border-white/30 shrink-0">
+      <div className="hidden sm:flex w-[72px] flex-col items-center py-5 gap-1.5 glassmorphism border-r border-white/30 shrink-0">
         {Object.entries(channelMeta).map(([id, meta]) => {
           const count = id === "all" ? totalCount : (channelCounts[id] || 0);
           const isActive = selectedChannel === id;
@@ -422,17 +474,17 @@ export default function InboxPage() {
                 <div className="hidden sm:inline-flex px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700">
                   {t("dashboardPageExtra.inbox.aiPrefix")} {selectedConversation.aiConfidence}%
                 </div>
-                <button onClick={() => console.log("Assign clicked")} className="btn-ghost text-xs">
+                <button onClick={handleAssign} className="btn-ghost text-xs">
                   <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                   {t("inboxPage.assign")}
                 </button>
-                <button onClick={() => console.log("Save bookmark clicked")} className="btn-ghost text-xs">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onClick={handleToggleBookmark} className="btn-ghost text-xs">
+                  <svg className={`w-4 h-4 mr-1 ${bookmarked ? "fill-amber-500 text-amber-500" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                   </svg>
-                  {t("inboxPage.save")}
+                  {bookmarked ? "Saved" : t("inboxPage.save")}
                 </button>
               </div>
             </div>
@@ -484,12 +536,12 @@ export default function InboxPage() {
                     className="w-full rounded-2xl border border-gray-200/80 bg-white/80 backdrop-blur-sm px-4 py-3 text-sm resize-none focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
                   />
                   <div className="absolute right-2 bottom-2 flex items-center gap-1">
-                    <button onClick={() => console.log("Attach file clicked")} aria-label="Attach file" className="h-7 w-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all">
+                    <button onClick={handleAttachFile} aria-label="Attach file" className="h-7 w-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                       </svg>
                     </button>
-                    <button onClick={() => console.log("Add emoji clicked")} aria-label="Add emoji" className="h-7 w-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all">
+                    <button onClick={handleAddEmoji} aria-label="Add emoji" className="h-7 w-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
@@ -497,13 +549,13 @@ export default function InboxPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => console.log("AI Assist clicked")} className="btn-secondary text-xs">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <button onClick={handleAiAssist} disabled={aiLoading} className="btn-secondary text-xs min-h-[44px]">
+                    <svg className={`w-4 h-4 mr-1 ${aiLoading ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    {t("inboxPage.aiAssist")}
+                    {aiLoading ? "Thinking..." : t("inboxPage.aiAssist")}
                   </button>
-                  <button className="btn-primary text-xs" onClick={handleSendMessage} disabled={!messageText.trim()}>
+                  <button className="btn-primary text-xs min-h-[44px]" onClick={handleSendMessage} disabled={!messageText.trim()}>
                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                     </svg>
@@ -539,7 +591,7 @@ export default function InboxPage() {
       </div>
 
       {/* Right Panel - AI Insights & Customer Info */}
-      <div className={`${selectedConversation ? 'hidden lg:flex' : 'hidden'} w-[300px] flex-col overflow-y-auto scrollbar-thin border-l border-white/30 glassmorphism shrink-0`}>
+      <div className={`${selectedConversation ? 'hidden lg:flex' : 'hidden'} w-full sm:w-[300px] flex-col overflow-y-auto scrollbar-thin border-l border-white/30 glassmorphism shrink-0`}>
         {selectedConversation && (
           <>
             {/* Customer Info */}
@@ -614,7 +666,7 @@ export default function InboxPage() {
             <div className="p-4 border-b border-white/30 animate-fade-in animate-stagger-in stagger-3">
               <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">{t("inboxPage.suggestedActions")}</div>
               <div className="space-y-2">
-                <button onClick={() => console.log("Password Reset action clicked")} className="w-full text-left rounded-xl border border-white/40 bg-white/60 backdrop-blur-sm p-3 text-sm hover:bg-white/80 hover:border-blue-200 transition-all duration-300 group hover-lift">
+                <button onClick={() => handleSuggestedAction("I can help you with a password reset. Please verify your email address first.")} className="w-full text-left rounded-xl border border-white/40 bg-white/60 backdrop-blur-sm p-3 text-sm hover:bg-white/80 hover:border-blue-200 transition-all duration-300 group hover-lift">
                   <div className="flex items-center gap-2.5">
                     <span className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">🔑</span>
                     <div>
@@ -623,7 +675,7 @@ export default function InboxPage() {
                     </div>
                   </div>
                 </button>
-                <button onClick={() => console.log("Billing Credit action clicked")} className="w-full text-left rounded-xl border border-white/40 bg-white/60 backdrop-blur-sm p-3 text-sm hover:bg-white/80 hover:border-purple-200 transition-all duration-300 group hover-lift">
+                <button onClick={() => handleSuggestedAction("I've applied a billing credit to your account. You should see it reflected in your next invoice.")} className="w-full text-left rounded-xl border border-white/40 bg-white/60 backdrop-blur-sm p-3 text-sm hover:bg-white/80 hover:border-purple-200 transition-all duration-300 group hover-lift">
                   <div className="flex items-center gap-2.5">
                     <span className="h-9 w-9 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center text-white text-sm shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-transform duration-300">💰</span>
                     <div>
@@ -632,7 +684,7 @@ export default function InboxPage() {
                     </div>
                   </div>
                 </button>
-                <button onClick={() => console.log("Billing History action clicked")} className="w-full text-left rounded-xl border border-white/40 bg-white/60 backdrop-blur-sm p-3 text-sm hover:bg-white/80 hover:border-amber-200 transition-all duration-300 group hover-lift">
+                <button onClick={() => handleSuggestedAction("Here is your billing history summary. All payments are up to date.")} className="w-full text-left rounded-xl border border-white/40 bg-white/60 backdrop-blur-sm p-3 text-sm hover:bg-white/80 hover:border-amber-200 transition-all duration-300 group hover-lift">
                   <div className="flex items-center gap-2.5">
                     <span className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-sm shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform duration-300">📋</span>
                     <div>

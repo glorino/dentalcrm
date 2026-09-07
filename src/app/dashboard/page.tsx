@@ -172,7 +172,7 @@ export default function DashboardPage() {
         ].map((s, i) => (
           <div
             key={s.label}
-            className={`rounded-3xl border p-5 cursor-pointer group ${s.cardClass} transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl animate-scale-in stagger-${i + 1}`}
+            className={`rounded-3xl border p-5 group ${s.cardClass} transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl animate-scale-in stagger-${i + 1}`}
           >
             <div className="flex items-center justify-between mb-4">
               <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${s.gradient} flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
@@ -181,7 +181,7 @@ export default function DashboardPage() {
                 </svg>
               </div>
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1 tracking-tight">{s.value}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 tracking-tight">{s.value}</div>
             <div className="text-xs text-gray-500 font-medium">{s.label}</div>
           </div>
         ))}

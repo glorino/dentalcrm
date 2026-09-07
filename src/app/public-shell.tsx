@@ -148,7 +148,7 @@ export default function PublicShell({ children }: { children: React.ReactNode })
               <span>{t("footer.copyright")}</span>
               <Link href="/privacy" className="hover:text-gray-600 transition-colors">{t("misc.privacyPolicy")}</Link>
               <Link href="/terms" className="hover:text-gray-600 transition-colors">{t("misc.terms")}</Link>
-              <a href="mailto:info@glopresc.com" className="hover:text-gray-600 transition-colors">info@glopresc.com</a>
+              <a href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || "info@glopresc.com"}`} className="hover:text-gray-600 transition-colors">{process.env.NEXT_PUBLIC_CONTACT_EMAIL || "info@glopresc.com"}</a>
             </div>
             <div className="flex items-center gap-3">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="h-8 w-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:border-gray-300 transition-all">

@@ -3,7 +3,8 @@ import { initDB, sql, generateTicketNumber } from "@/lib/db";
 import { sendSMS } from "@/lib/channels/sms";
 import { broadcastInboxUpdate } from "@/lib/events";
 
-const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || "+2347082529729";
+const WHATSAPP_NUMBER = process.env.CONTACT_PHONE || "+2347082529729";
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "info@glopresc.com";
 
 export async function POST(req: NextRequest) {
   try {
@@ -91,11 +92,11 @@ function generateSMSResponse(text: string, ticketNumber: string): string {
   const lower = text.toLowerCase();
 
   if (lower.includes("password") || lower.includes("reset") || lower.includes("login")) {
-    return `Hi! To reset your password, visit: ${process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app"}/forgot-password. Enter your email and follow the instructions. Ticket: ${ticketNumber}`;
+    return `Hi! To reset your password, visit: ${process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm-beta.vercel.app"}/forgot-password. Enter your email and follow the instructions. Ticket: ${ticketNumber}`;
   }
 
   if (lower.includes("billing") || lower.includes("invoice") || lower.includes("payment")) {
-    return `Hi! For billing help, please email info@glopresc.com with your invoice number. Our team responds within 1 hour. Ticket: ${ticketNumber}`;
+    return `Hi! For billing help, please email ${CONTACT_EMAIL} with your invoice number. Our team responds within 1 hour. Ticket: ${ticketNumber}`;
   }
 
   if (lower.includes("order") || lower.includes("delivery") || lower.includes("track")) {
@@ -103,12 +104,12 @@ function generateSMSResponse(text: string, ticketNumber: string): string {
   }
 
   if (lower.includes("human") || lower.includes("agent") || lower.includes("speak")) {
-    return `Hi! A human agent will connect with you shortly. You can also reach us at info@glopresc.com or WhatsApp: ${WHATSAPP_NUMBER}. Ticket: ${ticketNumber}`;
+    return `Hi! A human agent will connect with you shortly. You can also reach us at ${CONTACT_EMAIL} or WhatsApp: ${WHATSAPP_NUMBER}. Ticket: ${ticketNumber}`;
   }
 
   if (lower.includes("hello") || lower.includes("hi") || lower.includes("hey")) {
     return `Hello! Welcome to DentalCRM Support. How can we help you today? Reply with your question. Ticket: ${ticketNumber}`;
   }
 
-  return `Hi! Thanks for your message. We've created ticket ${ticketNumber} and our team will respond shortly. Need immediate help? Email info@glopresc.com or WhatsApp: ${WHATSAPP_NUMBER}`;
+  return `Hi! Thanks for your message. We've created ticket ${ticketNumber} and our team will respond shortly. Need immediate help? Email ${CONTACT_EMAIL} or WhatsApp: ${WHATSAPP_NUMBER}`;
 }

@@ -2,16 +2,16 @@ import { sql } from "../src/lib/db";
 import { hashPassword } from "../src/lib/auth";
 
 const demoUsers = [
-  { email: "admin@supportflow.ai", password: "admin123", name: "Alex Johnson", role: "super_admin", team: "AI Operations" },
-  { email: "marcus@supportflow.ai", password: "demo123", name: "Marcus Johnson", role: "admin", team: "Support Engineering" },
-  { email: "sarah@supportflow.ai", password: "demo123", name: "Sarah Kim", role: "manager", team: "Billing & Accounts" },
-  { email: "emily@supportflow.ai", password: "demo123", name: "Emily Rodriguez", role: "manager", team: "Customer Success" },
-  { email: "tom@supportflow.ai", password: "demo123", name: "Tom Chen", role: "agent", team: "Support Engineering" },
-  { email: "lisa@supportflow.ai", password: "demo123", name: "Lisa Park", role: "agent", team: "Support Engineering" },
-  { email: "david@supportflow.ai", password: "demo123", name: "David Kim", role: "agent", team: "Billing & Accounts" },
-  { email: "rachel@supportflow.ai", password: "demo123", name: "Rachel Green", role: "agent", team: "Customer Success" },
-  { email: "mike@supportflow.ai", password: "demo123", name: "Mike Davis", role: "agent", team: "Support Engineering" },
-  { email: "viewer@supportflow.ai", password: "demo123", name: "Jordan Lee", role: "viewer", team: null },
+  { email: "admin@dentalcrm.com", password: "admin123", name: "Alex Johnson", role: "super_admin", team: "AI Operations" },
+  { email: "marcus@dentalcrm.com", password: "demo123", name: "Marcus Johnson", role: "admin", team: "Support Engineering" },
+  { email: "sarah@dentalcrm.com", password: "demo123", name: "Sarah Kim", role: "manager", team: "Billing & Accounts" },
+  { email: "emily@dentalcrm.com", password: "demo123", name: "Emily Rodriguez", role: "manager", team: "Customer Success" },
+  { email: "tom@dentalcrm.com", password: "demo123", name: "Tom Chen", role: "agent", team: "Support Engineering" },
+  { email: "lisa@dentalcrm.com", password: "demo123", name: "Lisa Park", role: "agent", team: "Support Engineering" },
+  { email: "david@dentalcrm.com", password: "demo123", name: "David Kim", role: "agent", team: "Billing & Accounts" },
+  { email: "rachel@dentalcrm.com", password: "demo123", name: "Rachel Green", role: "agent", team: "Customer Success" },
+  { email: "mike@dentalcrm.com", password: "demo123", name: "Mike Davis", role: "agent", team: "Support Engineering" },
+  { email: "viewer@dentalcrm.com", password: "demo123", name: "Jordan Lee", role: "viewer", team: null },
 ];
 
 const demoCustomers = [
@@ -86,7 +86,7 @@ async function seed() {
   for (let i = 0; i < demoTickets.length; i++) {
     const ticket = demoTickets[i];
     const customerId = customerIds[i % customerIds.length];
-    const assigneeId = userIdMap["tom@supportflow.ai"];
+    const assigneeId = userIdMap["tom@dentalcrm.com"];
     const ticketNumber = `SF-${1234 - i}`;
     const slaDue = new Date(Date.now() + (ticket.priority === "urgent" ? 3600000 : ticket.priority === "high" ? 7200000 : 14400000));
 
@@ -138,10 +138,10 @@ async function seed() {
 
   console.log("Seed complete!");
   console.log("\nDemo Logins:");
-  console.log("Admin:    admin@supportflow.ai / admin123");
-  console.log("Manager:  sarah@supportflow.ai / demo123");
-  console.log("Agent:    tom@supportflow.ai / demo123");
-  console.log("Viewer:   viewer@supportflow.ai / demo123");
+  console.log("Admin:    admin@dentalcrm.com / admin123");
+  console.log("Manager:  sarah@dentalcrm.com / demo123");
+  console.log("Agent:    tom@dentalcrm.com / demo123");
+  console.log("Viewer:   viewer@dentalcrm.com / demo123");
 }
 
 seed().catch(console.error);

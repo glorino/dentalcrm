@@ -176,8 +176,8 @@ export default function TermsPage() {
             </p>
             <div className="mt-3 p-4 bg-gray-50 rounded-xl">
               <p className="text-gray-700 font-medium">DentalCRM</p>
-              <p className="text-gray-600">Email: info@glopresc.com</p>
-              <p className="text-gray-600">Phone: +234 905 998 0991</p>
+              <p className="text-gray-600">Email: {process.env.NEXT_PUBLIC_CONTACT_EMAIL || "info@glopresc.com"}</p>
+              <p className="text-gray-600">Phone: {process.env.NEXT_PUBLIC_CONTACT_PHONE || "+234 905 998 0991"}</p>
             </div>
           </section>
         </div>

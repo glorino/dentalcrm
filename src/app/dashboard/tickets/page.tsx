@@ -84,6 +84,9 @@ function TicketsContent() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -154,6 +157,56 @@ function TicketsContent() {
     { label: t("dashboardPage.status.resolved"), count: resolvedCount, gradient: "from-green-500 via-green-600 to-emerald-600", cardClass: "card-premium-green", icon: "✅", filter: "resolved" },
     { label: `${t("ticketsPage.sla")} ${t("ticketsPage.breached")}`, count: breachedCount, gradient: "from-red-600 via-red-700 to-red-800", cardClass: "card-premium-red", icon: "⚠️", filter: "breached" },
   ];
+
+  const handleBulkAssign = async (agentId: string) => {
+    if (!selectedTickets.length || bulkLoading) return;
+    setBulkLoading(true);
+    try {
+      await fetch("/api/tickets", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticketIds: selectedTickets, action: "assign", agentId }),
+      });
+      setSelectedTickets([]);
+      setShowAssignModal(false);
+    } catch (err) {
+      console.error("Bulk assign failed:", err);
+    }
+    setBulkLoading(false);
+  };
+
+  const handleBulkStatus = async (status: string) => {
+    if (!selectedTickets.length || bulkLoading) return;
+    setBulkLoading(true);
+    try {
+      await fetch("/api/tickets", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticketIds: selectedTickets, action: "status", status }),
+      });
+      setSelectedTickets([]);
+      setShowStatusDropdown(false);
+    } catch (err) {
+      console.error("Bulk status update failed:", err);
+    }
+    setBulkLoading(false);
+  };
+
+  const handleBulkClose = async () => {
+    if (!selectedTickets.length || bulkLoading) return;
+    setBulkLoading(true);
+    try {
+      await fetch("/api/tickets", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticketIds: selectedTickets, action: "status", status: "resolved" }),
+      });
+      setSelectedTickets([]);
+    } catch (err) {
+      console.error("Bulk close failed:", err);
+    }
+    setBulkLoading(false);
+  };
 
   const handleExport = () => {
     if (!tickets.length) return;
@@ -265,9 +318,28 @@ function TicketsContent() {
             </div>
             <span className="text-sm text-blue-700 font-semibold">{selectedTickets.length} {t("ticketsPage.selected")}</span>
           </div>
-          <button className="btn-ghost text-xs hover:bg-blue-100/80" onClick={() => console.log("Assign To clicked")}>{t("ticketsPage.assignTo")}</button>
-          <button className="btn-ghost text-xs hover:bg-blue-100/80" onClick={() => console.log("Change Status clicked")}>{t("ticketsPage.changeStatus")}</button>
-          <button className="btn-ghost text-xs text-red-600 hover:bg-red-50" onClick={() => console.log("Close Tickets clicked")}>{t("ticketsPage.closeTickets")}</button>
+          <div className="relative">
+            <button className="btn-ghost text-xs hover:bg-blue-100/80 min-h-[44px]" onClick={() => setShowAssignModal(true)} disabled={bulkLoading}>{t("ticketsPage.assignTo")}</button>
+            {showAssignModal && (
+              <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-200 py-1 z-10 w-48">
+                {["Agent Smith", "Agent Johnson", "Agent Williams"].map((name, i) => (
+                  <button key={name} onClick={() => handleBulkAssign(String(i + 1))} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-50 font-medium">{name}</button>
+                ))}
+                <button onClick={() => setShowAssignModal(false)} className="w-full text-center text-xs text-gray-400 hover:text-gray-600 py-2">Cancel</button>
+              </div>
+            )}
+          </div>
+          <div className="relative">
+            <button className="btn-ghost text-xs hover:bg-blue-100/80 min-h-[44px]" onClick={() => setShowStatusDropdown(!showStatusDropdown)} disabled={bulkLoading}>{t("ticketsPage.changeStatus")}</button>
+            {showStatusDropdown && (
+              <div className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-200 py-1 z-10 w-40">
+                {["open", "pending", "escalated", "resolved"].map((s) => (
+                  <button key={s} onClick={() => handleBulkStatus(s)} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-50 capitalize">{t(`dashboardPage.status.${s}`)}</button>
+                ))}
+              </div>
+            )}
+          </div>
+          <button className="btn-ghost text-xs text-red-600 hover:bg-red-50 min-h-[44px]" onClick={handleBulkClose} disabled={bulkLoading}>{t("ticketsPage.closeTickets")}</button>
         </div>
       )}
 

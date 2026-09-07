@@ -16,7 +16,7 @@ export default function SupportPage() {
       border: "border-green-200",
       hoverBorder: "hover:border-green-400",
       desc: t("supportPage.whatsappTitle"),
-      action: "https://wa.me/2347082529729",
+      action: `https://wa.me/${(process.env.NEXT_PUBLIC_CONTACT_PHONE || "+2347082529729").replace(/[^0-9]/g, "")}`,
       external: true,
     },
     {

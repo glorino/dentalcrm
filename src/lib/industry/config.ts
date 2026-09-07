@@ -1,3 +1,6 @@
+const getContactEmail = () => process.env.CONTACT_EMAIL || "info@glopresc.com";
+const getContactPhone = () => process.env.CONTACT_PHONE || "+2347082529729";
+
 export type IndustrySlug =
   | "healthcare"
   | "realestate"
@@ -61,10 +64,10 @@ export const industries: Record<IndustrySlug, IndustryConfig> = {
       gradientCSS: "linear-gradient(135deg, #0891b2 0%, #0d9488 100%)",
     },
     contact: {
-      email: "info@glopresc.com",
-      whatsapp: "+2347082529729",
-      phone: "+2347082529729",
-      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app",
+      email: getContactEmail(),
+      whatsapp: getContactPhone(),
+      phone: getContactPhone(),
+      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm-beta.vercel.app",
     },
     chatbot: {
       name: "Dental AI",
@@ -78,8 +81,8 @@ Guidelines:
 - Direct dental emergencies to appropriate services
 - Handle patient information with utmost confidentiality
 - All currency is in Naira (₦)
-- Contact email: info@glopresc.com
-- WhatsApp: +2347082529729
+- Contact email: ${getContactEmail()}
+- WhatsApp: ${getContactPhone()}
 - For emergencies, always direct to emergency services`,
       quickActions: [
         { label: "Book dental appointment", icon: "🦷" },
@@ -91,15 +94,15 @@ Guidelines:
         greeting:
           "Hello! Welcome to DentalCRM. I'm your dental hospital support assistant.\n\nI can help you with:\n• Dental appointment scheduling\n• Treatment information\n• Consultation requests\n• Insurance verification\n\nHow can I assist you today?",
         emergency:
-          "🚨 For dental emergencies, please:\n\n1. Call our emergency line: +2347082529729\n2. Or visit the nearest dental hospital\n3. For severe pain or trauma, go to the ER\n\nI'm an AI assistant and cannot provide emergency dental care.",
+          `🚨 For dental emergencies, please:\n\n1. Call our emergency line: ${getContactPhone()}\n2. Or visit the nearest dental hospital\n3. For severe pain or trauma, go to the ER\n\nI'm an AI assistant and cannot provide emergency dental care.`,
         appointment:
           "I can help you schedule a dental appointment. Please provide:\n\n• Dentist name or specialty (general, orthodontist, etc.)\n• Preferred date and time\n• Reason for visit (checkup, cleaning, treatment)\n• Your patient ID (if available)\n\nI'll check availability and confirm.",
         treatment:
           "I can help you with treatment information. We offer:\n\n• General dentistry & checkups\n• Teeth cleaning & whitening\n• Orthodontics (braces/aligners)\n• Root canal treatment\n• Dental implants\n• Emergency dental care\n\nWhat treatment are you interested in?",
         human:
-          "I'll connect you with our dental reception team right away.\n\n📧 Email: info@glopresc.com\n📱 WhatsApp: +2347082529729\n\nOur team is available Mon-Sat 8am-6pm.",
+          `I'll connect you with our dental reception team right away.\n\n📧 Email: ${getContactEmail()}\n📱 WhatsApp: ${getContactPhone()}\n\nOur team is available Mon-Sat 8am-6pm.`,
         default:
-          "Thank you for contacting DentalCRM! I can help you with:\n\n• Dental appointment scheduling\n• Treatment information\n• Consultation requests\n• Insurance verification\n\nFor dental emergencies, please call +2347082529729.\n\nHow can I assist you?",
+          `Thank you for contacting DentalCRM! I can help you with:\n\n• Dental appointment scheduling\n• Treatment information\n• Consultation requests\n• Insurance verification\n\nFor dental emergencies, please call ${getContactPhone()}.\n\nHow can I assist you?`,
       },
     },
     ticketCategories: [
@@ -140,10 +143,10 @@ Guidelines:
       gradientCSS: "linear-gradient(135deg, #059669 0%, #0d9488 100%)",
     },
     contact: {
-      email: "info@glopresc.com",
-      whatsapp: "+2347082529729",
-      phone: "+2347082529729",
-      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app",
+      email: getContactEmail(),
+      whatsapp: getContactPhone(),
+      phone: getContactPhone(),
+      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm-beta.vercel.app",
     },
     chatbot: {
       name: "Property AI",
@@ -157,8 +160,8 @@ Guidelines:
 - Provide pricing and availability information
 - Handle negotiation inquiries professionally
 - All currency is in Naira (₦)
-- Contact email: info@glopresc.com
-- WhatsApp: +2347082529729`,
+- Contact email: ${getContactEmail()}
+- WhatsApp: ${getContactPhone()}`,
       quickActions: [
         { label: "Search properties", icon: "🏠" },
         { label: "Schedule inspection", icon: "📅" },
@@ -175,7 +178,7 @@ Guidelines:
         pricing:
           "Our properties range from ₦15,000,000 to ₦500,000,000 depending on location and type.\n\nWould you like me to:\n• Send you available listings in your budget\n• Schedule a viewing\n• Connect you with an agent for negotiation",
         human:
-          "I'll connect you with one of our property specialists right away.\n\n📧 Email: info@glopresc.com\n📱 WhatsApp: +2347082529729\n\nOur agents are available 8am-8pm daily.",
+          `I'll connect you with one of our property specialists right away.\n\n📧 Email: ${getContactEmail()}\n📱 WhatsApp: ${getContactPhone()}\n\nOur agents are available 8am-8pm daily.`,
         default:
           "Thank you for your interest in PropertyCRM! I can help you with:\n\n• Property search and recommendations\n• Scheduling inspections\n• Pricing information\n• Agent connection\n\nHow can I assist you today?",
       },
@@ -218,10 +221,10 @@ Guidelines:
       gradientCSS: "linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%)",
     },
     contact: {
-      email: "info@glopresc.com",
-      whatsapp: "+2347082529729",
-      phone: "+2347082529729",
-      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app",
+      email: getContactEmail(),
+      whatsapp: getContactPhone(),
+      phone: getContactPhone(),
+      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm-beta.vercel.app",
     },
     chatbot: {
       name: "Fin AI",
@@ -235,8 +238,8 @@ Guidelines:
 - Guide users through account verification
 - Handle fraud reports seriously and escalate immediately
 - All currency is in Naira (₦)
-- Contact email: info@glopresc.com
-- WhatsApp: +2347082529729`,
+- Contact email: ${getContactEmail()}
+- WhatsApp: ${getContactPhone()}`,
       quickActions: [
         { label: "Check transaction", icon: "💳" },
         { label: "Report fraud", icon: "🚨" },
@@ -249,11 +252,11 @@ Guidelines:
         transaction:
           "I can help you check your transaction status. Please provide:\n\n• Transaction reference number\n• Date of transaction\n• Amount (approximate)\n\nI'll look up the details for you.",
         fraud:
-          "🚨 I take fraud reports very seriously.\n\nFor immediate assistance:\n1. Call our fraud hotline: +2347082529729\n2. Or provide your account details (last 4 digits only)\n\nI'll escalate this to our security team immediately.",
+          `🚨 I take fraud reports very seriously.\n\nFor immediate assistance:\n1. Call our fraud hotline: ${getContactPhone()}\n2. Or provide your account details (last 4 digits only)\n\nI'll escalate this to our security team immediately.`,
         account:
           "I can help with account-related issues:\n\n• Password reset\n• Account verification\n• Transaction limits\n• Account status\n\nFor security, I'll never ask for your full password or PIN.",
         human:
-          "I'll connect you with a financial specialist immediately.\n\n📧 Email: info@glopresc.com\n📱 WhatsApp: +2347082529729\n\nOur team is available 24/7 for urgent matters.",
+          `I'll connect you with a financial specialist immediately.\n\n📧 Email: ${getContactEmail()}\n📱 WhatsApp: ${getContactPhone()}\n\nOur team is available 24/7 for urgent matters.`,
         default:
           "Thank you for contacting FinSupport! I can help you with:\n\n• Transaction inquiries and disputes\n• Account support\n• Fraud reporting\n• Compliance questions\n\nFor security, please don't share sensitive information like full account numbers or PINs.\n\nHow can I assist you?",
       },
@@ -296,10 +299,10 @@ Guidelines:
       gradientCSS: "linear-gradient(135deg, #2563eb 0%, #0891b2 100%)",
     },
     contact: {
-      email: "info@glopresc.com",
-      whatsapp: "+2347082529729",
-      phone: "+2347082529729",
-      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app",
+      email: getContactEmail(),
+      whatsapp: getContactPhone(),
+      phone: getContactPhone(),
+      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm-beta.vercel.app",
     },
     chatbot: {
       name: "Insure AI",
@@ -313,8 +316,8 @@ Guidelines:
 - Handle policy renewal inquiries
 - Be sensitive during claim situations
 - All currency is in Naira (₦)
-- Contact email: info@glopresc.com
-- WhatsApp: +2347082529729`,
+- Contact email: ${getContactEmail()}
+- WhatsApp: ${getContactPhone()}`,
       quickActions: [
         { label: "File a claim", icon: "📋" },
         { label: "Check policy", icon: "📄" },
@@ -331,7 +334,7 @@ Guidelines:
         renewal:
           "Your policy renewal is important! I can help you:\n\n• Check your renewal date\n• Review coverage options\n• Process payment\n• Update your policy details\n\nWhen is your policy due for renewal?",
         human:
-          "I'll connect you with an insurance specialist right away.\n\n📧 Email: info@glopresc.com\n📱 WhatsApp: +2347082529729\n\nOur team is available Mon-Fri 8am-6pm.",
+          `I'll connect you with an insurance specialist right away.\n\n📧 Email: ${getContactEmail()}\n📱 WhatsApp: ${getContactPhone()}\n\nOur team is available Mon-Fri 8am-6pm.`,
         default:
           "Thank you for contacting InsureCRM! I can help you with:\n\n• Filing and tracking claims\n• Policy information and coverage\n• Renewals and payments\n• Agent connection\n\nHow can I assist you today?",
       },
@@ -374,10 +377,10 @@ Guidelines:
       gradientCSS: "linear-gradient(135deg, #ea580c 0%, #d97706 100%)",
     },
     contact: {
-      email: "info@glopresc.com",
-      whatsapp: "+2347082529729",
-      phone: "+2347082529729",
-      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app",
+      email: getContactEmail(),
+      whatsapp: getContactPhone(),
+      phone: getContactPhone(),
+      website: process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm-beta.vercel.app",
     },
     chatbot: {
       name: "Shop AI",
@@ -391,8 +394,8 @@ Guidelines:
 - Provide product recommendations
 - Handle delivery inquiries
 - All currency is in Naira (₦)
-- Contact email: info@glopresc.com
-- WhatsApp: +2347082529729`,
+- Contact email: ${getContactEmail()}
+- WhatsApp: ${getContactPhone()}`,
       quickActions: [
         { label: "Track order", icon: "📦" },
         { label: "Return item", icon: "🔄" },
@@ -409,7 +412,7 @@ Guidelines:
         product:
           "I'd be happy to help you with product information! I can provide:\n\n• Product details and specifications\n• Availability and pricing\n• Similar product recommendations\n• Size/fit guidance\n\nWhat product are you interested in?",
         human:
-          "I'll connect you with a support agent right away.\n\n📧 Email: info@glopresc.com\n📱 WhatsApp: +2347082529729\n\nOur team is available Mon-Sat 9am-8pm.",
+          `I'll connect you with a support agent right away.\n\n📧 Email: ${getContactEmail()}\n📱 WhatsApp: ${getContactPhone()}\n\nOur team is available Mon-Sat 9am-8pm.`,
         default:
           "Thank you for contacting ShopCRM! I can help you with:\n\n• Order tracking and delivery\n• Returns and refunds\n• Product information\n• Customer support\n\nHow can I assist you today?",
       },

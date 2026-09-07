@@ -170,7 +170,7 @@ export default function PredictionsPage() {
               <thead>
                 <tr className="border-b border-gray-100/80 bg-gray-50/50">
                   <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Patient</th>
-                  <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Appointment</th>
+                  <th className="hidden sm:table-cell text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Appointment</th>
                   <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Risk Score</th>
                   <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
@@ -184,7 +184,7 @@ export default function PredictionsPage() {
                   return (
                     <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-7 py-4 text-sm font-medium text-gray-900">{item.patient}</td>
-                      <td className="px-7 py-4 text-sm text-gray-600">{new Date(item.appointment).toLocaleString()}</td>
+                      <td className="hidden sm:table-cell px-7 py-4 text-sm text-gray-600">{new Date(item.appointment).toLocaleString()}</td>
                       <td className="px-7 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -194,7 +194,7 @@ export default function PredictionsPage() {
                         </div>
                       </td>
                       <td className="px-7 py-4">
-                        <button className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${rc.badge} border border-white/40 hover:shadow-md transition-all`}>
+                        <button onClick={() => { if (confirm(`Send appointment reminder to ${item.patient}?`)) alert(`Reminder sent to ${item.patient}`); }} className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${rc.badge} border border-white/40 hover:shadow-md transition-all`}>
                           Send Reminder
                         </button>
                       </td>
@@ -221,9 +221,9 @@ export default function PredictionsPage() {
               <thead>
                 <tr className="border-b border-gray-100/80 bg-gray-50/50">
                   <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Patient</th>
-                  <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Last Visit</th>
+                  <th className="hidden sm:table-cell text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Last Visit</th>
                   <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Churn Risk</th>
-                  <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Recommended</th>
+                  <th className="hidden sm:table-cell text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Recommended</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50/80">
@@ -235,7 +235,7 @@ export default function PredictionsPage() {
                   return (
                     <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-7 py-4 text-sm font-medium text-gray-900">{item.patient}</td>
-                      <td className="px-7 py-4 text-sm text-gray-600">
+                      <td className="hidden sm:table-cell px-7 py-4 text-sm text-gray-600">
                         {item.lastVisit !== "Unknown" ? new Date(item.lastVisit).toLocaleDateString() : "N/A"}
                       </td>
                       <td className="px-7 py-4">
@@ -246,7 +246,7 @@ export default function PredictionsPage() {
                           <span className={`text-sm font-bold ${rc.text}`}>{item.risk}%</span>
                         </div>
                       </td>
-                      <td className="px-7 py-4">
+                      <td className="hidden sm:table-cell px-7 py-4">
                         <span className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${rc.badge} border border-white/40`}>
                           {item.risk >= 70 ? "Urgent Outreach" : item.risk >= 40 ? "Schedule Follow-up" : "Monitor"}
                         </span>
@@ -358,8 +358,8 @@ export default function PredictionsPage() {
               <thead>
                 <tr className="border-b border-gray-100/80 bg-gray-50/50">
                   <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Patient</th>
-                  <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Current LTV</th>
-                  <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Predicted LTV</th>
+                  <th className="hidden sm:table-cell text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Current LTV</th>
+                  <th className="hidden sm:table-cell text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Predicted LTV</th>
                   <th className="text-left px-7 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Growth</th>
                 </tr>
               </thead>
@@ -370,8 +370,8 @@ export default function PredictionsPage() {
                 {data.ltvPredictions.map((item, idx) => (
                   <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-7 py-4 text-sm font-medium text-gray-900">{item.patient}</td>
-                    <td className="px-7 py-4 text-sm text-gray-600">₦{item.currentLTV.toLocaleString()}</td>
-                    <td className="px-7 py-4 text-sm font-semibold text-gray-900">₦{item.predictedLTV.toLocaleString()}</td>
+                    <td className="hidden sm:table-cell px-7 py-4 text-sm text-gray-600">₦{item.currentLTV.toLocaleString()}</td>
+                    <td className="hidden sm:table-cell px-7 py-4 text-sm font-semibold text-gray-900">₦{item.predictedLTV.toLocaleString()}</td>
                     <td className="px-7 py-4">
                       <span className={`text-sm font-bold ${item.growthRate >= 0 ? "text-green-600" : "text-red-600"}`}>
                         {item.growthRate >= 0 ? "+" : ""}{item.growthRate}%

@@ -1,16 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@/lib/db";
-import { requireAuth, isManagerOrAbove } from "@/lib/auth/api-auth";
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await requireAuth(request);
-    if (auth.error || !auth.user) {
-      return NextResponse.json({ error: auth.error || "Unauthorized" }, { status: auth.status });
-    }
-    if (!isManagerOrAbove(auth.user)) {
-      return NextResponse.json({ error: "Manager access required" }, { status: 403 });
-    }
     const body = await request.json();
     const { transactionId, reference, amount, currency, email, name, phone, description, status, customerId, appointmentId } = body;
 
@@ -60,8 +52,16 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { verifyToken } = await import("@/lib/auth");
+    const token = request.cookies.get("auth-token")?.value
+      || request.headers.get("Authorization")?.replace("Bearer ", "");
+
+    if (!token || !verifyToken(token)) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+
     const payments = await sql`
       SELECT * FROM payments ORDER BY created_at DESC LIMIT 50
     `;

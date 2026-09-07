@@ -3,8 +3,9 @@ import { sendWhatsAppMessage, verifyWhatsAppSignature } from "@/lib/channels/wha
 import { broadcastInboxUpdate } from "@/lib/events";
 import { initDB, sql, generateTicketNumber } from "@/lib/db";
 
-const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || "+2347082529729";
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm.vercel.app";
+const WHATSAPP_NUMBER = process.env.CONTACT_PHONE || "+2347082529729";
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "info@glopresc.com";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://dentalcrm-beta.vercel.app";
 
 export async function POST(req: NextRequest) {
   try {
@@ -212,7 +213,7 @@ I understand you're having trouble logging in, ${customerName}. Let's get this r
 • If you no longer have access to your email, contact us directly
 
 *Still can't access your account?*
-Reply with "human" to speak with our support team, or email us at info@glopresc.com with:
+Reply with "human" to speak with our support team, or email us at ${CONTACT_EMAIL} with:
 - Your registered email address
 - A description of the issue
 - Any error messages you're seeing
@@ -246,7 +247,7 @@ I'm here to help resolve your billing concern, ${customerName}. To assist you ef
 • Invoices are available in your dashboard under Settings → Billing
 
 *For immediate assistance:*
-Email: info@glopresc.com
+Email: ${CONTACT_EMAIL}
 Subject: "Billing - [Your Issue]"
 
 Ticket created: *${ticketNumber}*
@@ -371,7 +372,7 @@ I understand you'd like to delete your account, ${customerName}. Before we proce
 *To request account deletion:*
 
 Option 1: Email Request (Recommended)
-Send an email to: info@glopresc.com
+Send an email to: ${CONTACT_EMAIL}
 Subject: "Delete Account - [Your Email Address]"
 Include: Your full name and reason for deletion (optional)
 
@@ -517,7 +518,7 @@ We'd love to show you how DentalCRM can transform your customer support, ${custo
 5. Confirm your booking
 
 *Or email us directly:*
-📧 info@glopresc.com
+📧 ${CONTACT_EMAIL}
 Subject: "Demo Request - [Your Company Name]"
 
 *What to prepare:*
@@ -543,7 +544,7 @@ Absolutely, ${customerName}! I'll connect you with a human agent right away.
 
 *While you wait, you can also reach us through:*
 
-📧 *Email:* info@glopresc.com
+📧 *Email:* ${CONTACT_EMAIL}
    Subject: "Support Request - [Brief Issue]"
 
 📱 *WhatsApp:* ${WHATSAPP_NUMBER}
@@ -610,7 +611,7 @@ I'm glad I could help. Your satisfaction is our priority.
 Quick links:
 • Account settings: ${APP_URL}/dashboard/settings
 • Knowledge base: ${APP_URL}/knowledge
-• Contact support: info@glopresc.com
+• Contact support: ${CONTACT_EMAIL}
 
 Ticket *${ticketNumber}* is open and our team is on it.
 
@@ -702,7 +703,7 @@ I'm here to help you with:
 ✓ Direct solutions to common problems
 
 *Need immediate help?*
-Email: info@glopresc.com
+Email: ${CONTACT_EMAIL}
 WhatsApp: ${WHATSAPP_NUMBER}
 
 Ticket created: *${ticketNumber}*

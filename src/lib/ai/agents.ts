@@ -6,7 +6,7 @@ import { sql } from "@/lib/db";
 export const intakeAgent = {
   name: "Intake Agent",
   model: openai("gpt-4o-mini"),
-  system: `You are the Intake Agent for SupportFlow AI. Your job is to classify and route incoming customer messages.
+  system: `You are the Intake Agent for DentalCRM. Your job is to classify and route incoming customer messages.
 
 When a message arrives, you must:
 1. Detect the intent (billing, technical, account, general, feature_request, bug_report)
@@ -55,7 +55,7 @@ Be fast and accurate. This is the first step in the pipeline.`,
 export const knowledgeAgent = {
   name: "Knowledge Agent",
   model: openai("gpt-4o"),
-  system: `You are the Knowledge Agent for SupportFlow AI. Your job is to retrieve relevant information from the knowledge base to help resolve customer issues.
+  system: `You are the Knowledge Agent for DentalCRM. Your job is to retrieve relevant information from the knowledge base to help resolve customer issues.
 
 When called, you must:
 1. Search the knowledge base for relevant articles
@@ -141,7 +141,7 @@ Always cite your sources with article IDs and titles.`,
 export const resolutionAgent = {
   name: "Resolution Agent",
   model: openai("gpt-4o"),
-  system: `You are the Resolution Agent for SupportFlow AI. Your job is to generate helpful, accurate responses to customer issues.
+  system: `You are the Resolution Agent for DentalCRM. Your job is to generate helpful, accurate responses to customer issues.
 
 When generating a response:
 1. Use the knowledge base context provided
@@ -197,7 +197,7 @@ Never make up information. If you don't know, say so and escalate.`,
 export const qaAgent = {
   name: "QA Agent",
   model: openai("gpt-4o"),
-  system: `You are the QA Agent for SupportFlow AI. Your job is to review AI-generated responses before they reach customers.
+  system: `You are the QA Agent for DentalCRM. Your job is to review AI-generated responses before they reach customers.
 
 Review criteria:
 1. Factual accuracy — Is the information correct?
@@ -240,7 +240,7 @@ Output a structured review with pass/fail and specific feedback.`,
 export const escalationAgent = {
   name: "Escalation Agent",
   model: openai("gpt-4o-mini"),
-  system: `You are the Escalation Agent for SupportFlow AI. Your job is to determine when and where to escalate tickets to human agents.
+  system: `You are the Escalation Agent for DentalCRM. Your job is to determine when and where to escalate tickets to human agents.
 
 Escalation triggers:
 - Customer explicitly requests a human
@@ -300,7 +300,7 @@ Route to the appropriate team based on skills and availability.`,
 export const sentimentAgent = {
   name: "Sentiment Agent",
   model: openai("gpt-4o-mini"),
-  system: `You are the Sentiment Agent for SupportFlow AI. Your job is to track and analyze customer emotion throughout conversations.
+  system: `You are the Sentiment Agent for DentalCRM. Your job is to track and analyze customer emotion throughout conversations.
 
 You must:
 1. Analyze sentiment at each message
@@ -368,7 +368,7 @@ You must:
 export const analyticsAgent = {
   name: "Analytics Agent",
   model: openai("gpt-4o"),
-  system: `You are the Analytics Agent for SupportFlow AI. Your job is to generate insights, forecasts, and reports from support data.
+  system: `You are the Analytics Agent for DentalCRM. Your job is to generate insights, forecasts, and reports from support data.
 
 You must:
 1. Analyze ticket volumes and trends

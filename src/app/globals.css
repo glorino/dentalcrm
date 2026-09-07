@@ -71,6 +71,9 @@
   .glass {
     @apply bg-white/70 backdrop-blur-2xl border border-white/30 shadow-xl shadow-black/5;
   }
+  .glassmorphism {
+    @apply bg-white/70 backdrop-blur-2xl border border-white/30 shadow-xl shadow-black/5;
+  }
   .glass-dark {
     @apply bg-gray-900/80 backdrop-blur-2xl border border-white/10;
   }
