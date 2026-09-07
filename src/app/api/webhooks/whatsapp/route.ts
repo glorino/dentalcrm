@@ -70,62 +70,61 @@ export async function GET(req: NextRequest) {
 }
 
 async function processIncomingWhatsApp(from: string, text: string) {
-  let dbReady = false;
-  try {
-    await initDB();
-    dbReady = true;
-  } catch (e) {
-    console.error("DB init failed, proceeding without DB:", e);
-  }
-
   let customerId: string | null = null;
   let customerName = "there";
   let ticketNumber = `DNT-${Date.now().toString().slice(-6)}`;
+  let ticketSaved = false;
 
-  if (dbReady) {
-    try {
-      let customers = await sql`SELECT id, name FROM customers WHERE phone = ${from} OR email = ${from}`;
-      
-      if (customers.length === 0) {
-        const result = await sql`
-          INSERT INTO customers (email, name, company, segment, plan, phone)
-          VALUES (${from}, ${"WhatsApp User"}, "Unknown", "starter", "starter", ${from})
-          RETURNING id
-        `;
-        customerId = result[0].id;
-      } else {
-        customerId = customers[0].id;
-        if (customers[0].name && customers[0].name !== "WhatsApp User") {
-          customerName = customers[0].name.split(" ")[0];
-        }
-      }
+  try {
+    await initDB();
+  } catch (e) {
+    console.error("DB init warning:", e);
+  }
 
-      ticketNumber = await generateTicketNumber();
-      const slaDue = new Date(Date.now() + 7200000);
-
-      await sql`
-        INSERT INTO tickets (ticket_number, subject, message, status, priority, channel, customer_id, sla_status, sla_due, tags)
-        VALUES (${ticketNumber}, ${text.substring(0, 100)}, ${text}, 'open', 'medium', 'whatsapp', ${customerId}, 'ok', ${slaDue.toISOString()}, ARRAY['whatsapp'])
+  try {
+    let customers = await sql`SELECT id, name FROM customers WHERE phone = ${from} OR email = ${from}`;
+    
+    if (customers.length === 0) {
+      const result = await sql`
+        INSERT INTO customers (email, name, company, segment, plan, phone)
+        VALUES (${from}, ${"WhatsApp User"}, 'Unknown', 'starter', 'starter', ${from})
+        ON CONFLICT (email) DO UPDATE SET phone = ${from}
+        RETURNING id
       `;
-
-      const ticketResult = await sql`SELECT id FROM tickets WHERE ticket_number = ${ticketNumber}`;
-      if (ticketResult.length > 0) {
-        await sql`
-          INSERT INTO messages (ticket_id, sender_type, sender_id, content, channel)
-          VALUES (${ticketResult[0].id}, 'customer', ${customerId}, ${text}, 'whatsapp')
-        `;
+      customerId = result[0].id;
+    } else {
+      customerId = customers[0].id;
+      if (customers[0].name && customers[0].name !== "WhatsApp User") {
+        customerName = customers[0].name.split(" ")[0];
       }
-
-      broadcastInboxUpdate({
-        type: "new_message",
-        channel: "whatsapp",
-        from,
-        message: text,
-        ticketNumber,
-      });
-    } catch (e) {
-      console.error("DB operations failed:", e);
     }
+
+    ticketNumber = await generateTicketNumber();
+    const slaDue = new Date(Date.now() + 7200000);
+
+    await sql`
+      INSERT INTO tickets (ticket_number, subject, message, status, priority, channel, customer_id, sla_status, sla_due, tags)
+      VALUES (${ticketNumber}, ${text.substring(0, 100)}, ${text}, 'open', 'medium', 'whatsapp', ${customerId}, 'ok', ${slaDue.toISOString()}, ARRAY['whatsapp'])
+    `;
+
+    const ticketResult = await sql`SELECT id FROM tickets WHERE ticket_number = ${ticketNumber}`;
+    if (ticketResult.length > 0) {
+      await sql`
+        INSERT INTO messages (ticket_id, sender_type, sender_id, content, channel)
+        VALUES (${ticketResult[0].id}, 'customer', ${customerId}, ${text}, 'whatsapp')
+      `;
+    }
+
+    ticketSaved = true;
+    broadcastInboxUpdate({
+      type: "new_message",
+      channel: "whatsapp",
+      from,
+      message: text,
+      ticketNumber,
+    });
+  } catch (e) {
+    console.error("WhatsApp DB operations failed:", e);
   }
 
   const kbResults = await searchKnowledgeBase(text);

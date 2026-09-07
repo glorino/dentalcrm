@@ -128,13 +128,7 @@ export async function sendTicketUpdateEmail(to: string, ticketNumber: string, st
 
 export async function processIncomingEmail(from: string, subject: string, body: string): Promise<string> {
   let customerId: string;
-
-  try {
-    await sql`SELECT 1`;
-  } catch {
-    console.error("DB not available for email processing");
-    return "error";
-  }
+  let ticketNumber = `DNT-${Date.now().toString().slice(-6)}`;
 
   try {
     let customers = await sql`SELECT id, name FROM customers WHERE email = ${from}`;
@@ -143,6 +137,7 @@ export async function processIncomingEmail(from: string, subject: string, body: 
       const result = await sql`
         INSERT INTO customers (email, name, company, segment, plan)
         VALUES (${from}, ${from.split("@")[0]}, 'Unknown', 'starter', 'starter')
+        ON CONFLICT (email) DO UPDATE SET name = ${from.split("@")[0]}
         RETURNING id
       `;
       customerId = result[0].id;

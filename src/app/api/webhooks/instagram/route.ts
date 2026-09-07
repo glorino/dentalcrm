@@ -60,35 +60,46 @@ export async function GET(req: NextRequest) {
 }
 
 async function processIncomingInstagram(senderId: string, text: string) {
-  await initDB();
+  let ticketNumber = `DNT-${Date.now().toString().slice(-6)}`;
 
-  let customers = await sql`SELECT id FROM customers WHERE email = ${`instagram_${senderId}`}`;
-  let customerId: string;
-
-  if (customers.length === 0) {
-    const result = await sql`
-      INSERT INTO customers (email, name, company, segment, plan)
-      VALUES (${`instagram_${senderId}`}, ${'Instagram User'}, 'Unknown', 'starter', 'starter')
-      RETURNING id
-    `;
-    customerId = result[0].id;
-  } else {
-    customerId = customers[0].id;
+  try {
+    await initDB();
+  } catch {
+    console.error("DB init warning for Instagram");
   }
 
-  const ticketNumber = await generateTicketNumber();
-  const slaDue = new Date(Date.now() + 14400000);
+  try {
+    let customers = await sql`SELECT id FROM customers WHERE email = ${`instagram_${senderId}`}`;
+    let customerId: string;
 
-  await sql`
-    INSERT INTO tickets (ticket_number, subject, message, status, priority, channel, customer_id, sla_status, sla_due, tags)
-    VALUES (${ticketNumber}, ${text.substring(0, 100)}, ${text}, 'open', 'medium', 'instagram', ${customerId}, 'ok', ${slaDue.toISOString()}, ARRAY['instagram'])
-  `;
+    if (customers.length === 0) {
+      const result = await sql`
+        INSERT INTO customers (email, name, company, segment, plan)
+        VALUES (${`instagram_${senderId}`}, ${'Instagram User'}, 'Unknown', 'starter', 'starter')
+        ON CONFLICT (email) DO UPDATE SET name = ${'Instagram User'}
+        RETURNING id
+      `;
+      customerId = result[0].id;
+    } else {
+      customerId = customers[0].id;
+    }
 
-  broadcastInboxUpdate({
-    type: "new_message",
-    channel: "instagram",
-    from: senderId,
-    message: text,
-    ticketNumber,
-  });
+    ticketNumber = await generateTicketNumber();
+    const slaDue = new Date(Date.now() + 14400000);
+
+    await sql`
+      INSERT INTO tickets (ticket_number, subject, message, status, priority, channel, customer_id, sla_status, sla_due, tags)
+      VALUES (${ticketNumber}, ${text.substring(0, 100)}, ${text}, 'open', 'medium', 'instagram', ${customerId}, 'ok', ${slaDue.toISOString()}, ARRAY['instagram'])
+    `;
+
+    broadcastInboxUpdate({
+      type: "new_message",
+      channel: "instagram",
+      from: senderId,
+      message: text,
+      ticketNumber,
+    });
+  } catch (e) {
+    console.error("Instagram DB operations failed:", e);
+  }
 }

@@ -43,11 +43,12 @@ export async function GET(req: NextRequest) {
 }
 
 async function processIncomingSMS(from: string, text: string): Promise<string> {
+  let ticketNumber = `DNT-${Date.now().toString().slice(-6)}`;
+
   try {
     await initDB();
   } catch {
-    console.error("DB not available for SMS processing");
-    return `DNT-${Date.now().toString().slice(-6)}`;
+    console.error("DB init warning for SMS");
   }
 
   try {
@@ -57,7 +58,8 @@ async function processIncomingSMS(from: string, text: string): Promise<string> {
     if (customers.length === 0) {
       const result = await sql`
         INSERT INTO customers (email, name, company, segment, plan, phone)
-        VALUES (${from}, ${"SMS User"}, "Unknown", "starter", "starter", ${from})
+        VALUES (${from}, ${'SMS User'}, 'Unknown', 'starter', 'starter', ${from})
+        ON CONFLICT (email) DO UPDATE SET phone = ${from}
         RETURNING id
       `;
       customerId = result[0].id;
@@ -65,7 +67,7 @@ async function processIncomingSMS(from: string, text: string): Promise<string> {
       customerId = customers[0].id;
     }
 
-    const ticketNumber = await generateTicketNumber();
+    ticketNumber = await generateTicketNumber();
     const slaDue = new Date(Date.now() + 7200000);
 
     await sql`
@@ -80,12 +82,11 @@ async function processIncomingSMS(from: string, text: string): Promise<string> {
         VALUES (${ticketResult[0].id}, 'customer', ${customerId}, ${text}, 'sms')
       `;
     }
-
-    return ticketNumber;
-  } catch (error) {
-    console.error("SMS processing error:", error);
-    return `DNT-${Date.now().toString().slice(-6)}`;
+  } catch (e) {
+    console.error("SMS DB operations failed:", e);
   }
+
+  return ticketNumber;
 }
 
 function generateSMSResponse(text: string, ticketNumber: string): string {
