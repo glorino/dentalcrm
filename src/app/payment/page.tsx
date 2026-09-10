@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { useLang } from "@/lib/i18n/context";
-import { industries, getIndustryFromEnv } from "@/lib/industry/config";
+import { getIndustry } from "@/lib/industry/config";
+
+export const dynamic = "force-dynamic";
 
 interface PaymentSuccess {
   transactionId: string;
@@ -14,7 +16,7 @@ interface PaymentSuccess {
 
 export default function PaymentPage() {
   const { t } = useLang();
-  const config = industries[getIndustryFromEnv()];
+  const config = getIndustry();
 
   const [form, setForm] = useState({
     amount: "",
