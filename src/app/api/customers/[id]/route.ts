@@ -54,7 +54,7 @@ export async function GET(
         firstTicketDate: customer.first_ticket_date,
         createdAt: customer.created_at,
       },
-      recentTickets: recentTickets.map(t => ({
+      recentTickets: recentTickets.map((t: any) => ({
         ticketNumber: t.ticket_number,
         subject: t.subject,
         status: t.status,

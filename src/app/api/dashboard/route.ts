@@ -62,17 +62,17 @@ export async function GET() {
         totalUsers: Number(totalUsers[0].count),
         slaBreached: Number(slaBreached[0].count),
       },
-      channelCounts: channelCounts.map(c => ({
+      channelCounts: channelCounts.map((c: any) => ({
         channel: c.channel,
         count: Number(c.count),
       })),
-      sentimentCounts: sentimentCounts.map(s => ({
+      sentimentCounts: sentimentCounts.map((s: any) => ({
         sentiment: s.sentiment,
         count: Number(s.count),
       })),
       avgConfidence: Number(avgConfidence[0].avg) || 0,
       avgCsat: Number(avgCsat[0].avg) || 0,
-      recentTickets: recentTickets.map(t => ({
+      recentTickets: recentTickets.map((t: any) => ({
         ticketNumber: t.ticket_number,
         subject: t.subject,
         status: t.status,

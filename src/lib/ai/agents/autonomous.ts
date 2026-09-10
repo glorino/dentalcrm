@@ -439,7 +439,7 @@ Provide a detailed quality score with specific feedback.`,
     }));
 
     const avgScore = sentimentTrend.length > 0
-      ? sentimentTrend.reduce((sum, s) => sum + s.score, 0) / sentimentTrend.length
+      ? sentimentTrend.reduce((sum: number, s: any) => sum + s.score, 0) / sentimentTrend.length
       : 0;
 
     const trend = sentimentTrend.length >= 2

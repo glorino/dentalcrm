@@ -76,7 +76,7 @@ export async function GET(
           email: ticket.assignee_email,
         },
       },
-      messages: messages.map(m => ({
+      messages: messages.map((m: any) => ({
         id: m.id,
         senderType: m.sender_type,
         senderName: m.sender_name || "Unknown",

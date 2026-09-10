@@ -95,7 +95,7 @@ export async function getAvailableSlots(
       const slotTime = `${String(Math.floor(currentMinutes / 60)).padStart(2, "0")}:${String(currentMinutes % 60).padStart(2, "0")}`;
       const slotDateTime = new Date(`${date}T${slotTime}:00`);
 
-      const isBooked = existingAppointments.some((apt) => {
+      const isBooked = existingAppointments.some((apt: any) => {
         const aptTime = new Date(apt.scheduled_at as string);
         const aptEnd = new Date(aptTime.getTime() + ((apt.duration_minutes as number) || 30) * 60000);
         return slotDateTime >= aptTime && slotDateTime < aptEnd;

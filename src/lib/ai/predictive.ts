@@ -111,12 +111,12 @@ export async function predictChurnRisk(customerId: string): Promise<number> {
   for (let i = 1; i < visitDates.length; i++) {
     gaps.push((visitDates[i - 1] - visitDates[i]) / (1000 * 60 * 60 * 24));
   }
-  const avgGap = gaps.length > 0 ? gaps.reduce((a, b) => a + b, 0) / gaps.length : 90;
+  const avgGap = gaps.length > 0 ? gaps.reduce((a: number, b: number) => a + b, 0) / gaps.length : 90;
   const gapVariance = gaps.length > 1
-    ? gaps.reduce((sum, g) => sum + (g - avgGap) ** 2, 0) / gaps.length
+    ? gaps.reduce((sum: number, g: number) => sum + (g - avgGap) ** 2, 0) / gaps.length
     : 0;
 
-  const slope = linearSlope(visitDates.map((_, i) => i === 0 ? 0 : visitDates[i - 1] - visitDates[i]));
+  const slope = linearSlope(visitDates.map((_: any, i: number) => i === 0 ? 0 : visitDates[i - 1] - visitDates[i]));
   const trendFactor = slope > 10 ? 0.3 : slope > 0 ? 0.15 : slope > -10 ? 0 : -0.1;
 
   const recencyScore = Math.min(daysSinceVisit / (avgGap * 2), 1) * 35;
@@ -156,8 +156,8 @@ export async function predictTreatmentUrgency(customerId: string): Promise<{scor
   }
 
   const visitTypes = completed.map((a: Record<string, unknown>) => a.appointment_type as string);
-  const hasCleaning = visitTypes.some(t => /cleaning|prophylaxis/i.test(t));
-  const hasCheckup = visitTypes.some(t => /check|exam|checkup/i.test(t));
+  const hasCleaning = visitTypes.some((t: string) => /cleaning|prophylaxis/i.test(t));
+  const hasCheckup = visitTypes.some((t: string) => /check|exam|checkup/i.test(t));
 
   const recommendedTreatments: string[] = [];
   let urgencyScore = 20;
@@ -219,7 +219,7 @@ export async function forecastRevenue(days: number): Promise<{date: string, pred
 
   const dailyVisits = revenueData.map((r: Record<string, unknown>) => Number(r.visit_count));
   const avgVisits = dailyVisits.length > 0
-    ? dailyVisits.reduce((a, b) => a + b, 0) / dailyVisits.length
+    ? dailyVisits.reduce((a: number, b: number) => a + b, 0) / dailyVisits.length
     : 2;
 
   const slope = linearSlope(dailyVisits);
@@ -368,7 +368,7 @@ export async function predictLifetimeValue(customerId: string): Promise<{current
   const avgRevenuePerVisit = currentLTV / visits.length;
   const visitFrequency = visits.length / monthsActive;
 
-  const visitRevenues = visits.map((_, i) => i < visits.length - 1 ? avgRevenuePerVisit : avgRevenuePerVisit);
+  const visitRevenues = visits.map((_: any, i: number) => i < visits.length - 1 ? avgRevenuePerVisit : avgRevenuePerVisit);
   const revenueSlope = linearSlope(visitRevenues);
   const growthRate = currentLTV > 0 ? revenueSlope / currentLTV : 0;
 

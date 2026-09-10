@@ -85,14 +85,14 @@ export async function GET(req: NextRequest) {
     `;
 
     const totalPendingAmount = pendingClaims.reduce(
-      (sum, c) => sum + (Number(c.amount) || 0), 0
+      (sum: number, c: any) => sum + (Number(c.amount) || 0), 0
     );
     const totalOverdueAmount = overduePayments.reduce(
-      (sum, p) => sum + (Number(p.amount) || 0), 0
+      (sum: number, p: any) => sum + (Number(p.amount) || 0), 0
     );
 
     return NextResponse.json({
-      pendingClaims: pendingClaims.map(c => ({
+      pendingClaims: pendingClaims.map((c: any) => ({
         id: c.id,
         claimNumber: c.claim_number,
         patient: c.patient_name,
@@ -103,7 +103,7 @@ export async function GET(req: NextRequest) {
         submittedAt: c.submitted_at,
         successProbability: Number(c.success_probability),
       })),
-      overduePayments: overduePayments.map(p => ({
+      overduePayments: overduePayments.map((p: any) => ({
         id: p.id,
         patient: p.patient_name,
         email: p.email,
@@ -112,12 +112,12 @@ export async function GET(req: NextRequest) {
         daysOverdue: Number(p.days_overdue),
         collectionPriority: p.collection_priority,
       })),
-      revenueByTreatment: revenueByTreatment.map(r => ({
+      revenueByTreatment: revenueByTreatment.map((r: any) => ({
         treatment: r.treatment_type,
         count: Number(r.count),
         revenue: Number(r.revenue),
       })),
-      claimApprovalRates: claimApprovalRates.map(r => ({
+      claimApprovalRates: claimApprovalRates.map((r: any) => ({
         treatmentCode: r.treatment_code,
         totalClaims: Number(r.total_claims),
         approved: Number(r.approved),

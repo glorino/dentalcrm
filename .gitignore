@@ -38,3 +38,4 @@ check/
 next-env.d.ts
 
 .vercel
+.env*

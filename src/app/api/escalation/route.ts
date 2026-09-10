@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     `;
 
     return NextResponse.json({
-      escalations: escalatedTickets.map(t => ({
+      escalations: escalatedTickets.map((t: any) => ({
         id: t.id,
         ticketNumber: t.ticket_number,
         subject: t.subject,
